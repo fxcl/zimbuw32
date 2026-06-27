@@ -1,0 +1,128 @@
+#
+# The Zimbu compiler written in Zimbu
+#
+# GUI module - native macOS desktop GUI (Cocoa / AppKit)
+#
+# First slice of native desktop GUI. A single thin-imperative entry point:
+#   GUI.open(title, text)   -> blocks until the window is closed.
+# It opens a real NSWindow with an NSTextField label and pumps the run loop
+# until the window is ordered out (closed), then returns to the caller.
+#
+# Binding pattern: the work is pure C inside a `>>> uses(appkit, getCstring)
+# blockgc` interleave. `uses(appkit)` is the ONLY thing the caller needs; the
+# compiler's trigger for `appkit` (genC/WriteC.zu) calls Config.addAppKitLib(),
+# which appends "-framework AppKit -framework Foundation" to the link step. So
+# a user program merely IMPORTs GUI and calls GUI.open() - no -ccendarg.
+#
+# Why pure C (objc_msgSend / objc_getClass / sel_registerName) instead of
+# #include <AppKit/AppKit.h>: the emitted translation unit is a .c file built
+# in C mode. AppKit's headers carry Objective-C @interface / @class syntax
+# that only compiles in .m mode, and #include of system headers is illegal
+# inside a function body anyway. So we include NOTHING: forward-declare the
+# three objc runtime functions, typedef id/SEL/BOOL, reach AppKit classes by
+# name at runtime, and build strings via NSString stringWithCString:encoding:.
+#
+# MRC note: the generated .c is NOT compiled with -fobjc-arc. We take no extra
+# retains on the window/widgets (AppKit retains them once placed in the
+# hierarchy) and only drain the autorelease pool.
+#
+
+MODULE GUIModule @public @items=public
+
+  #= Open a native macOS window titled |title| showing |text| as a label.
+  #  Blocks until the window is closed by the user. macOS only; auto-links the
+  #  AppKit + Foundation frameworks via `uses(appkit)`.
+  PROC open(string title, string text)
+>>> uses(appkit, getCstring) blockgc
+  {
+    /* Forward declarations ONLY (legal at function scope; function *definitions*
+     * are not, hence no #include of system headers here). Drive the Objective-C
+     * runtime from pure C, no .m and no AppKit headers. */
+    typedef void *id;
+    typedef void *SEL;
+    typedef signed char BOOL;
+    #define nil ((id)0)
+    #define YES ((BOOL)1)
+    #define NO  ((BOOL)0)
+    extern id objc_msgSend(id, SEL, ...);
+    extern id objc_getClass(const char *);
+    extern SEL sel_registerName(const char *);
+
+    /* NSRect ABI: origin(x,y) + size(w,h) = 4 doubles (32 bytes), passed by
+     * hidden SysV reference - hence the precise non-variadic cast on every
+     * msgSend that takes one. */
+    typedef struct { double x, y, width, height; } ZNWSRect;
+
+    /* Cast objc_msgSend to a precise, non-variadic prototype so the compiler
+     * lowers the ABI correctly (varargs would mis-pass the ZNWSRect / structs). */
+    #define C0(ret, recv, sel) \
+      ((ret (*)(id, SEL))objc_msgSend)((id)(recv), sel_registerName(sel))
+
+    id pool = C0(id, objc_getClass("NSAutoreleasePool"), "alloc");
+    pool    = C0(id, pool, "init");
+
+    id app = C0(id, objc_getClass("NSApplication"), "sharedApplication");
+    ((void (*)(id, SEL, long))objc_msgSend)((id)app,
+        sel_registerName("setActivationPolicy:"), (long)0);  /* Regular */
+
+    /* NSString builder. ZgetCstring(%title%) / %text% splice the Zimbu string
+     * arguments as their C handles and convert to a UTF-8 char*. */
+    id strClass = objc_getClass("NSString");
+    #define NSSTR(cstr) \
+      ((id (*)(id, SEL, const char *, unsigned long))objc_msgSend)( \
+          (id)strClass, sel_registerName("stringWithCString:encoding:"), \
+          (cstr), 4UL)  /* NSUTF8StringEncoding */
+
+    /* Window: styleMask 15 = titled|closable|miniaturizable|resizable;
+     * backing 2 = buffered; defer NO so it realises immediately. */
+    id win = C0(id, objc_getClass("NSWindow"), "alloc");
+    ZNWSRect frame = { 100.0, 100.0, 480.0, 320.0 };
+    win = ((id (*)(id, SEL, ZNWSRect, unsigned long, unsigned long, BOOL))objc_msgSend)(
+            (id)win, sel_registerName("initWithContentRect:styleMask:backing:defer:"),
+            frame, (unsigned long)15, (unsigned long)2, NO);
+    ((void (*)(id, SEL, id))objc_msgSend)((id)win,
+        sel_registerName("setTitle:"), NSSTR(ZgetCstring(%title%)));
+
+    /* A label as a child widget, to prove a subview call works too. */
+    id field = C0(id, objc_getClass("NSTextField"), "alloc");
+    ZNWSRect labelFrame = { 40.0, 150.0, 400.0, 40.0 };
+    field = ((id (*)(id, SEL, ZNWSRect))objc_msgSend)(
+            (id)field, sel_registerName("initWithFrame:"), labelFrame);
+    ((void (*)(id, SEL, id))objc_msgSend)((id)field,
+        sel_registerName("setStringValue:"), NSSTR(ZgetCstring(%text%)));
+    ((void (*)(id, SEL, id))objc_msgSend)(C0(id, win, "contentView"),
+        sel_registerName("addSubview:"), (id)field);
+
+    ((void (*)(id, SEL, id))objc_msgSend)((id)win,
+        sel_registerName("makeKeyAndOrderFront:"), nil);
+    ((void (*)(id, SEL, BOOL))objc_msgSend)((id)app,
+        sel_registerName("activateIgnoringOtherApps:"), YES);
+    /* Without [NSApp run] we must finish launching manually so the app and its
+     * window participate in event delivery. */
+    C0(void, app, "finishLaunching");
+
+    /* Run the event loop until the window is closed. We poll [win isVisible]
+     * and pump events manually rather than calling [NSApp run], because run()
+     * never returns: Cocoa does not exit when the last window closes without an
+     * applicationShouldTerminateAfterLastWindowClosed: delegate (and installing
+     * one would need an IMP we cannot define as a nested function here).
+     * nextEventMatchingMask:untilDate:inMode:dequeue: with a nil untilDate
+     * blocks until an event arrives, so this does NOT busy-loop. When the user
+     * clicks the close button, that event is dequeued, sendEvent: processes the
+     * close (window is ordered out), and the next isVisible check is false. */
+    id mode = NSSTR("kCFRunLoopDefaultMode");
+    SEL nextEv = sel_registerName("nextEventMatchingMask:untilDate:inMode:dequeue:");
+    SEL sendEv = sel_registerName("sendEvent:");
+    SEL visSel = sel_registerName("isVisible");
+    while (((BOOL (*)(id, SEL))objc_msgSend)((id)win, visSel)) {
+      id ev = ((id (*)(id, SEL, unsigned long, id, id, BOOL))objc_msgSend)(
+              (id)app, nextEv, (unsigned long)~0UL, nil, mode, YES);
+      if (ev != nil)
+        ((void (*)(id, SEL, id))objc_msgSend)((id)app, sendEv, ev);
+    }
+
+    C0(void, pool, "drain");
+  }
+<<<
+  }
+}

@@ -40,6 +40,7 @@ IMPORT "lib/DICTLoader.zu"
 IMPORT "lib/ELoader.zu"
 IMPORT "lib/FLOATLoader.zu"
 IMPORT "lib/GCLoader.zu"
+IMPORT "lib/GUILoader.zu"
 IMPORT "lib/HTTPLoader.zu"
 IMPORT "lib/ILoader.zu"
 IMPORT "lib/INTLoader.zu"
@@ -142,6 +143,7 @@ CLASS Builtin @items=public                   # TODO: restrict visibility
       %availableModules["E"] = ELoader.prepare()
       %availableModules["FLOAT"] = FLOATLoader.prepare()
       %availableModules["GC"] = GCLoader.prepare()
+      %availableModules["GUI"] = GUILoader.prepare()
       %availableModules["HTTP"] = HTTPLoader.prepare()
       %availableModules["I"] = ILoader.prepare()
       %availableModules["INT"] = INTLoader.prepare()

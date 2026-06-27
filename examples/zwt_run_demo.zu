@@ -1,0 +1,12 @@
+# One-click ZWT launcher demo: the whole server setup is a single ZWT.run() call.
+# Contrast with zwtdemo/zwtdemo.zu, which hand-writes the 8-step boot.
+# No RPC servlet, so the run() "display-only" path fits.
+
+IMPORT.ZWT "zwt_run_page.zu"
+
+ARG.Int port = NEW("p", "port", 8090, "Port for the HTTP server")
+
+FUNC Main() int
+  ZWT.run(ZwtRunPage.Type(), "Zimbu ZWT.run() demo", port.value())
+  RETURN 0
+}

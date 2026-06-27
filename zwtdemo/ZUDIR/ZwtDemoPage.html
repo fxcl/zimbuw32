@@ -337,6 +337,9 @@ _.remove = YLxA;
 // including THREADModule structs
 // including Config structs
 // including zimbuConfig structs
+function YgC4(){ // E_Thread
+}
+_ = YgC4.prototype = new YwtA();
 // including ZWTModule structs
 // including BaseModule structs
 function Y4Y5(){ // UIObject
@@ -368,6 +371,8 @@ _.removeJsHandler = YcEP;
 _.setClickHandler = YRwQ;
 _.setMouseOverHandler = YA4S;
 _.setMouseOutHandler = YzQ6;
+// including AlertModule structs
+// including BadgeModule structs
 // including ButtonModule structs
 function YN0O(){ // Button
 }
@@ -436,6 +441,7 @@ _.getButtons = Y4Mpa;
 _.handleCancel = Yir6;
 _.Init = YILpa;
 // including DropdownModule structs
+// including DividerModule structs
 // including EventModule structs
 function YZDx(){ // Event
 }
@@ -451,8 +457,29 @@ var MEventModule__EEventType = [
 "key",
 "keyDown",
 "keyUp",
+"change",
 ];
 // including InputModule structs
+// including FileInputModule structs
+// including ImageModule structs
+// including ProgressBarModule structs
+// including RadioModule structs
+// including SliderModule structs
+// including SpinnerModule structs
+// including SwitchModule structs
+// including AccordionModule structs
+// including BreadcrumbModule structs
+// including CardModule structs
+// including PaginationModule structs
+// including TabsModule structs
+// including SkeletonModule structs
+// including ToastModule structs
+// including TooltipModule structs
+function Y7ns(){ // Tooltip
+}
+_ = Y7ns.prototype = new Y4xQ();
+_.Init = YldA;
+_.ToString = YDoO;
 // including LabelModule structs
 function YtSx(){ // Label
 }
@@ -662,6 +689,7 @@ _.setCellStyle = YCAj;
 _.addRow = YPru;
 _.deleteRow = YZmd;
 _.resizeRows = YnB1;
+// including TagModule structs
 // including TextareaModule structs
 function Yg_8(){ // Element
 }
@@ -763,20 +791,6 @@ _.setName = YAUM;
 _.hasName = YHye;
 _.valid = Y8Gy;
 _.fieldSpecs = YKIca;
-function YwEo(){ // Status
-}
-_ = YwEo.prototype = new YFL0();
-_.hasField = YKyGa;
-_.name = YmNka;
-_.boolGet = YGI8a;
-_.stringGet = YJYPa;
-_.boolSet = YJyDa;
-_.stringSet = YMOja;
-_.Vf_ok = 0;
-_.hasOk = YdgU;
-_.Vf_error = null;
-_.hasError = Yc27;
-_.fieldSpecs = YubJa;
 function YEzw(){ // Top
 }
 _ = YEzw.prototype = {};
@@ -851,12 +865,30 @@ var Yas1 = 5; // Proto.kTypeMax
 // including zimbuConfig declarations
 // including ZWTModule declarations
 // including BaseModule declarations
+// including AlertModule declarations
+// including BadgeModule declarations
 // including ButtonModule declarations
 // including CodeModule declarations
 // including DialogModule declarations
 // including DropdownModule declarations
+// including DividerModule declarations
 // including EventModule declarations
 // including InputModule declarations
+// including FileInputModule declarations
+// including ImageModule declarations
+// including ProgressBarModule declarations
+// including RadioModule declarations
+// including SliderModule declarations
+// including SpinnerModule declarations
+// including SwitchModule declarations
+// including AccordionModule declarations
+// including BreadcrumbModule declarations
+// including CardModule declarations
+// including PaginationModule declarations
+// including TabsModule declarations
+// including SkeletonModule declarations
+// including ToastModule declarations
+// including TooltipModule declarations
 // including LabelModule declarations
 // including MenuModule declarations
 // including PanelModule declarations
@@ -864,6 +896,7 @@ var Yas1 = 5; // Proto.kTypeMax
 var YphH = 0; // StyleModule__CStyle__X.styleCount
 var YPjV = ZDictAdd(0, ZDictAdd(0, ZDictAdd(0, ZDictAdd(0, ZDictAdd(0, ZDictAdd(0, ZDictAdd(0, ZDictAdd(0, ZDictAdd(0, ZnewDict(1, 1), ':' + "pixel", "px"), ':' + "percent", "%"), ':' + "em", "em"), ':' + "ex", "ex"), ':' + "cm", "cm"), ':' + "mm", "mm"), ':' + "inch", "in"), ':' + "point", "pt"), ':' + "pica", "pc"); // StyleModule__CStyle__X.unitNames
 // including TableModule declarations
+// including TagModule declarations
 // including TextareaModule declarations
 var YATn = null; // ZWTModule.rootPanel
 // including CHECKModule declarations
@@ -879,7 +912,6 @@ var YyE5 = ZDictAdd(0, ZDictAdd(0, ZDictAdd(0, ZDictAdd(0, ZnewDict(0, 0), ':' +
 var YO_w = ZDictAdd(0, ZDictAdd(0, ZDictAdd(0, ZnewDict(2, 0), ':' + 0, 1), ':' + 1, 2), ':' + 2, 3); // Tutorial__CPerson__X.int2PhoneType
 var YDAS = [Ykww(null, "person", 1, 12, 1)]; // Tutorial__CAddressBook__X.fieldSpecs
 var YZsK = [Ykww(null, "name", 1, 17, 0)]; // Tutorial__CGetOptions__X.fieldSpecs
-var Y1gv = [Ykww(null, "ok", 1, 1, 0), Ykww(null, "error", 2, 17, 0)]; // Tutorial__CStatus__X.fieldSpecs
 var YYlJ = null; // ZwtDemoPage.vPanel
 var Y4fJ = null; // ZwtDemoPage.hPanel
 var Yivf = null; // ZwtDemoPage.buttonStyleOver
@@ -3944,7 +3976,7 @@ function YoEe(AeventType, Ahandler) { // MBaseModule__CWidget.setHandler
   {
    {
     var Ve;
-    var Zf3 = ZforEnumNew(7);
+    var Zf3 = ZforEnumNew(8);
 for (Ve = ZforEnumGet(Zf3); ZforEnumCont(Zf3); Ve = ZforEnumNext(Zf3)) {
     if (((Ve != 0) && !(this.Vhandlers.has(Ve))))
     {
@@ -3973,7 +4005,7 @@ function YmNC(AeventType, Ahandler) { // MBaseModule__CWidget.addHandler
  {
   {
    var Ve;
-   var Zf2 = ZforEnumNew(7);
+   var Zf2 = ZforEnumNew(8);
 for (Ve = ZforEnumGet(Zf2); ZforEnumCont(Zf2); Ve = ZforEnumNext(Zf2)) {
    if ((Ve != 0))
    {
@@ -4029,6 +4061,11 @@ function YK1u(AeventType) { // MBaseModule__CWidget.setJsHandler
              this.Velem.onkeyup = f;
      break;
    }
+  case 7:
+   {
+             this.Velem.onchange = f;
+     break;
+   }
   }
  }
 }
@@ -4072,6 +4109,11 @@ function YcEP(AeventType) { // MBaseModule__CWidget.removeJsHandler
              this.Velem.onkeyup = null;
      break;
    }
+  case 7:
+   {
+             this.Velem.onchange = null;
+     break;
+   }
   }
  }
 }
@@ -4108,6 +4150,8 @@ for (Vh1 = ZforListGet(Zf21); ZforListCont(Zf21); Vh1 = ZforListNext(Zf21)) {
   }
  }
 }
+// including AlertModule bodies
+// including BadgeModule bodies
 // including ButtonModule bodies
 function YUJo(thisO, Atext, AclickHandler) { // MButtonModule__CButton.NEW
  if (!thisO) thisO = YN0Oa(null);
@@ -4279,6 +4323,7 @@ for (Vbutton = ZforListGet(Zf1); ZforListCont(Zf1); Vbutton = ZforListNext(Zf1))
  return thisO;
 }
 // including DropdownModule bodies
+// including DividerModule bodies
 // including EventModule bodies
 function YyE0(thisO, Awidget, Atype) { // MEventModule__CEvent.NEW
  if (!thisO) thisO = new YZDx();
@@ -4287,6 +4332,49 @@ function YyE0(thisO, Awidget, Atype) { // MEventModule__CEvent.NEW
  return thisO;
 }
 // including InputModule bodies
+// including FileInputModule bodies
+// including ImageModule bodies
+// including ProgressBarModule bodies
+// including RadioModule bodies
+// including SliderModule bodies
+// including SpinnerModule bodies
+// including SwitchModule bodies
+// including AccordionModule bodies
+// including BreadcrumbModule bodies
+// including CardModule bodies
+// including PaginationModule bodies
+// including TabsModule bodies
+// including SkeletonModule bodies
+// including ToastModule bodies
+// including TooltipModule bodies
+function YldA(thisO) { // MTooltipModule__CTooltip.Init
+ if (!thisO) thisO = new Y7ns();
+ thisO.Vactive = 1;
+ thisO.Vhighlighted = -1;
+ thisO.Vhighlights = Yh95(null);
+ thisO.Vx = -1;
+ thisO.Vy = -1;
+      thisO.Velem = $doc.createElement('div');
+      thisO.Velem.style.position = 'absolute';
+ var Vstyle = YH8J(null).setBGColorName(16).setBorder(2, 1, YfEv(null, 5));
+ thisO.setStyle(Vstyle);
+      thisO.Velem = $doc.createElement('div');
+      thisO.Velem.style.position = 'absolute';
+      thisO.Velem.style.padding = '4px 8px';
+      thisO.Velem.style.fontSize = '12px';
+      thisO.Velem.style.maxWidth = '240px';
+      thisO.Velem.style.backgroundColor = '#333333';
+      thisO.Velem.style.color = '#ffffff';
+      thisO.Velem.style.borderRadius = '3px';
+      thisO.Velem.style.zIndex = '1000';
+      thisO.Velem.style.display = 'none';
+      thisO.Velem.style.pointerEvents = 'none';
+      $doc.body.appendChild(thisO.Velem);
+ return thisO;
+}
+function YDoO() { // MTooltipModule__CTooltip.ToString
+ return "Tooltip";
+}
 // including LabelModule bodies
 function YL0R(thisO) { // MLabelModule__CLabel.Init
  if (!thisO) thisO = new YtSx();
@@ -5233,6 +5321,7 @@ function YrNL__YVvX__Y2AK(thisO) { // MTableModule__CTable.NEW__p2
  if (!thisO) thisO = YZQ2(null);
  return thisO;
 }
+// including TagModule bodies
 // including TextareaModule bodies
 function YbMN() { // MZWTModule.root
  if ((YATn == null))
@@ -5726,72 +5815,6 @@ function YPXNa(AfieldNr) { // MTutorial__CGetOptions.hasField
 }
 function YKIca() { // MTutorial__CGetOptions.fieldSpecs
  return YZsK;
-}
-function YmNka() { // MTutorial__CStatus.name
- return "Status";
-}
-function YdgU() { // MTutorial__CStatus.hasOk
- return (this.Vf_ok != 0);
-}
-function Yc27() { // MTutorial__CStatus.hasError
- return (this.Vf_error != null);
-}
-function YGI8a(AfieldNr) { // MTutorial__CStatus.boolGet
- switch (AfieldNr)
- {
- case 1:
-  {
-   return (this.Vf_ok == 2);
-  }
- }
- return 0;
-}
-function YJyDa(AfieldNr, Avalue) { // MTutorial__CStatus.boolSet
- switch (AfieldNr)
- {
- case 1:
-  {
-   this.Vf_ok = (((Avalue) ? (2) : (1)));
-    break;
-  }
- }
-}
-function YJYPa(AfieldNr) { // MTutorial__CStatus.stringGet
- switch (AfieldNr)
- {
- case 2:
-  {
-   return this.Vf_error;
-  }
- }
- return "";
-}
-function YMOja(AfieldNr, Avalue) { // MTutorial__CStatus.stringSet
- switch (AfieldNr)
- {
- case 2:
-  {
-   this.Vf_error = Avalue;
-    break;
-  }
- }
-}
-function YKyGa(AfieldNr) { // MTutorial__CStatus.hasField
- switch (AfieldNr)
- {
- case 1:
-  {
-   return this.hasOk();
-  }
- case 2:
-  {
-   return this.hasError();
-  }
- }
- return 0;
-}
-function YubJa() { // MTutorial__CStatus.fieldSpecs
- return Y1gv;
 }
 function YBoY(Arequest, Adone) { // MTutorial__MAddressService.callGetAddressBook
  if (!(Arequest.valid()))

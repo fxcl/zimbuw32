@@ -1,0 +1,27 @@
+# Browser-side ZWT page that talks to the server over WebSocket.
+#
+# Compiled to JS via IMPORT.ZWT in ws_zwt_demo.zu.  Proves the browser half of
+# the Phase 2 WebSocket support: a ZWT page uses the native JS WebSocket to
+# reach the server's /ws endpoint, and reflects frames into the page.
+#
+# The bridge is intentionally pure JS inside the interleave (no Zimbu lambda),
+# so it depends on no widget-method bridging and is build-robust.  A first-class
+# ZWT WebSocket widget that drives ZWT.Label etc. from JS callbacks is a real
+# API-shape decision and is deferred (see docs/TUI-GUI-SUPPORT.md).
+#
+# The page sends "ping from browser" once a second; the server echoes it, so the
+# output line refreshes live from WebSocket frames instead of HTTP polling.
+
+MODULE WsZwtPage
+  PROC init()
+    ZWT.root().add(ZWT.Label.NEW("ZWT over WebSocket"))
+>>>
+    var out = document.createElement('div');
+    out.textContent = '(connecting...)';
+    document.body.appendChild(out);
+    var ws = new WebSocket("ws://" + window.location.host + "/ws");
+    ws.onmessage = function(e) { out.textContent = e.data; };
+    window.setInterval(function() { ws.send("ping from browser"); }, 1000);
+<<<
+  }
+}

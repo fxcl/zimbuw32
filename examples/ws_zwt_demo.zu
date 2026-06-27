@@ -1,0 +1,39 @@
+# End-to-end ZWT + WebSocket demo.  Serves a ZWT page that connects back to
+# this server's /ws endpoint, with the server echoing each frame.  The page
+# refreshes live from WebSocket frames (no HTTP polling).
+#
+# Uses the manual HTTP.Server path (not ZWT.run(), which blocks and cannot
+# register a WebSocket endpoint on the shared port -- see ZWTModule.zu run()).
+#
+# Build:  ./zimbu examples/ws_zwt_demo.zu
+# Run:    ./ws_zwt_demo -p 8096
+# Then open the printed URL; the line refreshes once a second.
+
+IMPORT.ZWT "ws_zwt_page.zu"
+
+ARG.Int port = NEW("p", "port", 8096, "Port for the HTTP + WebSocket server")
+
+# Echo handler (the Phase 2 contract): recv() returns NIL when the browser
+# closes the tab, so we loop until then.
+PROC wsEcho(HTTP.WebSocketConnection conn)
+  WHILE TRUE
+    string msg = conn.recv()
+    IF msg == NIL
+      BREAK
+    }
+    conn.send(msg)
+  }
+}
+
+FUNC Main() int
+  IO.initSockets()
+  HTTP.Server server = NEW(port.value())
+  ZWT.createPage(server, "index.html", "Zimbu ZWT + WebSocket", WsZwtPage.Type())
+  server.redirect("/", "/index.html")
+  server.addWebSocket("/ws", wsEcho)
+  server.start()
+  IO.print("ws_zwt_demo: open http://localhost:" .. port.value() .. "/")
+  server.openInBrowser("index.html")
+  server.waitForExit()
+  RETURN 0
+}

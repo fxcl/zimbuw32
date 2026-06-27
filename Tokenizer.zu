@@ -120,6 +120,7 @@ MODULE Tokenizer @items=public   # TODO: restrict visibility
       "FOR": TType.for,
       "FUNC": TType.func,
       "GC": TType.id,
+      "GUI": TType.id,
       "GENERATE_ELSE": TType.generate_else,
       "GENERATE_ELSEIF": TType.generate_elseif,
       "GENERATE_ERROR": TType.generate_error,

@@ -1,0 +1,242 @@
+# WebSocket echo server — Phase 1 feasibility spike.
+#
+# Proves, in ONE standalone file with no vendored-source edit, that Zimbu's
+# >>> blockgc C interleave can do a full WebSocket handshake and frame loop:
+#   - SHA-1 + Base64 for Sec-WebSocket-Accept (NEITHER exists in the stdlib;
+#     both inlined below in plain C, no helper-function defs since blockgc is
+#     function-scope).
+#   - WS frame parse (mask, 7/16/64-bit length, unmask) and frame write
+#     (server->client, no mask), over raw recv/send on our own socket.
+#
+# Single client, blocking — that is intentional. Threading and HTTPModule
+# integration are Phase 2, gated on this spike.  Reversible: rm this file.
+#
+# Build:  ./zimbu examples/ws_echo.zu
+# Run:    ./ws_echo  -p 8092
+# Verify: examples/ws_echo_test.py  (independent Python client: handshake,
+#          send "hello", expect "hello" echoed back).
+
+ARG.Int port = NEW("p", "port", 8092, "Port for the WebSocket echo server")
+
+FUNC Main() int
+  IO.initSockets()
+  int p = port.value()
+>>> uses(sys_types, socket, unistd) blockgc
+  int serv_fd = socket(AF_INET, SOCK_STREAM, 0);
+  int fatal = (serv_fd < 0);
+  if (fatal) perror("ws_echo socket()");
+  if (!fatal)
+  {
+    int on = 1;
+    if (setsockopt(serv_fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) == -1)
+    { perror("ws_echo setsockopt()"); fatal = 1; }
+  }
+  if (!fatal)
+  {
+    struct sockaddr_in a;
+    memset(&a, 0, sizeof(a));
+    a.sin_family = AF_INET;
+    a.sin_addr.s_addr = INADDR_ANY;
+    a.sin_port = htons((int)%p%);
+    if (bind(serv_fd, (struct sockaddr *)&a, sizeof(a)) == -1)
+    { perror("ws_echo bind()"); fatal = 1; }
+  }
+  if (!fatal)
+  {
+    if (listen(serv_fd, 5) == -1) { perror("ws_echo listen()"); fatal = 1; }
+  }
+  if (!fatal)
+  {
+    fprintf(stderr, "ws_echo: listening on port %d\n", (int)%p%);
+    for (;;)
+    {
+      struct sockaddr_in cli;
+      socklen_t clen = sizeof(cli);
+      int fd = accept(serv_fd, (struct sockaddr *)&cli, &clen);
+      if (fd == -1) { if (errno == EINTR) continue; perror("ws_echo accept()"); break; }
+
+      /* --- read HTTP Upgrade request up to end of headers --- */
+      char req[4096];
+      int total = 0;
+      int r;
+      while (total < (int)sizeof(req) - 1)
+      {
+        r = recv(fd, req + total, sizeof(req) - 1 - total, 0);
+        if (r <= 0) break;
+        total += r;
+        req[total] = 0;
+        if (strstr(req, "\r\n\r\n")) break;
+      }
+      if (total <= 0) { close(fd); continue; }
+
+      /* --- locate Sec-WebSocket-Key (24 base64 chars) --- */
+      char *kp = strstr(req, "Sec-WebSocket-Key: ");
+      if (!kp) kp = strstr(req, "Sec-WebSocket-Key:");
+      if (!kp) { close(fd); continue; }
+      kp += (kp[18] == ' ') ? 19 : 18;
+      char key[64];
+      int kl = 0;
+      while (kp[kl] && kp[kl] != '\r' && kp[kl] != '\n' && kl < 24)
+      { key[kl] = kp[kl]; kl++; }
+      key[kl] = 0;
+
+      /* --- SHA-1 input = key || magic GUID --- */
+      const char *guid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+      unsigned char msg[128];
+      int ml = 0;
+      while (ml < kl) { msg[ml] = (unsigned char)key[ml]; ml++; }
+      int gi = 0;
+      while (guid[gi]) { msg[ml++] = (unsigned char)guid[gi++]; }
+
+      /* --- inline SHA-1 of msg[0..ml) --- */
+      unsigned int h0 = 0x67452301, h1 = 0xEFCDAB89, h2 = 0x98BADCFE,
+                   h3 = 0x10325476, h4 = 0xC3D2E1F0;
+      int padlen = ml + 1;
+      while ((padlen % 64) != 56) padlen++;
+      padlen += 8;
+      unsigned char pm[256];
+      int pi;
+      for (pi = 0; pi < padlen; pi++) pm[pi] = 0;
+      for (pi = 0; pi < ml; pi++) pm[pi] = msg[pi];
+      pm[ml] = 0x80;
+      unsigned long long bits = (unsigned long long)ml * 8;
+      int bi;
+      for (bi = 0; bi < 8; bi++) pm[padlen - 8 + bi] = (unsigned char)(bits >> ((7 - bi) * 8));
+
+      int blk;
+      for (blk = 0; blk < padlen; blk += 64)
+      {
+        unsigned int w[80];
+        int i;
+        for (i = 0; i < 16; i++)
+          w[i] = ((unsigned int)pm[blk + i*4] << 24)
+               | ((unsigned int)pm[blk + i*4 + 1] << 16)
+               | ((unsigned int)pm[blk + i*4 + 2] << 8)
+               | ((unsigned int)pm[blk + i*4 + 3]);
+        for (i = 16; i < 80; i++)
+        {
+          unsigned int t = w[i-3] ^ w[i-8] ^ w[i-14] ^ w[i-16];
+          w[i] = (t << 1) | (t >> 31);
+        }
+        unsigned int a = h0, b = h1, c = h2, d = h3, e = h4;
+        for (i = 0; i < 80; i++)
+        {
+          unsigned int f, k;
+          if (i < 20) { f = (b & c) | ((~b) & d); k = 0x5A827999; }
+          else if (i < 40) { f = b ^ c ^ d; k = 0x6ED9EBA1; }
+          else if (i < 60) { f = (b & c) | (b & d) | (c & d); k = 0x8F1BBCDC; }
+          else { f = b ^ c ^ d; k = 0xCA62C1D6; }
+          unsigned int tmp = ((a << 5) | (a >> 27)) + f + e + k + w[i];
+          e = d; d = c; c = (b << 30) | (b >> 2); b = a; a = tmp;
+        }
+        h0 += a; h1 += b; h2 += c; h3 += d; h4 += e;
+      }
+      unsigned char dig[20];
+      {
+        unsigned int H[5] = { h0, h1, h2, h3, h4 };
+        int i;
+        for (i = 0; i < 5; i++)
+        {
+          dig[i*4]     = (unsigned char)(H[i] >> 24);
+          dig[i*4 + 1] = (unsigned char)(H[i] >> 16);
+          dig[i*4 + 2] = (unsigned char)(H[i] >> 8);
+          dig[i*4 + 3] = (unsigned char)(H[i]);
+        }
+      }
+
+      /* --- inline Base64 of dig[20] -> 28 chars + padding --- */
+      const char b64tab[] =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+      char acc[32];
+      int oi = 0;
+      int i;
+      for (i = 0; i < 18; i += 3)
+      {
+        acc[oi++] = b64tab[dig[i] >> 2];
+        acc[oi++] = b64tab[((dig[i] & 3) << 4) | (dig[i+1] >> 4)];
+        acc[oi++] = b64tab[((dig[i+1] & 15) << 2) | (dig[i+2] >> 6)];
+        acc[oi++] = b64tab[dig[i+2] & 63];
+      }
+      /* final group: bytes 18,19 -> 3 chars + one '=' */
+      acc[oi++] = b64tab[dig[18] >> 2];
+      acc[oi++] = b64tab[((dig[18] & 3) << 4) | (dig[19] >> 4)];
+      acc[oi++] = b64tab[(dig[19] & 15) << 2];
+      acc[oi++] = '=';
+      acc[oi] = 0;
+
+      /* --- send the 101 handshake response --- */
+      char resp[512];
+      int rl = sprintf(resp,
+        "HTTP/1.1 101 Switching Protocols\r\n"
+        "Upgrade: websocket\r\n"
+        "Connection: Upgrade\r\n"
+        "Sec-WebSocket-Accept: %.28s\r\n"
+        "\r\n", acc);
+      if (send(fd, resp, rl, 0) <= 0) { close(fd); continue; }
+
+      /* --- frame loop: read client frames, echo text back --- */
+      for (;;)
+      {
+        unsigned char fhdr[2];
+        int got = 0;
+        while (got < 2)
+        { int rr = recv(fd, fhdr + got, 2 - got, 0); if (rr <= 0) goto done; got += rr; }
+        int opcode = fhdr[0] & 0x0F;
+        int masked = fhdr[1] & 0x80;
+        unsigned long long plen = fhdr[1] & 0x7F;
+        if (plen == 126)
+        {
+          unsigned char ext[2]; int g = 0;
+          while (g < 2) { int rr = recv(fd, ext + g, 2 - g, 0); if (rr <= 0) goto done; g += rr; }
+          plen = ((unsigned long long)ext[0] << 8) | ext[1];
+        }
+        else if (plen == 127)
+        {
+          unsigned char ext[8]; int g = 0;
+          while (g < 8) { int rr = recv(fd, ext + g, 8 - g, 0); if (rr <= 0) goto done; g += rr; }
+          plen = 0;
+          int ei;
+          for (ei = 0; ei < 8; ei++) plen = (plen << 8) | ext[ei];
+        }
+        unsigned char mask[4];
+        if (masked)
+        {
+          int g = 0;
+          while (g < 4) { int rr = recv(fd, mask + g, 4 - g, 0); if (rr <= 0) goto done; g += rr; }
+        }
+        if (plen > 65535) goto done;   /* spike cap */
+        unsigned char payload[65536];
+        {
+          unsigned long long g = 0;
+          while (g < plen)
+          { int rr = recv(fd, payload + g, (int)(plen - g), 0); if (rr <= 0) goto done; g += rr; }
+        }
+        if (masked)
+        {
+          unsigned long long j;
+          for (j = 0; j < plen; j++) payload[j] ^= mask[j % 4];
+        }
+
+        if (opcode == 0x8) goto done;   /* close frame */
+
+        /* echo as a single text frame (FIN|opcode 1), server sends unmasked */
+        unsigned char out[65550];
+        out[0] = 0x81;
+        int ol;
+        if (plen < 126) { out[1] = (unsigned char)plen; ol = 2; }
+        else { out[1] = 126; out[2] = (unsigned char)(plen >> 8); out[3] = (unsigned char)plen; ol = 4; }
+        {
+          unsigned long long j;
+          for (j = 0; j < plen; j++) out[ol + j] = payload[j];
+        }
+        ol += (int)plen;
+        if (send(fd, (char *)out, ol, 0) <= 0) goto done;
+      }
+      done:
+      close(fd);
+    }
+    if (serv_fd >= 0) close(serv_fd);
+  }
+<<<
+  RETURN 0
+}

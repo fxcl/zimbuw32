@@ -1,0 +1,9 @@
+# Auto-link proof for the builtin GUI module.
+# Uses GUI.open() which contains `uses(appkit)` -> triggers Config.addAppKitLib()
+# -> appends "-framework AppKit -framework Foundation" to the link step.
+# Built with NO --ccendarg: if this links, auto-link works end-to-end.
+# Blocks until the window is closed.
+FUNC Main() int
+  GUI.open("Zimbu Native GUI", "Hello from the builtin GUI module!")
+  RETURN 0
+}

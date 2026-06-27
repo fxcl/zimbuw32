@@ -1,0 +1,35 @@
+# WebSocket server riding on HTTP.Server — Phase 2.
+#
+# Proves the formalized path: a WebSocket endpoint registered via
+# HTTP.Server.addWebSocket() shares the HTTP port, the server completes the
+# Upgrade handshake, and the registered handler echoes text frames back to the
+# client from a per-connection thread.  recv() returns NIL when the peer closes,
+# so the handler just loops until NIL.
+#
+# Build:  ./zimbu examples/ws_server.zu
+# Run:    ./ws_server -p 8093
+# Verify: examples/ws_server_test.py  (independent Python WS client -> /ws echo)
+
+ARG.Int port = NEW("p", "port", 8093, "Port for the HTTP + WebSocket server")
+
+# Echo handler: send back each received text frame, until the client closes.
+PROC wsEcho(HTTP.WebSocketConnection conn)
+  WHILE TRUE
+    string msg = conn.recv()
+    IF msg == NIL
+      BREAK
+    }
+    conn.send(msg)
+  }
+}
+
+FUNC Main() int
+  IO.initSockets()
+  HTTP.Server server = NEW(port.value())
+  server.addWebSocket("/ws", wsEcho)
+  server.start()
+  IO.print("ws_server: HTTP + WebSocket on port " .. port.value()
+                .. "  (WebSocket endpoint: /ws)")
+  server.waitForExit()
+  RETURN 0
+}

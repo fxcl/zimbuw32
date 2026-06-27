@@ -185,6 +185,12 @@ MODULE Config @items=public                   # TODO: restrict visibility
     }
   }
 
+  # call when using the native macOS GUI. AppKit/Foundation are macOS-only
+  # frameworks; the arg is hardcoded (no config entry) for this first slice.
+  PROC addAppKitLib()
+    %libArgs.add("-framework AppKit -framework Foundation")
+  }
+
   FUNC compilerCmd(string srcName, string binName) string
     string cmd = compiler.value() .. " " .. ccarg.value()
                  .. " -o \"" .. binName .. "\" "

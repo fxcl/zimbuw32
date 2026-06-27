@@ -7670,6 +7670,10 @@ int Fmain(void) {
       fd.write("#endif\n")
     }
 
+    IF $isDeclUsed(%appkit)
+      Config.addAppKitLib()  # macOS only: adds -framework AppKit -framework Foundation
+    }
+
     IF $isDeclUsed(%socket)
       Config.addSocketLib()  # may add -l argument to the build command
 
@@ -15432,6 +15436,7 @@ void ZdeferCall(Tl *l) {
     Declaration %pthread = NEW("pthread")
     Declaration %math = NEW("math")
     Declaration %windows_h = NEW("windows_h")
+    Declaration %appkit = NEW("appkit")
     Declaration %setjmp_h = NEW("setjmp_h")
 
     Declaration %zfree = NEW("zfree")
@@ -15443,7 +15448,7 @@ void ZdeferCall(Tl *l) {
       RETURN [%fcntl, %errno, %dirent, %unistd, %limits, Declaration.gcRun,
               %getCstring, %sys_types, %sys_stat, %sys_wait, %string_h,
               %ctype_h, %termios, %time_h, %sys_time, %socket, %hostname,
-              %pthread, Declaration.throwThread, %windows_h, %setjmp_h]
+              %pthread, Declaration.throwThread, %windows_h, %appkit, %setjmp_h]
     }
 
     # Get the __T type name used for container items and dict keys:

@@ -390,6 +390,10 @@ MODULE HTTPModule @public
     int             $port                 #!
     int             $listenQueueLen = 50  #!
     list<Servlet>   $servlets = NEW()     #!
+    # WebSocket endpoints registered via $addWebSocket().  An Upgrade request
+    # whose path matches one of these is handed off to a per-connection thread
+    # instead of going through the normal one-shot servlet dispatch.
+    list<WebSocketServlet> $webSockets = NEW()  #!
     string          $fileRoot             #!
     string          $base = "http://localhost"  #!
     Verbosity       $verbosity = Verbosity.low
@@ -430,6 +434,26 @@ MODULE HTTPModule @public
     #= request.
     PROC $addServlet(Servlet servlet) @public
       $servlets.add(servlet)
+    }
+
+    #= Register a WebSocket endpoint at |path|.
+    #- When a client sends an HTTP Upgrade request for exactly |path| the server
+    #- completes the WebSocket handshake and runs |handler| in its own thread,
+    #- passing it a WebSocketConnection.  The accept loop is not blocked: each
+    #- upgraded connection lives on its own thread, so plain HTTP requests keep
+    #- being served concurrently.
+    PROC $addWebSocket(string path, proc<WebSocketConnection> handler) @public
+      $webSockets.add(NEW(path, handler))
+    }
+
+    #= Return the WebSocket endpoint registered at |path|, or NIL.
+    FUNC $findWebSocket(string path) WebSocketServlet
+      FOR ws IN $webSockets
+        IF ws.path == path
+          RETURN ws
+        }
+      }
+      RETURN NIL
     }
 
     #= Add a ZUT page.  This will create the page according to the |page|
@@ -678,6 +702,153 @@ MODULE HTTPModule @public
           IO.print("Header fields: " .. req.headerItems.ToString())
         }
 
+        # --- WebSocket Upgrade ---
+        # A WebSocket opening handshake is an ordinary HTTP GET that carries an
+        # "Upgrade: websocket" header.  When the path matches a registered
+        # endpoint we answer with 101 Switching Protocols on this fd and hand
+        # the socket to a per-connection thread, so the accept loop keeps
+        # serving other connections (HTTP and WS) concurrently.
+        IF req.headerItems.has("upgrade")
+          IF req.headerItems.get("upgrade").toLower() == "websocket"
+            WebSocketServlet wsServ = $findWebSocket(req.path)
+            IF wsServ != NIL
+              int connFd = -1
+              int hsOk = 0
+>>> uses(sys_types, socket, unistd) blockgc
+              {
+                /* Locate Sec-WebSocket-Key in the raw request buffer. */
+                char *kp = strstr(req_string, "Sec-WebSocket-Key: ");
+                if (!kp) kp = strstr(req_string, "Sec-WebSocket-Key:");
+                if (kp)
+                {
+                  kp += (kp[18] == ' ') ? 19 : 18;
+                  char key[64];
+                  int kl = 0;
+                  while (kp[kl] && kp[kl] != '\r' && kp[kl] != '\n' && kl < 24)
+                  { key[kl] = kp[kl]; kl++; }
+                  key[kl] = 0;
+
+                  /* SHA-1 input = key || magic GUID. */
+                  const char *guid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+                  unsigned char m[128];
+                  int ml = 0;
+                  while (ml < kl) { m[ml] = (unsigned char)key[ml]; ml++; }
+                  int gi = 0;
+                  while (guid[gi]) { m[ml++] = (unsigned char)guid[gi++]; }
+
+                  /* Inline SHA-1 (no stdlib hash available). */
+                  unsigned int h0 = 0x67452301, h1 = 0xEFCDAB89,
+                               h2 = 0x98BADCFE, h3 = 0x10325476,
+                               h4 = 0xC3D2E1F0;
+                  int padlen = ml + 1;
+                  while ((padlen % 64) != 56) padlen++;
+                  padlen += 8;
+                  unsigned char pm[256];
+                  int pi, blk, bi;
+                  for (pi = 0; pi < padlen; pi++) pm[pi] = 0;
+                  for (pi = 0; pi < ml; pi++) pm[pi] = m[pi];
+                  pm[ml] = 0x80;
+                  unsigned long long bits = (unsigned long long)ml * 8;
+                  for (bi = 0; bi < 8; bi++)
+                    pm[padlen - 8 + bi] = (unsigned char)(bits >> ((7 - bi) * 8));
+                  for (blk = 0; blk < padlen; blk += 64)
+                  {
+                    unsigned int w[80];
+                    int i;
+                    for (i = 0; i < 16; i++)
+                      w[i] = ((unsigned int)pm[blk + i*4] << 24)
+                           | ((unsigned int)pm[blk + i*4 + 1] << 16)
+                           | ((unsigned int)pm[blk + i*4 + 2] << 8)
+                           | ((unsigned int)pm[blk + i*4 + 3]);
+                    for (i = 16; i < 80; i++)
+                    {
+                      unsigned int t = w[i-3] ^ w[i-8] ^ w[i-14] ^ w[i-16];
+                      w[i] = (t << 1) | (t >> 31);
+                    }
+                    unsigned int a = h0, b = h1, c = h2, d = h3, e = h4;
+                    for (i = 0; i < 80; i++)
+                    {
+                      unsigned int f, k;
+                      if (i < 20) { f = (b & c) | ((~b) & d); k = 0x5A827999; }
+                      else if (i < 40) { f = b ^ c ^ d; k = 0x6ED9EBA1; }
+                      else if (i < 60) { f = (b & c) | (b & d) | (c & d); k = 0x8F1BBCDC; }
+                      else { f = b ^ c ^ d; k = 0xCA62C1D6; }
+                      unsigned int tmp = ((a << 5) | (a >> 27)) + f + e + k + w[i];
+                      e = d; d = c; c = (b << 30) | (b >> 2); b = a; a = tmp;
+                    }
+                    h0 += a; h1 += b; h2 += c; h3 += d; h4 += e;
+                  }
+                  unsigned char dig[20];
+                  unsigned int H[5] = { h0, h1, h2, h3, h4 };
+                  for (pi = 0; pi < 5; pi++)
+                  {
+                    dig[pi*4]     = (unsigned char)(H[pi] >> 24);
+                    dig[pi*4 + 1] = (unsigned char)(H[pi] >> 16);
+                    dig[pi*4 + 2] = (unsigned char)(H[pi] >> 8);
+                    dig[pi*4 + 3] = (unsigned char)(H[pi]);
+                  }
+
+                  /* Inline Base64 of the 20-byte digest -> 28 chars. */
+                  const char b64tab[] =
+                    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+                  char acc[32];
+                  int oi = 0;
+                  for (pi = 0; pi < 18; pi += 3)
+                  {
+                    acc[oi++] = b64tab[dig[pi] >> 2];
+                    acc[oi++] = b64tab[((dig[pi] & 3) << 4) | (dig[pi+1] >> 4)];
+                    acc[oi++] = b64tab[((dig[pi+1] & 15) << 2) | (dig[pi+2] >> 6)];
+                    acc[oi++] = b64tab[dig[pi+2] & 63];
+                  }
+                  acc[oi++] = b64tab[dig[18] >> 2];
+                  acc[oi++] = b64tab[((dig[18] & 3) << 4) | (dig[19] >> 4)];
+                  acc[oi++] = b64tab[(dig[19] & 15) << 2];
+                  acc[oi++] = '=';
+                  acc[oi] = 0;
+
+                  /* Send the 101 Switching Protocols response. */
+                  char resp[512];
+                  int rl = sprintf(resp,
+                    "HTTP/1.1 101 Switching Protocols\r\n"
+                    "Upgrade: websocket\r\n"
+                    "Connection: Upgrade\r\n"
+                    "Sec-WebSocket-Accept: %.28s\r\n"
+                    "\r\n", acc);
+                  if (rl > 0 && sckt_write(fd, resp, rl) == rl)
+                  {
+                    /* Hand the live fd to the connection thread; do NOT close
+                     * it here. */
+                    %connFd% = fd;
+                    %hsOk% = 1;
+                  }
+                  else
+                  {
+                    sckt_close(fd);
+                  }
+                }
+                else
+                {
+                  sckt_close(fd);
+                }
+              }
+<<<
+              IF hsOk == 1
+                # The connection IS a thread: its body() runs $handler(THIS).
+                # ZGC roots running threads via the global threads list (set up
+                # in Thread.$startBody), so conn stays reachable for its lifetime
+                # without the server holding a reference.
+                WebSocketConnection conn = NEW(connFd, wsServ.handler)
+                conn.start()
+              }
+              # Whether the handshake succeeded or failed, this fd must not go
+              # through the normal one-shot HTTP response path below.
+>>> blockgc
+              continue;
+<<<
+            }
+          }
+        }
+
         # Read more if we don't have the whole body.
         int bodySize = 0
         IF req.headerItems.has("content-length")
@@ -854,6 +1025,128 @@ MODULE HTTPModule @public
     PROC $waitForExit() @public
       WHILE $quitPipe.read() == FALSE && !$didQuit
         # do nothing
+      }
+    }
+  }
+
+  #= A registered WebSocket endpoint: a path paired with the handler that is
+  #- invoked once a client completes the Upgrade handshake for that path.
+  CLASS WebSocketServlet @public
+    string                    $path     #! exact path this endpoint answers
+    proc<WebSocketConnection> $handler  #! run once per upgraded connection
+
+    NEW(string path, proc<WebSocketConnection> handler) @public
+      $path = path
+      $handler = handler
+    }
+  }
+
+  #= One end of an upgraded WebSocket connection.
+  #- A WebSocketConnection IS a thread: its |body()| invokes the registered
+  #- |$handler| once, passing THIS, and the handler owns the recv()/send() loop.
+  #- recv() returns NIL when the peer closes (or on error), so a handler can
+  #- loop until NIL and then return; body() always releases the socket.
+  #-
+  #- This is a first slice: text frames only, payloads capped at 65535 bytes,
+  #- no ping/pong, continuation or fragmentation handling.  Enough to prove the
+  #- end-to-end path through HTTP.Server.
+  CLASS WebSocketConnection EXTENDS thread @public
+    int                     $fd       #! live C socket fd, -1 once closed
+    proc<WebSocketConnection> $handler  #!
+
+    NEW(int fd, proc<WebSocketConnection> handler) @public
+      $fd = fd
+      $handler = handler
+    }
+
+    #= Entry point of the per-connection thread.
+    #- Runs the handler, then guarantees the socket is released even if the
+    #- handler returns without closing (close() is idempotent).
+    PROC $body() @replace @public
+      $handler(THIS)
+      $close()
+    }
+
+    #= Read one text frame and return its payload.
+    #- Returns NIL when the peer closed, sent a close frame, exceeded the
+    #- 65535-byte cap, or on any read error; the socket is closed in that case.
+    FUNC $recv() string @public
+      string msg = ""
+      int got = 0
+>>> uses(sys_types, socket, unistd) blockgc
+      {
+        unsigned char hdr[2];
+        int n = 0;
+        while (n < 2) { int r = sckt_read(%$fd%, (char *)hdr + n, 2 - n); if (r <= 0) goto ws_done; n += r; }
+        int opcode = hdr[0] & 0x0F;
+        int masked = hdr[1] & 0x80;
+        unsigned long long plen = hdr[1] & 0x7F;
+        if (plen == 126)
+        {
+          unsigned char ext[2]; n = 0;
+          while (n < 2) { int r = sckt_read(%$fd%, (char *)ext + n, 2 - n); if (r <= 0) goto ws_done; n += r; }
+          plen = ((unsigned long long)ext[0] << 8) | ext[1];
+        }
+        else if (plen == 127)
+        {
+          unsigned char ext[8]; n = 0;
+          while (n < 8) { int r = sckt_read(%$fd%, (char *)ext + n, 8 - n); if (r <= 0) goto ws_done; n += r; }
+          plen = 0; int ei; for (ei = 0; ei < 8; ei++) plen = (plen << 8) | ext[ei];
+        }
+        if (plen > 65535) goto ws_done;
+        unsigned char mask[4];
+        if (masked)
+        {
+          n = 0;
+          while (n < 4) { int r = sckt_read(%$fd%, (char *)mask + n, 4 - n); if (r <= 0) goto ws_done; n += r; }
+        }
+        unsigned char payload[65536];
+        unsigned long long g = 0;
+        while (g < plen) { int r = sckt_read(%$fd%, (char *)payload + g, (int)(plen - g)); if (r <= 0) goto ws_done; g += r; }
+        if (masked) { unsigned long long j; for (j = 0; j < plen; j++) payload[j] ^= mask[j % 4]; }
+        payload[plen] = 0;
+        if (opcode == 0x8) goto ws_done;   /* close frame */
+        %msg% = Zstr((char *)payload);
+        %got% = 1;
+        ws_done: ;
+      }
+<<<
+      IF got == 1
+        RETURN msg
+      }
+      $close()
+      RETURN NIL
+    }
+
+    #= Send |text| as a single unmasked text frame.  Returns OK on success.
+    FUNC $send(string text) status @public
+      status ret = FAIL
+>>> uses(sys_types, socket, unistd) blockgc
+      {
+        Tc *p;
+        Ti len = ZstringSizePtr(%text%, &p);
+        if (len > 65535) len = 65535;
+        unsigned char out[65540];
+        out[0] = 0x81;   /* FIN | text */
+        int ol;
+        if (len < 126) { out[1] = (unsigned char)len; ol = 2; }
+        else { out[1] = 126; out[2] = (unsigned char)(len >> 8); out[3] = (unsigned char)len; ol = 4; }
+        Ti i;
+        for (i = 0; i < len; i++) out[ol + i] = (unsigned char)p[i];
+        ol += (int)len;
+        if (sckt_write(%$fd%, (char *)out, (size_t)ol) == (size_t)ol) %ret% = %OK%;
+      }
+<<<
+      RETURN ret
+    }
+
+    #= Close the underlying socket.  Idempotent.
+    PROC $close() @public
+      IF $fd >= 0
+>>> uses(sys_types, socket, unistd) blockgc
+        { sckt_close(%$fd%); }
+<<<
+        $fd = -1
       }
     }
   }

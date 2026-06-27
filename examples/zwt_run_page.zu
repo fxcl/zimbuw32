@@ -1,0 +1,9 @@
+# Minimal display-only ZWT page, used by zwt_run_demo.zu to exercise ZWT.run().
+# Compiled to JavaScript via IMPORT.ZWT in zwt_run_demo.zu.
+
+MODULE ZwtRunPage  # TODO: IMPLEMENTS ZWT.Page
+  PROC init()
+    ZWT.Label hello = ZWT.Label.NEW("Hello from ZWT.run()!")
+    ZWT.root().add(hello)
+  }
+}

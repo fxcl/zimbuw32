@@ -1,0 +1,38 @@
+#
+# The Zimbu compiler written in Zimbu
+#
+# GUI module loader - native macOS desktop GUI (Cocoa / AppKit)
+#
+# First slice of native desktop GUI support. The low-level work lives in
+# lib/GUIModule.zu; it drives the Objective-C runtime from pure C via
+# Zimbu's `>>> uses(appkit) blockgc` C interleave. `uses(appkit)` triggers
+# Config.addAppKitLib(), which adds "-framework AppKit -framework Foundation"
+# to the link step, so user programs that IMPORT.GUI auto-link the frameworks
+# with no extra flags.
+#
+
+IMPORT "../Builtin.zu"
+IMPORT "../Declaration.zu"
+IMPORT "../SContext.zu"
+
+MODULE GUILoader @public @items=public
+  Declaration moduleDecl
+
+  # Prepare for using the builtin GUI module.
+  FUNC prepare() Builtin
+    Builtin b = NEW()
+    b.moduleName = "GUIModule"
+    b.fileName = "GUIModule.zu"
+    b.setup = setup
+    RETURN b
+  }
+
+  # Invoked when the GUI module is used, after it was processed first time.
+  PROC setup(Builtin builtin, SContext ctx)
+    IF moduleDecl == NIL
+      # Add this module to the list of predefined symbols.
+      moduleDecl = Builtin.addLibModule("GUI", builtin)
+    }
+  }
+
+}

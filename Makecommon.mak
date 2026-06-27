@@ -137,6 +137,7 @@ COMP_SOURCES = \
 	lib/FLOATModule.zu \
 	lib/GCLoader.zu \
 	lib/GCModule.zu \
+	lib/GUILoader.zu \
 	lib/HTTPLoader.zu \
 	lib/INT16Loader.zu \
 	lib/INT16Module.zu \
@@ -197,6 +198,7 @@ DOCINPUT = \
 	lib/FLOAT80Module.zu \
 	lib/FLOAT128Module.zu \
 	lib/GCModule.zu \
+	lib/GUIModule.zu \
 	lib/HTTPModule.zu \
 	lib/IModule.zu \
 	lib/INTModule.zu \

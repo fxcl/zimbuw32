@@ -164,6 +164,8 @@ typedef struct YIgO__S YIgO; /* MHTTPModule.StringServlet */
 typedef struct YntX__S YntX; /* MHTTPModule.RpcServlet */
 typedef struct Yivg__S Yivg; /* MHTTPModule__CRpcServlet.Handler */
 typedef struct Y1QG__S Y1QG; /* MHTTPModule.Server */
+typedef struct Yih7__S Yih7; /* MHTTPModule.WebSocketServlet */
+typedef struct YAdf__S YAdf; /* MHTTPModule.WebSocketConnection */
 /* HTTPModule done */
 /* including ZModule typedefs */
 typedef struct YkxB__S YkxB; /* MZModule.Pos */
@@ -893,6 +895,7 @@ Tl *Vstack;
  Ti Vport;
  Ti VlistenQueueLen;
  Tl *Vservlets;
+ Tl *VwebSockets;
  Tc *VfileRoot;
  Tc *Vbase;
  Te Vverbosity;
@@ -901,6 +904,29 @@ Tl *Vstack;
  Tb Vbusy;
 };
 extern Tto Y1QG__T;
+struct Yih7__S {
+ Zoh *np;
+ Tc *Vpath;
+ Tcb *Vhandler;
+};
+extern Tto Yih7__T;
+struct YAdf__S {
+ Zoh *np;
+ int fok;
+ To* to;
+ Ts (*ff)(void *, Te);
+Tcb *Vproc;
+Te Vstate;
+pthread_t Vthread_id;
+Tl *Vstack;
+ Ti Vfd;
+ Tcb *Vhandler;
+};
+extern Tto YAdf__T;
+typedef struct {
+ Zoh *np;
+ char text[21];
+} Zs21;
 /* HTTPModule done */
 /* including ZModule structs */
 struct YkxB__S {
@@ -1004,12 +1030,6 @@ typedef struct {
  char text[602];
 } Zs602;
 /* ZWTModule done */
-/* including CHECKModule structs */
-typedef struct {
- Zoh *np;
- char text[21];
-} Zs21;
-/* CHECKModule done */
 /* including ARGModule structs */
 struct YnU5__S {
  Zoh *np;
@@ -1668,6 +1688,7 @@ Y1QG *YAvl(Y1QG *t, Ti Aport); /* MHTTPModule__CServer.NEW */
 Zs3 Y5 = {&Zstatic, "\001:\000"};
 Zs8 Ycao = {&Zstatic, "\006/ZUDIR\000"};
 void Yb8i(Y1QG *t, Tr Aservlet); /* MHTTPModule__CServer.addServlet */
+Yih7 *Yzwz(Y1QG *t, Tc *Apath); /* MHTTPModule__CServer.findWebSocket */
 void Yv7Q(Y1QG *t, Tc *Afrom, Tc *Ato); /* MHTTPModule__CServer.redirect */
 void YVBU(Y1QG *t); /* MHTTPModule__CServer.body */
 Zs12 Yj86 = {&Zstatic, "\012 params: '\000"};
@@ -1679,6 +1700,8 @@ Zs33 Yetr = {&Zstatic, "\037Warning: Request header too big\000"};
 Zs3 YG = {&Zstatic, "\001 \000"};
 Zs4 Ydha = {&Zstatic, "\002, \000"};
 Zs17 Y5UY = {&Zstatic, "\017Header fields: \000"};
+Zs9 YcTW = {&Zstatic, "\007upgrade\000"};
+Zs11 Y464 = {&Zstatic, "\011websocket\000"};
 Zs16 YSBt = {&Zstatic, "\016content-length\000"};
 Zs14 Y6Ov = {&Zstatic, "\014Body size = \000"};
 Zs14 YLqJ = {&Zstatic, "\014Reading more\000"};
@@ -1703,9 +1726,22 @@ void Y1QG__YcCua(Y1QG *t); /* MHTTPModule__CServer.body__p1 */
 int Y1QGa__r = 0; /* Init/1().Ready */
 Y1QG *Y1QGa(Y1QG *t); /* MHTTPModule__CServer.Init */
 Zs18 YoWK = {&Zstatic, "\020http://localhost\000"};
-To ToY1QG[13];
+To ToY1QG[14];
 char *StrY1QG[];
 Zs8 YooJ = {&Zstatic, "\006Server\000"};
+To ToYih7[3];
+char *StrYih7[];
+Zs18 YX29 = {&Zstatic, "\020WebSocketServlet\000"};
+YAdf *Y3Ff(YAdf *t, Ti Afd, Tcb *Ahandler); /* MHTTPModule__CWebSocketConnection.NEW */
+void Y8XL(YAdf *t); /* MHTTPModule__CWebSocketConnection.body */
+void YLjJ(YAdf *t); /* MHTTPModule__CWebSocketConnection.close */
+void YAdf__YTgs__Y7C8(YAdf *t); /* MHTTPModule__CWebSocketConnection.startBody__p2 */
+void YAdf__YTgs__YSuw(YAdf *t); /* MHTTPModule__CWebSocketConnection.start__p2 */
+Ts YAdf__YTgs__Y2Cz(YAdf *t, Te _fr); /* MHTTPModule__CWebSocketConnection.Finish__p2 */
+void YAdf__YcCua(YAdf *t); /* MHTTPModule__CWebSocketConnection.body__p1 */
+To ToYAdf[6];
+char *StrYAdf[];
+Zs21 Ycs8 = {&Zstatic, "\023WebSocketConnection\000"};
 Tb Y2jx(Ti Ac); /* MHTTPModule.isWhite */
 int JHTTPModule(int round);
 /* HTTPModule done */
@@ -5256,13 +5292,14 @@ Tc YGL9[]="HTTP.Server.Init/1()";
 Tcpos ZcTbl32864[]={
 {391,22},
 {1,22},
-{3,22},
-{4,22},
+{5,29},
 {7,22},
+{8,22},
+{11,22},
 };
 Tc Y32H[]="HTTP.Server.NEW()";
 Tcpos ZcTbl96330[]={
-{403,5},
+{407,5},
 {1,13},
 {2,7},
 {3,15},
@@ -5270,12 +5307,12 @@ Tcpos ZcTbl96330[]={
 };
 Tc YXL6[]="HTTP.Server.addServlet()";
 Tcpos ZcTbl98650[]={
-{431,11},
+{435,11},
 {1,7},
 };
 Tc Y7FCa[]="HTTP.Server.body()";
 Tcpos ZcTbl99366[]={
-{465,11},
+{489,11},
 {2,24},
 {3,7},
 {4,4},
@@ -5361,99 +5398,119 @@ Tcpos ZcTbl99366[]={
 {155,9},
 {212,9},
 {213,11},
-{217,24},
-{218,9},
-{219,20},
-{220,11},
-{221,13},
-{224,9},
-{227,36},
-{228,11},
-{232,11},
-{234,13},
-{235,15},
-{237,4},
-{242,4},
-{246,13},
+{222,9},
+{223,11},
+{224,40},
+{225,13},
+{226,29},
+{227,26},
+{228,4},
+{346,15},
+{351,44},
+{352,17},
+{356,4},
+{364,24},
+{365,9},
+{366,20},
 };
 Tcpos ZcTbl99367[]={
-{712,15},
-{2,13},
-{5,13},
-{-15,11},
-{7,20},
+{856,11},
+{1,13},
+{4,9},
+{7,36},
 {8,11},
-{9,13},
-{10,13},
-{11,15},
-{12,15},
-{13,15},
+{12,11},
+{14,13},
 {15,15},
-{17,13},
-{20,20},
-{23,15},
-{26,25},
-{28,27},
-{29,9},
-{29,9},
-{30,11},
-{31,13},
-{32,20},
-{30,11},
-{37,11},
-{38,13},
-{40,13},
-{43,9},
-{44,21},
-{45,20},
-{46,21},
-{48,9},
-{53,70},
-{55,9},
-{56,22},
-{55,9},
-{58,17},
-{60,9},
-{61,11},
-{62,11},
-{63,13},
-{64,13},
+{17,4},
+{22,4},
+{26,13},
+{27,15},
+{29,13},
+{32,13},
+{12,11},
+{34,20},
+{35,11},
+{36,13},
+{37,13},
+{38,15},
+{39,15},
+{40,15},
+{42,15},
+{44,13},
+{47,20},
+{50,15},
+{53,25},
+{55,27},
+{56,9},
+{56,9},
+{57,11},
+{58,13},
+{59,20},
+{57,11},
+{64,11},
 {65,13},
-{66,15},
-{67,15},
-{68,15},
-{70,15},
-{72,13},
-{75,4},
-{79,4},
-{82,4},
+{67,13},
+{70,9},
+{71,21},
+{72,20},
+{73,21},
+{75,9},
+{80,70},
+{82,9},
+{83,22},
+{82,9},
+{85,17},
+{87,9},
+{88,11},
 {89,11},
-{90,24},
-{91,21},
-{92,4},
-{98,4},
-{101,4},
+{90,13},
+{91,13},
+{92,13},
+{93,15},
+{94,15},
+{95,15},
+{97,15},
+{99,13},
+{102,4},
+{106,4},
 {109,4},
-{114,15},
-{115,9},
 {116,11},
-{118,4},
+{117,24},
+{118,21},
+{119,4},
+{125,4},
+{128,4},
+{136,4},
+{141,15},
+{142,9},
+{143,11},
+{145,4},
+};
+Tc Ywsg[]="HTTP.Server.findWebSocket()";
+Tcpos ZcTbl60800[]={
+{450,11},
+{1,7},
+{2,9},
+{3,18},
+{1,7},
+{6,14},
 };
 Tc Yv62[]="HTTP.Server.openInBrowser()";
 Tcpos ZcTbl76361[]={
-{839,11},
+{1010,11},
 {1,18},
 };
 Tc Y0Qs[]="HTTP.Server.redirect()";
 Tcpos ZcTbl80742[]={
-{457,11},
+{481,11},
 {1,33},
 {2,7},
 {3,7},
 };
 Tc Yp9y[]="HTTP.Server.waitForExit()";
 Tcpos ZcTbl34426[]={
-{854,11},
+{1025,11},
 {1,7},
 };
 Tc Ytbi[]="HTTP.StringServlet.NEW()";
@@ -5488,9 +5545,28 @@ Tcpos ZcTbl76846[]={
 {1,29},
 {2,14},
 };
+Tc Y3eX[]="HTTP.WebSocketConnection.NEW()";
+Tcpos ZcTbl58086[]={
+{1057,5},
+{1,11},
+{2,16},
+};
+Tc YVkK[]="HTTP.WebSocketConnection.body()";
+Tcpos ZcTbl52882[]={
+{1065,11},
+{1,7},
+{2,7},
+};
+Tc YFpc[]="HTTP.WebSocketConnection.close()";
+Tcpos ZcTbl82058[]={
+{1144,11},
+{1,7},
+{2,4},
+{5,13},
+};
 Tc YHiL[]="HTTP.isWhite()";
 Tcpos ZcTbl74200[]={
-{863,21},
+{1156,21},
 };
 Tc YLM9[]="INT";
 Tcpos ZcTbl52635[]={
@@ -7352,6 +7428,39 @@ Tcpos ZcTbl84521[]={
 {1,4},
 {4,14},
 };
+Tc Ytia[]="THREAD.WebSocketConnection.Finish__p2/2()";
+Tcpos ZcTbl99830[]={
+{193,11},
+{1,4},
+{4,14},
+};
+Tc YDA5[]="THREAD.WebSocketConnection.startBody__p2/2()";
+Tcpos ZcTbl69297[]={
+{64,11},
+{2,4},
+{9,9},
+{10,4},
+{9,9},
+{17,4},
+{27,4},
+{53,4},
+{59,4},
+};
+Tc Y_r5[]="THREAD.WebSocketConnection.start__p2/2()";
+Tcpos ZcTbl387[]={
+{134,11},
+{4,4},
+{7,16},
+{8,9},
+{10,4},
+{15,11},
+{8,9},
+{18,4},
+{21,9},
+{22,11},
+{24,4},
+{31,14},
+};
 Tc YLwM[]="TIME.current()";
 Tcpos ZcTbl50841[]={
 {22,4},
@@ -7513,7 +7622,7 @@ Tcpos ZcTbl18187[]={
 };
 Tc YXHK[]="ZWT.createPage()";
 Tcpos ZcTbl43825[]={
-{628,23},
+{675,23},
 {5,23},
 {19,23},
 {44,41},
@@ -7530,6 +7639,7 @@ Tcpos ZcTbl43825[]={
 };
 Tcode ZcodeTable[]={
 {0,Y2Yq,Yaa,ZcTbl0},
+{387,Ytql,Y_r5,ZcTbl387},
 {412,Yt1T,YxLq,ZcTbl412},
 {857,Y_hM,YBDu,ZcTbl857},
 {1013,Y_hM,YEuX,ZcTbl1013},
@@ -7768,6 +7878,7 @@ Tcode ZcodeTable[]={
 {52648,YCG4,YF9k,ZcTbl52648},
 {52701,Yt1T,Y0hW,ZcTbl52701},
 {52728,Yt1T,Yoiq,ZcTbl52728},
+{52882,Y5m0,YVkK,ZcTbl52882},
 {52989,Y5m0,YjKx,ZcTbl52989},
 {53063,Y5m0,Y5GQ,ZcTbl53063},
 {53292,Yt1T,YpMD,ZcTbl53292},
@@ -7786,6 +7897,7 @@ Tcode ZcodeTable[]={
 {57183,Y_hM,YDO1,ZcTbl57183},
 {57447,Y_hM,YqQd,ZcTbl57447},
 {58046,Y_hM,Y6KW,ZcTbl58046},
+{58086,Y5m0,Y3eX,ZcTbl58086},
 {58154,YBAK,Y4z1,ZcTbl58154},
 {59098,Y_hM,YWWH,ZcTbl59098},
 {59187,YxTh,YUX0,ZcTbl59187},
@@ -7797,6 +7909,7 @@ Tcode ZcodeTable[]={
 {60546,Y_hM,YgDX,ZcTbl60546},
 {60593,Yt1T,Y5LR,ZcTbl60593},
 {60648,Y_hM,Y_jw,ZcTbl60648},
+{60800,Y5m0,Ywsg,ZcTbl60800},
 {62213,Yay0,YU58,ZcTbl62213},
 {62654,Y_hM,Yibq,ZcTbl62654},
 {62809,Yt1T,Ylj3,ZcTbl62809},
@@ -7830,6 +7943,7 @@ Tcode ZcodeTable[]={
 {68797,Yt1T,YfLf,ZcTbl68797},
 {68823,Ytql,YCe5,ZcTbl68823},
 {69095,Y0dn,YP_b,ZcTbl69095},
+{69297,Ytql,YDA5,ZcTbl69297},
 {69435,Yt1T,YNLE,ZcTbl69435},
 {69657,Y_hM,YubJb,ZcTbl69657},
 {69700,Y_hM,YOIp,ZcTbl69700},
@@ -7892,6 +8006,7 @@ Tcode ZcodeTable[]={
 {81755,Y7A_,YFBI,ZcTbl81755},
 {81798,YCG4,YMnk,ZcTbl81798},
 {81998,Y_hM,Y67Bb,ZcTbl81998},
+{82058,Y5m0,YFpc,ZcTbl82058},
 {82363,YYUe,Ysl1,ZcTbl82363},
 {82533,YCG4,Yh2v,ZcTbl82533},
 {82534,YCG4,Yh2v,ZcTbl82534},
@@ -7958,6 +8073,7 @@ Tcode ZcodeTable[]={
 {99366,Y5m0,Y7FCa,ZcTbl99366},
 {99367,Y5m0,Y7FCa,ZcTbl99367},
 {99748,Y_hM,YN51,ZcTbl99748},
+{99830,Ytql,Ytia,ZcTbl99830},
 {99838,Yay0,YTE3,ZcTbl99838},
 {99886,Yt1T,Y0Jk,ZcTbl99886},
 };
@@ -16953,9 +17069,9 @@ void YP8Z(Tr Amsg, YLWE *AprotoWriter) {
  sf.pos=1929902;
  if (((*(Ti*)(Amsg.ptr + (size_t)Amsg.table[1])) == AprotoWriter->VderefTime))
  {
-  Tr YDSo = {NULL};
+  Tr YDSoa = {NULL};
   sf.pos=1075671727;
-  (YDSo = AprotoWriter->Vwriter, ((Ts (*)(void*, Tc*))(YDSo.table[1]))(YDSo.ptr, ZcS5(((Tc*)&YvJi), ((Tc* (*)(void*))(Amsg.table[6]))(Amsg.ptr), ((Tc*)&YT), (t0 = Zint2string((*(Ti*)(Amsg.ptr + (size_t)Amsg.table[2])))), ((Tc*)&Yk))));
+  (YDSoa = AprotoWriter->Vwriter, ((Ts (*)(void*, Tc*))(YDSoa.table[1]))(YDSoa.ptr, ZcS5(((Tc*)&YvJi), ((Tc* (*)(void*))(Amsg.table[6]))(Amsg.ptr), ((Tc*)&YT), (t0 = Zint2string((*(Ti*)(Amsg.ptr + (size_t)Amsg.table[2])))), ((Tc*)&Yk))));
  }
  else
  {
@@ -20836,6 +20952,59 @@ void Yb8i(Y1QG *t, Tr Aservlet) {
  e->topFrame = sf.prev;
  return;
 }
+Zfo Yzwzfo[5] = {{0,(Tt*)&Y1QG__T},{0,(Tt*)&string__T},{0,(Tt*)&list__T},{0,(Tt*)&Yih7__T},{0,0}};
+Yih7 *Yzwz(Y1QG *t, Tc *Apath) {
+ Tn *e = ZgetEnv();
+ Zsf sf;
+ Yih7 *r = 0;
+ Tl *Zf1 = NULL;
+ Yih7 *Vws = 0;
+ static int sfF = 0;
+ int rt = 0;
+ if (!sfF) {
+  sfF = 1;
+  Yzwzfo[0].off = (void*)&sf - (void*)&t;
+  Yzwzfo[1].off = (void*)&sf - (void*)&Apath;
+  Yzwzfo[2].off = (void*)&sf - (void*)&Zf1;
+  Yzwzfo[3].off = (void*)&sf - (void*)&Vws;
+ }
+ sf.frof = Yzwzfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {
+  sf.pos=1079821824;
+  ZthrowThisNil();
+ }
+ sf.pos=6080001;
+ {
+  Tfl Zf1i;
+  Zf1 = t->VwebSockets;
+  Zf1i.l = Zf1;
+  Zf1i.valp = (void*)&Vws;
+  Zf1i.i = 0;
+  for (; ZforListPtrCont(&Zf1i); ) {
+  sf.pos=6080002;
+  if ((ZstringCmp(Vws->Vpath, Apath) == 0))
+  {
+   sf.pos=1079821827;
+   r = Vws;
+   rt = 1;
+   goto Yx2G;
+  }
+Yx2G:
+  if (rt) goto Yuu2;
+  if (e->wantGC) ZthreadGC();
+  sf.pos=6080004;
+  }
+ }
+ sf.pos=1079821829;
+ r = NULL;
+Yuu2:
+ e->topFrame = sf.prev;
+ return r;
+}
 Zfo Yv7Qfo[6] = {{0,(Tt*)&Y1QG__T},{0,(Tt*)&string__T},{0,(Tt*)&string__T},{0,(Tt*)&YphE__T},{0,(Tt*)&iobj__T},{0,0}};
 void Yv7Q(Y1QG *t, Tc *Afrom, Tc *Ato) {
  Tn *e = ZgetEnv();
@@ -20869,7 +21038,7 @@ void Yv7Q(Y1QG *t, Tc *Afrom, Tc *Ato) {
  e->topFrame = sf.prev;
  return;
 }
-Zfo YVBUfo[20] = {{0,(Tt*)&Y1QG__T},{0,(Tt*)&string__T},{0,(Tt*)&YSM1__T},{0,(Tt*)&string__T},{0,(Tt*)&string__T},{0,(Tt*)&string__T},{0,(Tt*)&string__T},{0,(Tt*)&string__T},{0,(Tt*)&YKeB__T},{0,(Tt*)&YtzZ__T},{0,(Tt*)&list__T},{0,(Tt*)&iobj__T},{0,(Tt*)&iobj__T},{0,(Tt*)&string__T},{0,(Tt*)&list__T},{0,(Tt*)&string__T},{0,(Tt*)&YjUM__T},{0,(Tt*)&string__T},{0,(Tt*)&string__T},{0,0}};
+Zfo YVBUfo[22] = {{0,(Tt*)&Y1QG__T},{0,(Tt*)&string__T},{0,(Tt*)&YSM1__T},{0,(Tt*)&string__T},{0,(Tt*)&string__T},{0,(Tt*)&string__T},{0,(Tt*)&string__T},{0,(Tt*)&string__T},{0,(Tt*)&YKeB__T},{0,(Tt*)&YtzZ__T},{0,(Tt*)&list__T},{0,(Tt*)&iobj__T},{0,(Tt*)&iobj__T},{0,(Tt*)&string__T},{0,(Tt*)&list__T},{0,(Tt*)&string__T},{0,(Tt*)&Yih7__T},{0,(Tt*)&YAdf__T},{0,(Tt*)&YjUM__T},{0,(Tt*)&string__T},{0,(Tt*)&string__T},{0,0}};
 void YVBU(Y1QG *t) {
  Ti VlistenArg;
  Ti Vsi;
@@ -20897,6 +21066,8 @@ void YVBU(Y1QG *t) {
  Tc *VrespString = NULL;
  Tl *Zf1 = NULL;
  Tc *Vkey = NULL;
+ Yih7 *VwsServ = 0;
+ YAdf *Vconn = 0;
  YjUM *Vwriter = 0;
  Tc *t0 = NULL;
  Tc *t1 = NULL;
@@ -20920,9 +21091,11 @@ void YVBU(Y1QG *t) {
   YVBUfo[13].off = (void*)&sf - (void*)&VrespString;
   YVBUfo[14].off = (void*)&sf - (void*)&Zf1;
   YVBUfo[15].off = (void*)&sf - (void*)&Vkey;
-  YVBUfo[16].off = (void*)&sf - (void*)&Vwriter;
-  YVBUfo[17].off = (void*)&sf - (void*)&t0;
-  YVBUfo[18].off = (void*)&sf - (void*)&t1;
+  YVBUfo[16].off = (void*)&sf - (void*)&VwsServ;
+  YVBUfo[17].off = (void*)&sf - (void*)&Vconn;
+  YVBUfo[18].off = (void*)&sf - (void*)&Vwriter;
+  YVBUfo[19].off = (void*)&sf - (void*)&t0;
+  YVBUfo[20].off = (void*)&sf - (void*)&t1;
  }
  sf.frof = YVBUfo;
  sf.prev = e->topFrame;
@@ -21238,109 +21411,258 @@ Yaoy:
   sf.pos=1083678509;
   Yl0k(ZcS(((Tc*)&Y5UY), ZDictToString(Vreq->VheaderItems, 1, 1)));
  }
- sf.pos=9936686;
+ sf.pos=1083678510;
+ if (ZDictHas(Vreq->VheaderItems, (Tz)(void*)((Tc*)&YcTW)))
+ {
+  sf.pos=1083678511;
+  if ((ZstringCmp(ZstringToLower(((Tc *)ZDictGetPtr(Vreq->VheaderItems, (Tz)(void*)((Tc*)&YcTW)))), ((Tc*)&Y464)) == 0))
+  {
+   sf.pos=1083678512;
+   VwsServ = Yzwz(t, Vreq->Vpath);
+   sf.pos=9936689;
+   if ((VwsServ != NULL))
+   {
+    Ti VconnFd;
+    Ti VhsOk;
+    sf.pos=9936690;
+    VconnFd = -1;
+    sf.pos=9936691;
+    VhsOk = 0;
+    sf.pos=1083678516;
+              {
+                /* Locate Sec-WebSocket-Key in the raw request buffer. */
+                char *kp = strstr(req_string, "Sec-WebSocket-Key: ");
+                if (!kp) kp = strstr(req_string, "Sec-WebSocket-Key:");
+                if (kp)
+                {
+                  kp += (kp[18] == ' ') ? 19 : 18;
+                  char key[64];
+                  int kl = 0;
+                  while (kp[kl] && kp[kl] != '\r' && kp[kl] != '\n' && kl < 24)
+                  { key[kl] = kp[kl]; kl++; }
+                  key[kl] = 0;
+
+                  /* SHA-1 input = key || magic GUID. */
+                  const char *guid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+                  unsigned char m[128];
+                  int ml = 0;
+                  while (ml < kl) { m[ml] = (unsigned char)key[ml]; ml++; }
+                  int gi = 0;
+                  while (guid[gi]) { m[ml++] = (unsigned char)guid[gi++]; }
+
+                  /* Inline SHA-1 (no stdlib hash available). */
+                  unsigned int h0 = 0x67452301, h1 = 0xEFCDAB89,
+                               h2 = 0x98BADCFE, h3 = 0x10325476,
+                               h4 = 0xC3D2E1F0;
+                  int padlen = ml + 1;
+                  while ((padlen % 64) != 56) padlen++;
+                  padlen += 8;
+                  unsigned char pm[256];
+                  int pi, blk, bi;
+                  for (pi = 0; pi < padlen; pi++) pm[pi] = 0;
+                  for (pi = 0; pi < ml; pi++) pm[pi] = m[pi];
+                  pm[ml] = 0x80;
+                  unsigned long long bits = (unsigned long long)ml * 8;
+                  for (bi = 0; bi < 8; bi++)
+                    pm[padlen - 8 + bi] = (unsigned char)(bits >> ((7 - bi) * 8));
+                  for (blk = 0; blk < padlen; blk += 64)
+                  {
+                    unsigned int w[80];
+                    int i;
+                    for (i = 0; i < 16; i++)
+                      w[i] = ((unsigned int)pm[blk + i*4] << 24)
+                           | ((unsigned int)pm[blk + i*4 + 1] << 16)
+                           | ((unsigned int)pm[blk + i*4 + 2] << 8)
+                           | ((unsigned int)pm[blk + i*4 + 3]);
+                    for (i = 16; i < 80; i++)
+                    {
+                      unsigned int t = w[i-3] ^ w[i-8] ^ w[i-14] ^ w[i-16];
+                      w[i] = (t << 1) | (t >> 31);
+                    }
+                    unsigned int a = h0, b = h1, c = h2, d = h3, e = h4;
+                    for (i = 0; i < 80; i++)
+                    {
+                      unsigned int f, k;
+                      if (i < 20) { f = (b & c) | ((~b) & d); k = 0x5A827999; }
+                      else if (i < 40) { f = b ^ c ^ d; k = 0x6ED9EBA1; }
+                      else if (i < 60) { f = (b & c) | (b & d) | (c & d); k = 0x8F1BBCDC; }
+                      else { f = b ^ c ^ d; k = 0xCA62C1D6; }
+                      unsigned int tmp = ((a << 5) | (a >> 27)) + f + e + k + w[i];
+                      e = d; d = c; c = (b << 30) | (b >> 2); b = a; a = tmp;
+                    }
+                    h0 += a; h1 += b; h2 += c; h3 += d; h4 += e;
+                  }
+                  unsigned char dig[20];
+                  unsigned int H[5] = { h0, h1, h2, h3, h4 };
+                  for (pi = 0; pi < 5; pi++)
+                  {
+                    dig[pi*4]     = (unsigned char)(H[pi] >> 24);
+                    dig[pi*4 + 1] = (unsigned char)(H[pi] >> 16);
+                    dig[pi*4 + 2] = (unsigned char)(H[pi] >> 8);
+                    dig[pi*4 + 3] = (unsigned char)(H[pi]);
+                  }
+
+                  /* Inline Base64 of the 20-byte digest -> 28 chars. */
+                  const char b64tab[] =
+                    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+                  char acc[32];
+                  int oi = 0;
+                  for (pi = 0; pi < 18; pi += 3)
+                  {
+                    acc[oi++] = b64tab[dig[pi] >> 2];
+                    acc[oi++] = b64tab[((dig[pi] & 3) << 4) | (dig[pi+1] >> 4)];
+                    acc[oi++] = b64tab[((dig[pi+1] & 15) << 2) | (dig[pi+2] >> 6)];
+                    acc[oi++] = b64tab[dig[pi+2] & 63];
+                  }
+                  acc[oi++] = b64tab[dig[18] >> 2];
+                  acc[oi++] = b64tab[((dig[18] & 3) << 4) | (dig[19] >> 4)];
+                  acc[oi++] = b64tab[(dig[19] & 15) << 2];
+                  acc[oi++] = '=';
+                  acc[oi] = 0;
+
+                  /* Send the 101 Switching Protocols response. */
+                  char resp[512];
+                  int rl = sprintf(resp,
+                    "HTTP/1.1 101 Switching Protocols\r\n"
+                    "Upgrade: websocket\r\n"
+                    "Connection: Upgrade\r\n"
+                    "Sec-WebSocket-Accept: %.28s\r\n"
+                    "\r\n", acc);
+                  if (rl > 0 && sckt_write(fd, resp, rl) == rl)
+                  {
+                    /* Hand the live fd to the connection thread; do NOT close
+                     * it here. */
+                    VconnFd = fd;
+                    VhsOk = 1;
+                  }
+                  else
+                  {
+                    sckt_close(fd);
+                  }
+                }
+                else
+                {
+                  sckt_close(fd);
+                }
+              }
+    if (e->wantGC) ZthreadGC();
+    sf.pos=9936693;
+    if ((VhsOk == 1))
+    {
+     sf.pos=1083678518;
+     Vconn = Y3Ff(NULL, VconnFd, VwsServ->Vhandler);
+     sf.pos=1083678519;
+     YAdf__YTgs__YSuw(Vconn);
+    }
+    sf.pos=1083678520;
+              continue;
+    if (e->wantGC) ZthreadGC();
+   }
+  }
+ }
+ sf.pos=9936697;
  VbodySize = 0;
- sf.pos=1083678511;
+ sf.pos=1083678522;
  if (ZDictHas(Vreq->VheaderItems, (Tz)(void*)((Tc*)&YSBt)))
  {
-  sf.pos=1083678512;
+  sf.pos=1083678523;
   VbodySize = ZstringToInt(((Tc *)ZDictGetPtr(Vreq->VheaderItems, (Tz)(void*)((Tc*)&YSBt))), 1, 0);
-  sf.pos=9936689;
+  sf.pos=9936700;
   if ((t->Vverbosity != 0))
   {
-   sf.pos=1083678514;
+   sf.pos=1083678525;
    Yl0k(ZcS(((Tc*)&Y6Ov), Zint2string(VbodySize)));
   }
  }
- sf.pos=9936691;
+ sf.pos=9936702;
  if ((VbodySize > 0))
  {
-  sf.pos=1083678516;
+  sf.pos=1083678527;
   Vwriter = Za(sizeof(YjUM));
-  sf.pos=1083678517;
+  sf.pos=1083678528;
   YJqza(Vwriter, ZstringSlice(VreqString, Vbol, -1, 0));
-  sf.pos=1083678518;
+  sf.pos=1083678529;
   while ((Yd3R(Vwriter) < VbodySize))
   {
    Ti Vlen;
    Vlen = 0;
-   sf.pos=9936695;
+   sf.pos=9936706;
    if ((t->Vverbosity == 2))
    {
-    sf.pos=1083678520;
+    sf.pos=1083678531;
     Yl0k(((Tc*)&YLqJ));
    }
-   sf.pos=9936697;
+   sf.pos=9936708;
             Vlen = sckt_read(fd, req_string, MAX_HEADER_SIZE - 1);
             if (Vlen > 0) {
               req_string[Vlen] = 0;
-   sf.pos=1083678522;
+   sf.pos=1083678533;
               VreqString = Zstr(req_string);
             }
    if (e->wantGC) ZthreadGC();
-   sf.pos=9936699;
+   sf.pos=9936710;
    if ((t->Vverbosity == 2))
    {
-    sf.pos=1083678524;
+    sf.pos=1083678535;
     Yl0k(ZcS(((Tc*)&Ylp1), Zint2string(Vlen)));
    }
-   sf.pos=9936701;
+   sf.pos=9936712;
    if ((Vlen <= 0))
    {
     rt = 2;
-    goto YAno;
+    goto YaQO;
    }
-   sf.pos=1083678526;
+   sf.pos=1083678537;
    YJqza(Vwriter, VreqString);
-YAno:
+YaQO:
    if (rt == 2) { rt &= 1; break; }
-  sf.pos=1083678527;
+  sf.pos=1083678538;
   }
-  sf.pos=1083678528;
+  sf.pos=1083678539;
   Vreq->Vbody = YbNW(Vwriter);
-  sf.pos=9936705;
+  sf.pos=9936716;
   if ((t->Vverbosity == 2))
   {
-   sf.pos=1083678530;
+   sf.pos=1083678541;
    Yvcu(ZcS3(((Tc*)&YLih), Zint2string(ZbyteStringSize(Vreq->Vbody)), ((Tc*)&YrD_)));
-   sf.pos=1083678531;
+   sf.pos=1083678542;
    if ((ZbyteStringSize(Vreq->Vbody) > 1000))
    {
-    sf.pos=1083678532;
+    sf.pos=1083678543;
     Yl0k(ZstringSlice(ZbyteStringCheckUtf8(Vreq->Vbody), 0, 500, 0));
-    sf.pos=1083678533;
+    sf.pos=1083678544;
     Yl0k(((Tc*)&YKUO));
-    sf.pos=1083678534;
+    sf.pos=1083678545;
     Yvcu(ZstringSlice(ZbyteStringCheckUtf8(Vreq->Vbody), -500, -1, 0));
    }
    else
    {
-    sf.pos=1083678535;
+    sf.pos=1083678546;
     Yvcu(ZbyteStringCheckUtf8(Vreq->Vbody));
    }
-   sf.pos=1083678536;
+   sf.pos=1083678547;
    Yl0k(((Tc*)&YN));
   }
  }
  else
  {
-  sf.pos=9936713;
+  sf.pos=9936724;
   Vreq->Vbody = ((Tc*)&Ya);
  }
- sf.pos=9936714;
+ sf.pos=9936725;
  t->Vbusy = 1;
- sf.pos=1083678539;
+ sf.pos=1083678550;
  Vresp = YikN(NULL);
  Vdone = 0;
- sf.pos=1083678540;
+ sf.pos=1083678551;
  Vcontext = Y89Z(NULL, t, Vreq, Vresp);
- sf.pos=9936717;
+ sf.pos=9936728;
  {
   volatile int caught = 0;
   Tn *te = ZgetEnv();
   int try_index = te->tryCtxUsed;
   volatile int did_jump = 0;
-  sf.pos=1083678542;
+  sf.pos=1083678553;
   ZtryDeeper(te, &sf);
   if (setjmp(te->tryCtx[try_index].jmpBuf) != 0) {
    ++did_jump;
@@ -21348,7 +21670,7 @@ YAno:
   }
   if (did_jump == 0) /* TRY */
   {
-   sf.pos=9936719;
+   sf.pos=9936730;
    {
     Tfl Zf3i;
     Zf3 = t->Vservlets;
@@ -21356,18 +21678,18 @@ YAno:
     Zf3i.valp = (void*)&Vservlet;
     Zf3i.i = 0;
     for (; ZforListIobjCont(&Zf3i); ) {
-    sf.pos=1083678544;
+    sf.pos=1083678555;
     if (((Tb (*)(void*, YtzZ*))(((Tr)Vservlet).table[5]))(((Tr)Vservlet).ptr, ((YtzZ*)Vcontext)))
     {
-     sf.pos=9936721;
+     sf.pos=9936732;
      Vdone = 1;
      rt = 2;
-     goto YouY;
+     goto Yxzn;
     }
-YouY:
+Yxzn:
     if (rt == 2) { rt &= 1; break; }
     if (e->wantGC) ZthreadGC();
-    sf.pos=9936722;
+    sf.pos=9936733;
     }
    }
   }
@@ -21376,36 +21698,36 @@ YouY:
   {
    Ve = te->thrown[--te->thrownUsed];
    caught = 1;
-   sf.pos=9936723;
+   sf.pos=9936734;
    if ((t->Vverbosity == 2))
    {
-    sf.pos=1083678548;
+    sf.pos=1083678559;
     Yl0k(ZcS(((Tc*)&Y_P0), ((Tc* (*)(void*, Tb))(((Tr)Ve).table[9]))(((Tr)Ve).ptr, 1)));
    }
    else
    {
-    sf.pos=1083678549;
+    sf.pos=1083678560;
     Yl0k(ZcS(((Tc*)&Y_P0), ((Tc* (*)(void*))(((Tr)Ve).table[6]))(((Tr)Ve).ptr)));
    }
   }
   if ((did_jump == 1 && !caught) || did_jump > 1) Zrethrow();
  }
- sf.pos=9936726;
+ sf.pos=9936737;
  if (!(Vdone))
  {
-  sf.pos=9936727;
+  sf.pos=9936738;
   Vresp->Vcode = 404;
-  sf.pos=9936728;
+  sf.pos=9936739;
   Vresp->Vmsg = ((Tc*)&Yytr);
-  sf.pos=9936729;
+  sf.pos=9936740;
   Vresp->Vbody = ((Tc*)&YaLI);
  }
- sf.pos=1083678554;
+ sf.pos=1083678565;
  YjIQ(Vresp, ZstringSize(Vresp->Vbody));
- sf.pos=1083678555;
+ sf.pos=1083678566;
  VrespString = ZcS5(((Tc*)&Y5E7), Zint2string(Vresp->Vcode), ((Tc*)&YG), (t0 = Vresp->Vmsg), ((Tc*)&Yau));
  VrespLen = 0;
- sf.pos=1083678556;
+ sf.pos=1083678567;
  {
   Tfl Zf1i;
   Zf1 = ZDictKeys(Vresp->VheaderItems, 0);
@@ -21413,92 +21735,92 @@ YouY:
   Zf1i.valp = (void*)&Vkey;
   Zf1i.i = 0;
   for (; ZforListPtrCont(&Zf1i); ) {
-  sf.pos=1083678557;
+  sf.pos=1083678568;
   VrespString =  ZcS(VrespString, ZcS5(Vkey, ((Tc*)&YFDa), (t0 = ((Tc *)ZDictGetPtr(Vresp->VheaderItems, (Tz)(void*)Vkey))), ((Tc*)&Yau), (Tc*)1));
   if (e->wantGC) ZthreadGC();
-  sf.pos=1083678558;
+  sf.pos=1083678569;
   }
  }
- sf.pos=1083678559;
+ sf.pos=1083678570;
  VrespLen = ZstringSize(VrespString);
- sf.pos=9936736;
+ sf.pos=9936747;
  if ((t->Vverbosity != 0))
  {
-  sf.pos=1083678561;
+  sf.pos=1083678572;
   Yl0k(ZcS(((Tc*)&YkHK), Zint2string(Vresp->Vcode)));
-  sf.pos=9936738;
+  sf.pos=9936749;
   if ((t->Vverbosity == 2))
   {
-   sf.pos=1083678563;
+   sf.pos=1083678574;
    Yl0k(ZcS(((Tc*)&Y5UY), ZDictToString(Vresp->VheaderItems, 1, 1)));
-   sf.pos=1083678564;
+   sf.pos=1083678575;
    Yvcu(((Tc*)&Y6wd));
-   sf.pos=1083678565;
+   sf.pos=1083678576;
    if ((ZstringSize(Vresp->Vbody) > 1000))
    {
-    sf.pos=1083678566;
+    sf.pos=1083678577;
     Yl0k(ZstringSlice(Vresp->Vbody, 0, 500, 0));
-    sf.pos=1083678567;
+    sf.pos=1083678578;
     Yl0k(((Tc*)&YKUO));
-    sf.pos=1083678568;
+    sf.pos=1083678579;
     Yvcu(ZstringSlice(Vresp->Vbody, -500, -1, 0));
    }
    else
    {
-    sf.pos=1083678569;
+    sf.pos=1083678580;
     Yvcu(Vresp->Vbody);
    }
-   sf.pos=1083678570;
+   sf.pos=1083678581;
    Yl0k(((Tc*)&YN));
   }
  }
- sf.pos=9936747;
+ sf.pos=9936758;
         /* dummy loop so that we can use "break" to get to sckt_close() */
         for (;;) {
- sf.pos=1083678572;
+ sf.pos=1083678583;
           char *s = ZgetCstring(VrespString);
  if (e->wantGC) ZthreadGC();
- sf.pos=9936749;
+ sf.pos=9936760;
           if (sckt_write(fd, s, (size_t)VrespLen) <= 0)
           {
             perror("HTTP.Server write header");
             break;
           }
- sf.pos=9936750;
+ sf.pos=9936761;
  if ((Vreq->Vtype != 3))
  {
-  sf.pos=9936751;
+  sf.pos=9936762;
   VrespString = Vresp->Vbody;
-  sf.pos=1083678576;
+  sf.pos=1083678587;
   VrespLen = ZstringSize(VrespString);
-  sf.pos=9936753;
+  sf.pos=9936764;
             if (sckt_write(fd, "\r\n", 2) != 2) {
               perror("HTTP.Server write separator");
               break;
             }
-  sf.pos=1083678578;
+  sf.pos=1083678589;
             char *s = ZgetCstring(VrespString);
   if (e->wantGC) ZthreadGC();
-  sf.pos=9936755;
+  sf.pos=9936766;
             if (VrespLen > 0 && sckt_write(fd, s, (size_t)VrespLen) <= 0)
             {
               perror("HTTP.Server write body");
               break;
             }
  }
- sf.pos=9936756;
+ sf.pos=9936767;
           break;
         }
         sckt_close(fd);
- sf.pos=9936757;
+ sf.pos=9936768;
  t->Vbusy = 0;
- sf.pos=9936758;
+ sf.pos=9936769;
  if (t->VdidQuit)
  {
-  sf.pos=1083678583;
+  sf.pos=1083678594;
   YWty(t->VquitPipe, 1);
  }
- sf.pos=9936760;
+ sf.pos=9936771;
      }  /* while */
  e->topFrame = sf.prev;
  return;
@@ -21747,20 +22069,23 @@ Y1QG *Y1QGa(Y1QG *t) {
  t->VlistenQueueLen = 50;
  sf.pos=1077028225;
  t->Vservlets = ZnewList((Tt*)&iobj__T, 0);
- sf.pos=3286402;
- t->Vbase = ((Tc*)&YoWK);
+ sf.pos=1077028226;
+ t->VwebSockets = ZnewList((Tt*)&Yih7__T, 0);
  sf.pos=3286403;
+ t->Vbase = ((Tc*)&YoWK);
+ sf.pos=3286404;
  t->Vverbosity = 1;
- sf.pos=1077028228;
+ sf.pos=1077028229;
  t->VquitPipe = YPsV(NULL);
  e->topFrame = sf.prev;
  return t;
 }
 To ToY1QG[] = {
- {12, 0},
+ {13, 0},
  {0, (Tt*)&int__T}, /* port */
  {0, (Tt*)&int__T}, /* listenQueueLen */
  {0, (Tt*)&list__T}, /* servlets */
+ {0, (Tt*)&list__T}, /* webSockets */
  {0, (Tt*)&string__T}, /* fileRoot */
  {0, (Tt*)&string__T}, /* base */
  {0, (Tt*)&MHTTPModule__EVerbosity__T}, /* verbosity */
@@ -21775,6 +22100,7 @@ char *StrY1QG[] = {
  "port",
  "listenQueueLen",
  "servlets",
+ "webSockets",
  "fileRoot",
  "base",
  "verbosity",
@@ -21786,6 +22112,286 @@ char *StrY1QG[] = {
  "stack",
 };
 Tto Y1QG__T = {390, (Tc*)&YooJ, 0, StrY1QG, 0, Y1QG__YTgs__Y2Cz, 0, 0, ToY1QG};
+To ToYih7[] = {
+ {2, 0},
+ {0, (Tt*)&string__T}, /* path */
+ {0, (Tt*)&cb__T}, /* handler */
+};
+char *StrYih7[] = {
+ "path",
+ "handler",
+};
+Tto Yih7__T = {390, (Tc*)&YX29, 0, StrYih7, 0, 0, 0, 0, ToYih7};
+Zfo Y3Fffo[3] = {{0,(Tt*)&YAdf__T},{0,(Tt*)&cb__T},{0,0}};
+YAdf *Y3Ff(YAdf *t, Ti Afd, Tcb *Ahandler) {
+ Tn *e = ZgetEnv();
+ Zsf sf;
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  Y3Fffo[0].off = (void*)&sf - (void*)&t;
+  Y3Fffo[1].off = (void*)&sf - (void*)&Ahandler;
+ }
+ sf.frof = Y3Fffo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1079550424; t = ZaF(sizeof(YAdf), ToYAdf, (Ts (*)(void*, Te))YAdf__YTgs__Y2Cz, 0);}
+ sf.pos=5808601;
+ t->Vfd = Afd;
+ sf.pos=5808602;
+ t->Vhandler = Ahandler;
+ e->topFrame = sf.prev;
+ return t;
+}
+Zfo Y8XLfo[2] = {{0,(Tt*)&YAdf__T},{0,0}};
+void Y8XL(YAdf *t) {
+ Tn *e = ZgetEnv();
+ Zsf sf;
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  Y8XLfo[0].off = (void*)&sf - (void*)&t;
+ }
+ sf.frof = Y8XLfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {
+  sf.pos=1079030024;
+  ZthrowThisNil();
+ }
+ sf.pos=1079030025;
+ ((void (*)(Tcb *, YAdf*))t->Vhandler->cfunc)((Tcb*)t->Vhandler, t);
+ sf.pos=1079030026;
+ YLjJ(t);
+ e->topFrame = sf.prev;
+ return;
+}
+Zfo YLjJfo[2] = {{0,(Tt*)&YAdf__T},{0,0}};
+void YLjJ(YAdf *t) {
+ Tn *e = ZgetEnv();
+ Zsf sf;
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  YLjJfo[0].off = (void*)&sf - (void*)&t;
+ }
+ sf.frof = YLjJfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {
+  sf.pos=1081947624;
+  ZthrowThisNil();
+ }
+ sf.pos=8205801;
+ if ((t->Vfd >= 0))
+ {
+  sf.pos=1081947626;
+        { sckt_close(t->Vfd); }
+  if (e->wantGC) ZthreadGC();
+  sf.pos=8205803;
+  t->Vfd = -1;
+ }
+ e->topFrame = sf.prev;
+ return;
+}
+Zfo YAdf__YTgs__Y7C8fo[3] = {{0,(Tt*)&YAdf__T},{0,(Tt*)&list__T},{0,0}};
+void YAdf__YTgs__Y7C8(YAdf *t) {
+ Tn *e = ZgetEnv();
+ Zsf sf;
+ Tl *Zf1 = NULL;
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  YAdf__YTgs__Y7C8fo[0].off = (void*)&sf - (void*)&t;
+  YAdf__YTgs__Y7C8fo[1].off = (void*)&sf - (void*)&Zf1;
+ }
+ sf.frof = YAdf__YTgs__Y7C8fo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {
+  sf.pos=1080671524;
+  ZthrowThisNil();
+ }
+ sf.pos=6929701;
+ int i = 0;
+ Zsf *prev = NULL;
+ e->startFrames = calloc(1, ZListSize(t->Vstack) * sizeof(Zsf));
+ sf.pos=6929702;
+ {
+  Ti Vpos;
+  Tfl Zf1i;
+  Zf1 = t->Vstack;
+  Zf1i.l = Zf1;
+  Zf1i.valp = (void*)&Vpos;
+  Zf1i.i = 0;
+  for (; ZforListIntCont(&Zf1i); ) {
+  sf.pos=6929703;
+ e->startFrames[i].pos = Vpos;
+ e->startFrames[i].prev = prev;
+ prev = &e->startFrames[i];
+ ++i;
+  if (e->wantGC) ZthreadGC();
+  sf.pos=6929704;
+  }
+ }
+ sf.pos=6929705;
+ sf.prev = prev;
+ sf.pos=1080671530;
+ for (;;) {
+  pthread_mutex_lock(&gcMarkPhaseMutex);
+  while (gcSTW || gcMarkPhase) pthread_cond_wait(&gcMarkPhaseCond, &gcMarkPhaseMutex);
+  pthread_mutex_unlock(&gcMarkPhaseMutex);
+  pthread_mutex_lock(&threadsMutex);
+  if (gcSTW) {
+   pthread_mutex_unlock(&threadsMutex);
+  } else {
+   ZLa(threads, -1, (Tz)(void*)e);
+   pthread_mutex_unlock(&threadsMutex);
+   break;
+  }
+ }
+ if (e->wantGC) ZthreadGC();
+ sf.pos=6929707;
+ Y8XL(t);
+
+ e->finished = 1;
+ sf.pos=6929708;
+ if (e->wantGC) ZthreadGC();
+ e->topFrame = sf.prev;
+ return;
+}
+Zfo YAdf__YTgs__YSuwfo[3] = {{0,(Tt*)&YAdf__T},{0,(Tt*)&iobj__T},{0,0}};
+void YAdf__YTgs__YSuw(YAdf *t) {
+ Tn *e = ZgetEnv();
+ Zsf sf;
+ Tr t0 = {NULL};
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  YAdf__YTgs__YSuwfo[0].off = (void*)&sf - (void*)&t;
+  YAdf__YTgs__YSuwfo[1].off = (void*)&sf - (void*)&t0;
+ }
+ sf.frof = YAdf__YTgs__YSuwfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {
+  sf.pos=1073780524;
+  ZthrowThisNil();
+ }
+ sf.pos=38701;
+ Zsf *top = e->topFrame;
+ sf.pos=1073780526;
+ t->Vstack = ZnewList((Tt*)&int__T, 0);
+ sf.pos=1073780527;
+ while ((ZListSize(t->Vstack) < 30))
+ {
+  Ti Ventry;
+  Ventry = 0;
+  sf.pos=38704;
+  if (top == NULL) break;
+  Ventry = top->pos;
+  top = top->prev;
+  sf.pos=1073780529;
+  ZListInsert((Tl*)t->Vstack, 0, (Tz)(Ti)Ventry);
+ sf.pos=1073780530;
+ }
+ sf.pos=38707;
+ if (pthread_create(&t->Vthread_id, NULL, (void *(*)(void *))YAdf__YTgs__Y7C8, t) != 0) {
+ sf.pos=38708;
+ if (1)
+ {
+  Tr ex;
+  sf.pos=1073780533;
+  *Znao(&ex, YgC4__YwtA__YRHR(NULL, ((Tc*)&YgzQ)), YgC4__Ytlm_I_imt, 31);
+  ZthrowIobject(ex);
+ }
+ sf.pos=38710;
+ }
+ {
+  int oldstate;
+  pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, &oldstate);
+ }
+ sf.pos=38711;
+ t->Vstate = 1;
+ e->topFrame = sf.prev;
+ return;
+}
+Zfo YAdf__YTgs__Y2Czfo[2] = {{0,(Tt*)&YAdf__T},{0,0}};
+Ts YAdf__YTgs__Y2Cz(YAdf *t, Te _fr) {
+ Tn *e = ZgetEnv();
+ Zsf sf;
+ Ts r = 0;
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  YAdf__YTgs__Y2Czfo[0].off = (void*)&sf - (void*)&t;
+ }
+ sf.frof = YAdf__YTgs__Y2Czfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {
+  sf.pos=1083724824;
+  ZthrowThisNil();
+ }
+ sf.pos=9983001;
+ pthread_detach(t->Vthread_id);
+ sf.pos=1083724826;
+ r = 1;
+ e->topFrame = sf.prev;
+ return r;
+}
+Zfo YAdf__YcCuafo[2] = {{0,(Tt*)&YAdf__T},{0,0}};
+void YAdf__YcCua(YAdf *t) {
+ Tn *e = ZgetEnv();
+ Zsf sf;
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  YAdf__YcCuafo[0].off = (void*)&sf - (void*)&t;
+ }
+ sf.frof = YAdf__YcCuafo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {
+   ZthrowThisNil();
+ }
+ if ((t->Vproc != NULL))
+ {
+  ((void (*)(Tcb *))t->Vproc->cfunc)((Tcb*)t->Vproc);
+ }
+ e->topFrame = sf.prev;
+ return;
+}
+To ToYAdf[] = {
+ {5, 0},
+ {0, (Tt*)&int__T}, /* fd */
+ {0, (Tt*)&cb__T}, /* handler */
+ {0, (Tt*)&cb__T}, /* proc */
+ {0, (Tt*)&MTHREADModule__EState__T}, /* state */
+ {0, (Tt*)&list__T}, /* stack */
+};
+char *StrYAdf[] = {
+ "fd",
+ "handler",
+ "proc",
+ "state",
+ "stack",
+};
+Tto YAdf__T = {390, (Tc*)&Ycs8, 0, StrYAdf, 0, YAdf__YTgs__Y2Cz, 0, 0, ToYAdf};
 Tb Y2jx(Ti Ac) {
  Tn *e = ZgetEnv();
  Zsf sf;
@@ -31674,15 +32280,29 @@ void ZimtInit(void) {
   ToY1QG[1].off = (int)((Tc*)&p->Vport - (Tc*)p);
   ToY1QG[2].off = (int)((Tc*)&p->VlistenQueueLen - (Tc*)p);
   ToY1QG[3].off = (int)((Tc*)&p->Vservlets - (Tc*)p);
-  ToY1QG[4].off = (int)((Tc*)&p->VfileRoot - (Tc*)p);
-  ToY1QG[5].off = (int)((Tc*)&p->Vbase - (Tc*)p);
-  ToY1QG[6].off = (int)((Tc*)&p->Vverbosity - (Tc*)p);
-  ToY1QG[7].off = (int)((Tc*)&p->VquitPipe - (Tc*)p);
-  ToY1QG[8].off = (int)((Tc*)&p->VdidQuit - (Tc*)p);
-  ToY1QG[9].off = (int)((Tc*)&p->Vbusy - (Tc*)p);
-  ToY1QG[10].off = (int)((Tc*)&p->Vproc - (Tc*)p);
-  ToY1QG[11].off = (int)((Tc*)&p->Vstate - (Tc*)p);
-  ToY1QG[12].off = (int)((Tc*)&p->Vstack - (Tc*)p);
+  ToY1QG[4].off = (int)((Tc*)&p->VwebSockets - (Tc*)p);
+  ToY1QG[5].off = (int)((Tc*)&p->VfileRoot - (Tc*)p);
+  ToY1QG[6].off = (int)((Tc*)&p->Vbase - (Tc*)p);
+  ToY1QG[7].off = (int)((Tc*)&p->Vverbosity - (Tc*)p);
+  ToY1QG[8].off = (int)((Tc*)&p->VquitPipe - (Tc*)p);
+  ToY1QG[9].off = (int)((Tc*)&p->VdidQuit - (Tc*)p);
+  ToY1QG[10].off = (int)((Tc*)&p->Vbusy - (Tc*)p);
+  ToY1QG[11].off = (int)((Tc*)&p->Vproc - (Tc*)p);
+  ToY1QG[12].off = (int)((Tc*)&p->Vstate - (Tc*)p);
+  ToY1QG[13].off = (int)((Tc*)&p->Vstack - (Tc*)p);
+ }
+ {
+  Yih7 *p = 0;
+  ToYih7[1].off = (int)((Tc*)&p->Vpath - (Tc*)p);
+  ToYih7[2].off = (int)((Tc*)&p->Vhandler - (Tc*)p);
+ }
+ {
+  YAdf *p = 0;
+  ToYAdf[1].off = (int)((Tc*)&p->Vfd - (Tc*)p);
+  ToYAdf[2].off = (int)((Tc*)&p->Vhandler - (Tc*)p);
+  ToYAdf[3].off = (int)((Tc*)&p->Vproc - (Tc*)p);
+  ToYAdf[4].off = (int)((Tc*)&p->Vstate - (Tc*)p);
+  ToYAdf[5].off = (int)((Tc*)&p->Vstack - (Tc*)p);
  }
  {
   YkxB *p = 0;

@@ -1,0 +1,110 @@
+#
+# Native desktop GUI spike for Zimbu (macOS / Cocoa) — Phase 1.
+#
+# LOCAL proof file. zimbuw32/ is gitignored in the outer repo (vendored upstream
+# tree); this file is not tracked there. Reversible: rm this file and nothing
+# else changes. NO compiler source edit, NO rebuild.
+#
+# Build: ./zimbu examples/native_window.zu \
+#          -ccendarg "-framework AppKit -framework Foundation"
+# Run:   ./native_window
+#
+# Goal: prove Zimbu's `>>> ... <<<` C interleave can drive the Objective-C
+# runtime from PURE C (objc_msgSend / objc_getClass / sel_registerName) and
+# open a real NSWindow. This is the binding pattern a future `GUI` builtin
+# module would use for every widget call.
+#
+# Why pure C and not #import/<AppKit/AppKit.h>: the emitted translation unit is
+# a .c file, compiled in C mode. AppKit's headers contain @interface ObjC
+# syntax that only compiles in .m mode. And #include of ANY system header
+# inside a `>>>` block fails too: the block lands inside a function body, and
+# system headers define static-inline helpers (math.h) — function definitions
+# are illegal at function scope. So we include NOTHING: we forward-declare the
+# three objc runtime functions, typedef id/SEL/BOOL, reach AppKit classes by
+# name at runtime via objc_getClass, build strings via NSString
+# stringWithCString:encoding:, and drive the 5s self-close via NSTimer.
+#
+# MRC note: the generated .c is NOT compiled with -fobjc-arc. We avoid manual
+# retain/release bookkeeping for the window/widgets (AppKit retains them once
+# added to the app/window hierarchy; a few drops leaked over a 5s demo are
+# acceptable) and only drain the autorelease pool.
+
+FUNC Main() int
+>>>
+  /* Forward declarations ONLY (legal inside a function body; function
+   * *definitions* are not, hence no #include of system headers here). We reach
+   * the Objective-C runtime from pure C, with no .m and no AppKit headers. */
+  typedef void *id;
+  typedef void *SEL;
+  typedef signed char BOOL;
+  #define nil ((id)0)
+  #define YES ((BOOL)1)
+  #define NO  ((BOOL)0)
+  extern id objc_msgSend(id, SEL, ...);
+  extern id objc_getClass(const char *);
+  extern SEL sel_registerName(const char *);
+  extern int printf(const char *, ...);   /* execution trace to stdout (proof, since the window is visual) */
+
+  /* NSRect layout must match the macOS ABI: origin(x,y) + size(w,h) = 4 doubles. */
+  typedef struct { double x, y, width, height; } ZNWSRect;
+
+  /* Helpers: cast objc_msgSend to a precise, non-variadic prototype so the
+   * compiler lowers the ABI correctly (notably ZNWSRect, 32 bytes, which the
+   * SysV ABI passes by hidden reference). */
+  #define C0(ret, recv, sel) \
+    ((ret (*)(id, SEL))objc_msgSend)((id)(recv), sel_registerName(sel))
+
+  id pool = C0(id, objc_getClass("NSAutoreleasePool"), "alloc");
+  pool    = C0(id, pool, "init");
+
+  id app = C0(id, objc_getClass("NSApplication"), "sharedApplication");
+  printf("[zimbu-gui] NSApplication sharedApplication OK\n");
+  ((void (*)(id, SEL, long))objc_msgSend)((id)app,
+      sel_registerName("setActivationPolicy:"), (long)0);  /* Regular policy */
+
+  id strClass = objc_getClass("NSString");
+  #define NSSTR(cstr) \
+    ((id (*)(id, SEL, const char *, unsigned long))objc_msgSend)( \
+        (id)strClass, sel_registerName("stringWithCString:encoding:"), (cstr), 4UL) /* UTF-8 */
+
+  /* Window: styleMask 15 = titled|closable|miniaturizable|resizable; backing 2 = buffered. */
+  id win = C0(id, objc_getClass("NSWindow"), "alloc");
+  ZNWSRect frame = { 100.0, 100.0, 480.0, 320.0 };
+  win = ((id (*)(id, SEL, ZNWSRect, unsigned long, unsigned long, BOOL))objc_msgSend)(
+          (id)win, sel_registerName("initWithContentRect:styleMask:backing:defer:"),
+          frame, (unsigned long)15, (unsigned long)2, NO);
+  printf("[zimbu-gui] NSWindow created OK\n");
+  ((void (*)(id, SEL, id))objc_msgSend)((id)win, sel_registerName("setTitle:"), NSSTR("Zimbu Native Window"));
+
+  /* A label inside the window, to prove a child widget call works too. */
+  id field = C0(id, objc_getClass("NSTextField"), "alloc");
+  ZNWSRect labelFrame = { 40.0, 150.0, 400.0, 40.0 };
+  field = ((id (*)(id, SEL, ZNWSRect))objc_msgSend)(
+           (id)field, sel_registerName("initWithFrame:"), labelFrame);
+  ((void (*)(id, SEL, id))objc_msgSend)((id)field, sel_registerName("setStringValue:"), NSSTR("Hello from native Cocoa via Zimbu!"));
+  ((void (*)(id, SEL, id))objc_msgSend)(C0(id, win, "contentView"), sel_registerName("addSubview:"), (id)field);
+
+  ((void (*)(id, SEL, id))objc_msgSend)((id)win, sel_registerName("makeKeyAndOrderFront:"), nil);
+  ((void (*)(id, SEL, BOOL))objc_msgSend)((id)app, sel_registerName("activateIgnoringOtherApps:"), YES);
+
+  /* Schedule [app terminate:nil] after 5 s via an NSTimer (also driven through
+   * objc_msgSend — no CoreFoundation needed). terminate: ends the process
+   * reliably from the run loop; unlike stop: it doesn't wait on a pending event,
+   * so the 5 s timing is deterministic. */
+  SEL termSel = sel_registerName("terminate:");
+  ((id (*)(id, SEL, double, id, SEL, id, BOOL))objc_msgSend)(
+      (id)objc_getClass("NSTimer"),
+      sel_registerName("scheduledTimerWithTimeInterval:target:selector:userInfo:repeats:"),
+      5.0, (id)app, termSel, nil, NO);
+
+  printf("[zimbu-gui] entering NSApplication run; window should be visible ~5s\n");
+  C0(void, app, "run");   /* blocks until terminate: exits the process */
+
+  /* Unreached when terminate: fires (it ends the process); here for the
+   * no-window / fall-through path only. */
+  printf("[zimbu-gui] run returned (no terminate fired)\n");
+  C0(void, pool, "drain");
+<<<
+
+  RETURN 0
+}
