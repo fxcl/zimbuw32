@@ -1,0 +1,36 @@
+#
+# TUI demo for Zimbu — proves the TIO (termios) + hand-rolled ANSI path on macOS.
+#
+# This is a LOCAL proof file. zimbuw32/ is gitignored in the outer repo and is
+# the vendored upstream tree; this file is not tracked there. Non-interactive:
+# safe to run with stdin piped or attached to a tty.
+#
+# Build: ./zimbu examples/tui_demo.zu -o /tmp/tui_demo
+# Run:   /tmp/tui_demo
+#
+# Why this exists: Zimbu's terminal support is lib/TIOModule.zu ONLY — a termios
+# binding (getMode/setMode). There is no curses, color, screen-buffer, or widget
+# module for the terminal. A TUI is therefore built from raw ANSI escape sequences
+# on top of TIO raw mode. This demo exercises both halves to prove the path works
+# on macOS after the termios-constants fix.
+
+FUNC Main() int
+  # ESC via octal escape (Zimbu has no \e; \033 = 0x1b = ESC). See Tokenizer.zu.
+  string esc = "\033"
+
+  # 1. termios read via TIO. Proves the (macOS-fixed) binding links and runs.
+  #    On a non-tty stdin, tcgetattr fails softly and a zeroed Mode is returned
+  #    rather than throwing — so this runs under a pipe too.
+  TIO.Mode mode = TIO.getMode(IO.stdin)
+  IO.print("TUI demo: TIO.getMode(IO.stdin) succeeded")
+  IO.print("Mode: " .. mode.ToString())
+
+  # 2. Hand-rolled ANSI rendering — the only rendering path (no color/screen module).
+  IO.stdout.write(esc .. "[1;36m")                # bold cyan
+  IO.stdout.write("Zimbu TUI works on macOS\n")
+  IO.stdout.write(esc .. "[32m")                  # green
+  IO.stdout.write("raw ANSI on top of TIO termios\n")
+  IO.stdout.write(esc .. "[0m")                   # reset
+
+  RETURN 0
+}

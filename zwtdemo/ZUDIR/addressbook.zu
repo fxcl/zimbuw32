@@ -1,4 +1,4 @@
-# Generated from addressbook.proto
+# Generated from zwtdemo/addressbook.proto
 
 IMPORT "$PLUGIN/proto/Proto.zu"
 IMPORT "$PLUGIN/proto/Message.zu"
