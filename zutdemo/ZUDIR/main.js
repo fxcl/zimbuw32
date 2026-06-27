@@ -64,6 +64,7 @@ function YyGC(){ // EventConfig
 }
 _ = YyGC.prototype = {};
 _.Vactive = null;
+_.listen = YHeX;
 function YJgz(){ // Context
 }
 _ = YJgz.prototype = {};
@@ -73,9 +74,22 @@ _.VcssEntries = null;
 _.VactiveEvents = null;
 _.hasCss = YdGR;
 _.addCss = Yl3F;
+_.listen = Y8My;
 function Yq5o(){ // Element
 }
 _ = Yq5o.prototype = {};
+var MZUTModule__EEventType = [
+"click",
+"doubleClick",
+"longClick",
+"mouseDown",
+"mouseUp",
+"mouseOver",
+"mouseOut",
+"key",
+"keyDown",
+"keyUp",
+];
 function YN5G(){ // Event
 }
 _ = YN5G.prototype = {};
@@ -107,6 +121,8 @@ function Yhqr(){ // Set__t1
 _ = Yhqr.prototype = {};
 _.Vdict = null;
 _.Init = Ypau;
+_.has = YyHa;
+_.add = YGMT;
 function Ygqr(){ // Set__t2
 }
 _ = Ygqr.prototype = {};
@@ -337,11 +353,11 @@ function Y2EX__Yalz__YwtA__YRHR(thisO, Amsg) { // MEModule__CKeyNotFound.NEW__p3
  return thisO;
 }
 function Yxmk(Akey, Amsg) { // MEModule.throwIntKeyNotFound
- alert("Exception in D:/zimbu/lib/EModule.zu line 374 col 5: " + Y2EX__Yalz__YwtA__YRHR(null, Amsg + "Key not found: " + "" + Akey).Vmessage);
+ alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/EModule.zu line 374 col 5: " + Y2EX__Yalz__YwtA__YRHR(null, Amsg + "Key not found: " + "" + Akey).Vmessage);
  return;
 }
 function Y5LT(Akey, Amsg) { // MEModule.throwStringKeyNotFound
- alert("Exception in D:/zimbu/lib/EModule.zu line 380 col 5: " + Y2EX__Yalz__YwtA__YRHR(null, Amsg + "Key not found: \"" + Akey + "\"").Vmessage);
+ alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/EModule.zu line 380 col 5: " + Y2EX__Yalz__YwtA__YRHR(null, Amsg + "Key not found: \"" + Akey + "\"").Vmessage);
  return;
 }
 function YX0i__Yalz__YwtA__YRHRa(thisO, Apos, Amsg) { // MEModule__CKeyExists.NEW__p3
@@ -359,11 +375,11 @@ function YX0i__Yalz__YwtA__YRHR(thisO, Amsg) { // MEModule__CKeyExists.NEW__p3
  return thisO;
 }
 function YL9Z(Akey, Amsg) { // MEModule.throwIntKeyExists
- alert("Exception in D:/zimbu/lib/EModule.zu line 396 col 5: " + YX0i__Yalz__YwtA__YRHR(null, Amsg + "Key already exists: " + "" + Akey).Vmessage);
+ alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/EModule.zu line 396 col 5: " + YX0i__Yalz__YwtA__YRHR(null, Amsg + "Key already exists: " + "" + Akey).Vmessage);
  return;
 }
 function YEeX(Akey, Amsg) { // MEModule.throwStringKeyExists
- alert("Exception in D:/zimbu/lib/EModule.zu line 402 col 5: " + YX0i__Yalz__YwtA__YRHR(null, Amsg + "Key already exists: \"" + Akey + "\"").Vmessage);
+ alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/EModule.zu line 402 col 5: " + YX0i__Yalz__YwtA__YRHR(null, Amsg + "Key already exists: \"" + Akey + "\"").Vmessage);
  return;
 }
 function YXKl__YwtA__YRHR(thisO, Amsg) { // MEModule__CIOError.NEW__p2
@@ -418,6 +434,35 @@ function YVCn(thisO) { // MZUTModule__CEventConfig.NEW
  YhAF = thisO;
  return thisO;
 }
+function YHeX(Atype) { // MZUTModule__CEventConfig.listen
+ if (!(this.Vactive.has(Atype)))
+ {
+  this.Vactive.add(Atype);
+  switch (Atype)
+  {
+  case 0:
+   {
+              $doc.onclick = zut.clickEventHandler;
+     break;
+   }
+  case 5:
+   {
+              $doc.onmouseover = zut.mouseOverEventHandler;
+     break;
+   }
+  case 6:
+   {
+              $doc.onmouseout = zut.mouseOutEventHandler;
+     break;
+   }
+  default:
+   {
+    return 0;
+   }
+  }
+ }
+ return 1;
+}
 function YIZda(thisO) { // MZUTModule__CContext.NEW
  if (!thisO) thisO = new YJgz();
  thisO.VcssEntries = [];
@@ -437,6 +482,9 @@ function Yl3F(Aname, Acss) { // MZUTModule__CContext.addCss
           styleEl.appendChild($doc.createTextNode(Acss));
         }
         $doc.head.appendChild(styleEl);
+}
+function Y8My(AeventType) { // MZUTModule__CContext.listen
+ return YhAF.listen(AeventType);
 }
 function YXm4(thisO, Ael) { // MZUTModule__CEvent.NEW
  if (!thisO) thisO = new YN5G();
@@ -496,7 +544,7 @@ function YwHoa(Atext) { // MIOModule__CFile.write
  var Vret = 0;
  if ((this.Vname == null))
  {
-  alert("Exception in D:/zimbu/lib/IOModule.zu line 501 col 11: " + YXKl__YwtA__YRHR(null, "File is not open").Vmessage);
+  alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/IOModule.zu line 501 col 11: " + YXKl__YwtA__YRHR(null, "File is not open").Vmessage);
   return;
  }
  var e = $doc.getElementById(this.Vname);
@@ -548,6 +596,18 @@ function Yh95(thisO) { // MSETModule__CSet__t1.NEW
  if (!thisO) thisO = Ypau(null);
  return thisO;
 }
+function YyHa(Akey) { // MSETModule__CSet__t1.has
+ return ':' + Akey in this.Vdict;
+}
+function YGMT(Akey) { // MSETModule__CSet__t1.add
+ if (':' + Akey in this.Vdict)
+ {
+  alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/SETModule.zu line 104 col 9: " + YX0i__Yalz__YwtA__YRHRa(null, null, "key already present: " + MZUTModule__EEventType[Akey]).Vmessage);
+  return;
+ }
+ ZDictAdd(0, this.Vdict, ':' + Akey, 1);
+ return this;
+}
 function YuFZ(thisO) { // MSETModule__CSet__t2.Init
  if (!thisO) thisO = new Ygqr();
  thisO.Vdict = ZnewDict(1, 0);
@@ -563,7 +623,7 @@ function YXZk(Akey) { // MSETModule__CSet__t2.has
 function Y432(Akey) { // MSETModule__CSet__t2.add
  if (':' + Akey in this.Vdict)
  {
-  alert("Exception in D:/zimbu/lib/SETModule.zu line 104 col 9: " + YX0i__Yalz__YwtA__YRHRa(null, null, "key already present: " + Akey).Vmessage);
+  alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/SETModule.zu line 104 col 9: " + YX0i__Yalz__YwtA__YRHRa(null, null, "key already present: " + Akey).Vmessage);
   return;
  }
  ZDictAdd(0, this.Vdict, ':' + Akey, 1);
@@ -596,11 +656,14 @@ function YHTw(Acontext) { // MHelloMessage.addCss
 function YqnP(Acontext, Atext) { // MHelloMessage.show
  YHTw(Acontext);
  var Vw = new YjUM();
+ Acontext.listen(5);
  ;
+ Acontext.listen(6);
  ;
  Vw.write("<div class=\"hello\"\nzcontroller=\"OverController\"\nzaction=\"mouseOver: over, mouseOut: out\">\n");
  Vw.write(Atext);
  Vw.write("</div>\n<div>This is not a\n");
+ Vw.write("# ");
  Vw.write("comment</div>\n");
  return Vw.ToString();
 }

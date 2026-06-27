@@ -20,6 +20,7 @@
 # define GC_SIG SIGUSR2
 #endif
 #include <setjmp.h>
+#include <sys/time.h>
 
 #ifdef WIN32
 # include <winsock.h>
@@ -45,9 +46,9 @@
 /*
  * TYPEDEFS
  */
-#define ZINT_FORMAT "%I64d"
-#define ZNAT_FORMAT "%I64u"
-#define ZINT_XFORMAT "%I64x"
+#define ZINT_FORMAT "%lld"
+#define ZNAT_FORMAT "%llu"
+#define ZINT_XFORMAT "%llx"
 #define ZFLOAT_FORMAT "%g"
 typedef long long Ti; /* int */
 typedef short Ti16; /* int16 */
@@ -161,6 +162,7 @@ typedef struct YlXt__S YlXt; /* MTHREADModule.Lock */
 typedef struct Y0Wo__S Y0Wo; /* MTHREADModule.Cond */
 /* THREADModule done */
 /* including ZUTModule typedefs */
+typedef struct YyGC__S YyGC; /* MZUTModule.EventConfig */
 typedef struct YJgz__S YJgz; /* MZUTModule.Context */
 typedef struct YfsL__S YfsL; /* MZUTModule.Page */
 typedef struct Yq5o__S Yq5o; /* MZUTModule.Element */
@@ -196,6 +198,7 @@ typedef struct Y5cA__S Y5cA; /* MyController */
 /* MyController done */
 /* ZutDemoPage done */
 typedef struct Tcallback__S Tcb;
+typedef struct Tcallbackx__S Tcbx;
 /*
  * STRUCTS
  */
@@ -315,7 +318,6 @@ struct CArray__S {
  int itemSize;
  int tosNr;
 };
-void ZfreeArray(Ta *head);
 void ZArrayToStringGa(Ta *head, int useq, Tg *ga);
 Ta *ZnewArray(Tt *itemType, int itemSize, Ti size);
 struct CListHead__S {
@@ -809,6 +811,11 @@ typedef struct {
  char text[38];
 } Zs38;
 /* MainPage done */
+struct YyGC__S {
+ Zoh *np;
+ Yhqr *Vactive;
+};
+extern Tto YyGC__T;
 typedef struct {
  Zoh *np;
  char text[34];
@@ -937,8 +944,8 @@ typedef struct {
 } Zs43;
 typedef struct {
  Zoh *np;
- char text[27];
-} Zs27;
+ char text[54];
+} Zs54;
 typedef struct {
  Zoh *np;
  char text[21];
@@ -1052,6 +1059,13 @@ struct Tcallback__S {
  void *cfunc;
  int toCount;
 };
+struct Tcallbackx__S {
+ Zoh *np;
+ void *cfunc;
+ int toCount;
+ Tcb *cb;
+ To to[1];
+};
 /*
  * DECLARE FUNCTIONS AND GLOBALS
  */
@@ -1062,6 +1076,9 @@ YuVGa *ZaYuVGa(YuVGa *p, void *t, Tt *tt, Tcb *cb, YfsL * arg1);
 Tc* ZcbYuVGa(YuVGa *cb, YtzZ *arg0);
 YOFva *ZaYOFva(YOFva *p, void *t, Tt *tt, Tcb *cb, Tc * arg1);
 Tc* ZcbYOFva(YOFva *cb, YJgz *arg0);
+/* including TIMEModule declarations */
+Ti Y9Rj(); /* MTIMEModule.current */
+/* TIMEModule done */
 /* including EModule declarations */
 Tc *YH0V(Ytlm *t); /* MEModule__CException.ToString */
 void YxaJ(Ytlm *t, Tr Aw); /* MEModule__CException.writeTo */
@@ -1449,10 +1466,16 @@ Zs14 YqZT = {&Zstatic, "\014\"></script>\n\000"};
 Zs17 Y5_w = {&Zstatic, "\017</head>\n<body>\n\000"};
 Zs18 YDQe = {&Zstatic, "\020</body>\n</html>\n\000"};
 /* MainPage done */
+Ts YHeX(YyGC *t, Te Atype); /* MZUTModule__CEventConfig.listen */
+To ToYyGC[2];
+char *StrYyGC[];
+Zs13 YG0S = {&Zstatic, "\013EventConfig\000"};
+YyGC *YhAF = 0; /* MZUTModule.eventConfig */
 YJgz *YIZd(YJgz *t, YtzZ *AhttpContext); /* MZUTModule__CContext.NEW */
 YJgz *YIZda(YJgz *t); /* MZUTModule__CContext.NEW */
 Tb YdGR(YJgz *t, Tc *Aname); /* MZUTModule__CContext.hasCss */
 void Yl3F(YJgz *t, Tc *Aname, Tc *Acss); /* MZUTModule__CContext.addCss */
+Ts Y8My(YJgz *t, Te AeventType); /* MZUTModule__CContext.listen */
 Tc *YSZt(YJgz *t); /* MZUTModule__CContext.activateEventListeners */
 Zs34 YnvA = {&Zstatic, "\040<script type=\"text/javascript\">\n\000"};
 Zs25 YFXK = {&Zstatic, "\027zut.eventConfig.listen(\000"};
@@ -1545,8 +1568,14 @@ Ti Y26N(Tc *Afname, Ti Aidx); /* MIOModule.nextPartIndex */
 int JIOModule(int round);
 /* IOModule done */
 /* including SETModule declarations */
+int Ypau__r = 0; /* MSETModule__CSet__t1.Ready */
+Yhqr *Ypau(Yhqr *t); /* MSETModule__CSet__t1.Init */
+Yhqr *Yh95(Yhqr *t); /* MSETModule__CSet__t1.NEW */
 Tc *Yehh(Yhqr *t); /* MSETModule__CSet__t1.ToString */
 Tr YuJb(Yhqr *t); /* MSETModule__CSet__t1.Iterator */
+Tb YyHa(Yhqr *t, Te Akey); /* MSETModule__CSet__t1.has */
+Yhqr *YGMT(Yhqr *t, Te Akey); /* MSETModule__CSet__t1.add */
+Zs23 YLLX = {&Zstatic, "\025key already present: \000"};
 To ToYhqr[2];
 char *StrYhqr[];
 Zs9 Yehz = {&Zstatic, "\007Set__t1\000"};
@@ -1556,7 +1585,6 @@ Ygqr *YGrg(Ygqr *t); /* MSETModule__CSet__t2.NEW */
 Tc *Yd2r(Ygqr *t); /* MSETModule__CSet__t2.ToString */
 Tb YXZk(Ygqr *t, Tc *Akey); /* MSETModule__CSet__t2.has */
 Ygqr *Y432(Ygqr *t, Tc *Akey); /* MSETModule__CSet__t2.add */
-Zs23 YLLX = {&Zstatic, "\025key already present: \000"};
 To ToYgqr[2];
 char *StrYgqr[];
 Zs9 Yfhz = {&Zstatic, "\007Set__t2\000"};
@@ -1617,7 +1645,7 @@ Zs29 YjTs = {&Zstatic, "\033INTERNAL: unknown flag type\000"};
 void YSUO(Tc *Amsg); /* MARGModule.error */
 Zs22 YkFE = {&Zstatic, "\024To list flags use: '\000"};
 Zs10 Y15F = {&Zstatic, "\010 --help'\000"};
-Zs27 Yzoka = {&Zstatic, "\031D:/zimbu/lib/ARGModule.zu\000"};
+Zs54 YrhZa = {&Zstatic, "\064/Users/vec/workspace/zimbu/zimbuw32/lib/ARGModule.zu\000"};
 void Yfj5(Tb Averbose); /* MARGModule.displayHelp */
 Zs21 YaBy = {&Zstatic, "\023Command line flags:\000"};
 Zs13 YwXF = {&Zstatic, "\013--morehelp \000"};
@@ -1699,6 +1727,7 @@ Zs26 YGkn = {&Zstatic, "\030.hello {\ncolor: blue;\n}\n\000"};
 Tc *YqnP(YJgz *Acontext, Tc *Atext); /* MHelloMessage.show */
 Zs92 Yesb = {&Zstatic, "\132<div class=\"hello\"\nzcontroller=\"OverController\"\nzaction=\"mouseOver: over, mouseOut: out\">\n\000"};
 Zs28 Ysok = {&Zstatic, "\032</div>\n<div>This is not a\n\000"};
+Zs4 YN2 = {&Zstatic, "\002# \000"};
 Zs16 YLAB = {&Zstatic, "\016comment</div>\n\000"};
 /* HelloMessage done */
 Tb YiUW(Y5cA *t, YN5G *Aevent); /* CMyController.clicked */
@@ -1738,6 +1767,29 @@ Tc* ZcbYZ05(Tcb *cb, YtzZ *arg0, YfsL *arg1);
 Tcb ZCB_YZ05 = {0, ZcbYZ05, -1};
 Tc* ZcbYqnP(Tcb *cb, YJgz *arg0, Tc *arg1);
 Tcb ZCB_YqnP = {0, ZcbYqnP, -1};
+
+
+Zop ZglobalVars[] = {
+{&Y4fD,(Tt*)&Y86c__T},
+{&Y6Gp,(Tt*)&YzqH__T},
+{&YJ5o,(Tt*)&YzqH__T},
+{&Y6ma,(Tt*)&YzqH__T},
+{&YMSZ,(Tt*)&Y86c__T},
+{&YhAF,(Tt*)&YyGC__T},
+{&YwKT,(Tt*)&string__T},
+{&Y59X,(Tt*)&iobj__T},
+{&Yb0q,(Tt*)&iobj__T},
+{&YeNQ,(Tt*)&iobj__T},
+{&YzvW,(Tt*)&string__T},
+{&Y2R7,(Tt*)&string__T},
+{&Y1p3,(Tt*)&list__T},
+{&Y6fX,(Tt*)&list__T},
+{&Yun4,(Tt*)&YuMQ__T},
+{&Y7be,(Tt*)&dict__T},
+{&YBQy,(Tt*)&dict__T},
+{&Vport,(Tt*)&YJQu__T},
+{0,0},
+};
 
 Tt bool__T  = {21, 0, 0};
 Tt byte__T  = {11, 0, 0};
@@ -1793,9 +1845,26 @@ typedef struct Senv__S {
  int ZaEntered;
  Zsf *startFrames;
  Zsf *topFrame;
+ Zoh *firstUsed;
+ pthread_mutex_t stateMutex;
+ pthread_cond_t stateCond;
+ int wantGC;
+ int inGC;
+#define GC_STOPPED 1
+#define GC_MARK_DONE 2
+ int state;
+ Zgcs gcStatus;
  Zohf *firstUsedF;
  int tosNr;
 } Tn; /* per-thread environemnt */
+
+typedef struct Zohp__S Zohp;
+struct Zohp__S {
+ Zohp *next;
+ Zoh  *firstUsed;
+};
+Zohp *usedList = NULL;
+pthread_mutex_t usedListMutex;
 
 typedef struct Zohpf__S Zohpf;
 struct Zohpf__S {
@@ -1804,6 +1873,12 @@ struct Zohpf__S {
 };
 Zohpf *usedListF = NULL;
 Zohf *toFinish = ZOHF_LAST;
+pthread_mutex_t gcRunMutex;
+int gcMarkPhase = 0;
+int gcSTW = 0;
+pthread_mutex_t gcMarkPhaseMutex;
+pthread_cond_t gcMarkPhaseCond;
+
 pthread_mutex_t threadsMutex;
 Tl *threads;
 
@@ -1811,6 +1886,24 @@ static pthread_key_t ZenvKey;
 void ZenvFree(void *ptr) {
  Tn *e = (Tn *)ptr;
  if (e->startFrames) free(e->startFrames);
+ e->inGC = 1;
+ pthread_mutex_lock(&usedListMutex);
+ if (e->firstUsed != &Zlast) {
+  Zohp *entry = ZaNmi(sizeof(Zohp));
+  entry->next = usedList;
+  usedList = entry;
+  entry->firstUsed = e->firstUsed;
+ }
+ if (e->firstUsedF != ZOHF_LAST) {
+  Zohpf *entry = ZaNmi(sizeof(Zohpf));
+  entry->next = usedListF;
+  usedListF = entry;
+  entry->firstUsedF = e->firstUsedF;
+ }
+ if (e->tryCtx) {
+  free(e->tryCtx);
+ }
+ pthread_mutex_unlock(&usedListMutex);
  pthread_mutex_lock(&threadsMutex);
  ZListRemovePtrItem(threads, ZListFind(threads, (Tz)(void*)e));
  pthread_mutex_unlock(&threadsMutex);
@@ -1821,6 +1914,10 @@ Tn *ZgetEnv() {
  if (e == NULL) {
   e = ZaNmi(sizeof(Tn));
   e->tid = pthread_self();
+  e->firstUsed = &Zlast;
+  e->firstUsedF = (Zohf*)&Zlast;
+  pthread_mutex_init(&e->stateMutex, NULL);
+  pthread_cond_init(&e->stateCond, NULL);
   pthread_setspecific(ZenvKey, e);
  }
  return e;
@@ -1828,11 +1925,16 @@ Tn *ZgetEnv() {
 void ZenvInit() {
  (void)pthread_key_create(&ZenvKey, ZenvFree);
  pthread_setspecific(ZenvKey, NULL);
+ pthread_mutex_init(&gcRunMutex, NULL);
+ pthread_mutex_init(&usedListMutex, NULL);
+ pthread_mutex_init(&gcMarkPhaseMutex, NULL);
+ pthread_cond_init(&gcMarkPhaseCond, NULL);
  pthread_mutex_init(&threadsMutex, NULL);
  threads = ZnewList(&thread__T, 0);
  ZLa(threads, -1, (Tz)(void*)ZgetEnv());
 }
 
+void ZthreadGC();
 void ZgcFinishAll(int rsn);
 void ZgcRun();
 void beforeExit() {
@@ -1886,6 +1988,9 @@ void *Za(size_t size) {
   ZthrowOutOfMemory(size);
  }
  e->ZaEntered = 0;
+ ((Zoh *)p)->np = (Zoh*)e->firstUsed;
+ e->firstUsed = p;
+ ++ZgcUseCount;
  return p;
 }
 
@@ -1915,6 +2020,7 @@ void *ZaF(size_t size, To *to, Ts (*ff)(void *, Te), int nox) {
  e->ZaEntered = 0;
  ((Zoh *)p)->np = (Zoh*)e->firstUsedF;
  e->firstUsedF = p;
+ ++ZgcUseCount;
  ((Zohf *)p)->to = to;
  ((Zohf *)p)->ff = ff;
  if (nox) ((Zohf *)p)->fok = FOK_NOX;
@@ -1975,18 +2081,6 @@ void *ZaNmi(size_t size) {
 void *Zran(void *op, size_t osize, size_t nsize) {
  void *p = NULL;
  Tn *e = ZgetEnv();
- if (!e->inZa && !e->ZaEntered) {
-  e->inZa = 1;
-  p = realloc(op, nsize);
-  e->inZa = 0;
-  if (p == NULL) {
-    ++e->ZaEntered;
-    ZthrowOutOfMemory(nsize);
-  }
-  e->ZaEntered = 0;
-  if (nsize > osize) memset(p + osize, 0, nsize - osize);
-  return p;
- }
  p = Za(nsize);
  if (op)
   memmove(p + ZOH_OFF, op + ZOH_OFF, nsize > osize ? osize - ZOH_OFF : nsize - ZOH_OFF);
@@ -2015,7 +2109,17 @@ void *ZranNm(void *op, size_t osize, size_t nsize) {
 }
 
 void Zfree(void *p) {
+ Tn *e = ZgetEnv();
+ int sp;
+ if (e->topFrame != NULL) {
+  sp = e->topFrame->pos;
+  e->topFrame->pos = 0x40000000;
+ }
  if (p) free(p);
+ if (e->topFrame != NULL) {
+  e->topFrame->pos = sp;
+  if (e->wantGC && (e->topFrame->pos & 0x40000000) == 0) ZthreadGC();
+ }
 }
 
 void ZtryDeeper(Tn *e, Zsf *sf);
@@ -2078,6 +2182,551 @@ void ZgcFinishAll(int rsn) {
  ZgcCallFinish(rsn);
 }
 
+int newMark = 1;
+
+void ZgcGetBlock(Zgcs *gcs) {
+ Zgcb *b = malloc(sizeof(Zgcb));
+ if (b == NULL) {
+  fputs("Out of memory (ZgcGetBlock)\n", stderr);
+  fflush(stderr);
+  exit(1);
+ }
+ b->next = gcs->todo;
+ gcs->todo = b;
+}
+
+/* Mark used memory on stack frames and try context for one thread.
+ * When "doGlobal" is non-zero also mark global items. */
+void ZgcMarkItems(Tn *e, int doGlobal, void *pArg, Tt *toArg) {
+ Zgcs *gcs = &e->gcStatus;
+ Zgcb *b = NULL;
+ int used = GC_BLOCK_SIZE;
+#define ADD_ITEM(ap, atype) \
+  { if (ap) { \
+   if (used == GC_BLOCK_SIZE) { \
+    if (b) b->used = GC_BLOCK_SIZE; \
+    ZgcGetBlock(gcs); \
+    b = gcs->todo; \
+    used = 0; \
+   } \
+   b->items[used].var = (ap); \
+   b->items[used].type = (atype); \
+   ++used; \
+  }}
+
+ Zsf *frame = e->topFrame;
+ Zfo *fo = frame == NULL ? NULL : frame->frof;
+ int ti = 0;
+ int gi = 0;
+ int ni = 0;
+ void *p = NULL;
+ Tt *to;
+ int what = 0;
+ while (what <= 5) {
+  switch (what) {
+   case 0:
+    if (pArg) {
+     what = 99;
+     p = pArg;
+     to = toArg;
+     break;
+    }
+    if (frame == NULL) ++what;
+    else {
+     if (!fo) {
+      frame = frame->prev;
+      if (frame) fo = frame->frof;
+     } else {
+      if (fo->type == &iobj__T) {
+       p = (char *)frame - (fo->off & ~1);
+       if (((Tr*)p)->ptr == NULL) p = NULL;
+       else to = &iobj__T;
+      } else if (fo->off & 1) {
+       p = (char *)frame - (fo->off - 1);
+       if (((Zoh*)p)->np == NULL) p = NULL;
+       else to = fo->type;
+      } else {
+       p = *(char **)((char *)frame - fo->off);
+       if (p) to = fo->type;
+      }
+      ++fo;
+      if (!fo->off) {
+       frame = frame->prev;
+       if (frame) fo = frame->frof;
+      }
+     }
+    }
+    break;
+   case 1:
+    p = e->tryCtx;
+    to = NULL;
+    ++what;
+    break;
+   case 2:
+    if (ti >= e->thrownUsed) ++what;
+    else {
+     p = &e->thrown[ti];
+     to = &iobj__T;
+     ++ti;
+    }
+    break;
+   case 3:
+    if (!doGlobal) what = 99;
+    else {
+     p = threads;
+     to = &list__T;
+     ++what;
+    }
+    break;
+   case 4:
+    if (!ZglobalVars[gi].var) {
+     ++what;
+    } else {
+     to = ZglobalVars[gi].type;
+     if (to == &iobj__T)
+      p = ZglobalVars[gi].var;
+     else
+      p = *((char**)(ZglobalVars[gi].var));
+     ++gi;
+    }
+    break;
+   case 5:
+    ++what;
+    break;
+  }
+
+  while (p) {
+   void *ip = NULL;
+   Tt *ito = NULL;
+   Zoh *np;
+   while (to == &iobj__T) {
+    if (((Tr*)p)->ptr == NULL) goto p_is_null;
+    to = (Tt*)(((Tr*)p)->table[0]);
+    p = ((Tr*)p)->ptr;
+   }
+   np = ((Zoh *)p)->np;
+   if (((Tip)np & 3) != newMark && np != NULL) {
+    ((Zoh *)p)->np = (Zoh *)(((Tip)np & ~3) | newMark);
+
+    if (to != NULL && to->nr >= 300) {
+     if (0) ;
+      else if (to == &array__T) {
+      Ta *head = (Ta*)p;
+      if (head->ptr && head->ptr != head + 1) {
+       ip = head->ptr - ZOH_OFF;
+       /* ito = NULL; */
+       if (head->itemType && head->itemType->nr >= 200) {
+        Ti i;
+        Ti d;
+        i = head->size[0];
+        for (d = 1; d < head->dim; ++d) i *= head->size[d];
+        while (--i >= 0) {
+         void *p;
+         if (head->itemType == &iobj__T)
+          p = (Tr*)head->ptr + i;
+         else
+          p = ((char **)(head->ptr))[i];
+         ADD_ITEM(p, head->itemType)
+        }
+       }
+      }
+     } else if (to == &list__T) {
+      Tl *head = (Tl*)p;
+      if (head->itemType && head->itemType->nr >= 200) {
+       if (head->items) {
+        Ti n;
+        Ti tot = head->empty + head->itemCount;
+        if (head->itemType != &thread__T)
+         for (n = head->empty; n < tot; ++n) {
+          void *p;
+         if (head->itemType == &iobj__T)
+          p = (Tr*)head->items + n;
+         else
+           p = head->items[n];
+          ADD_ITEM(p, head->itemType)
+         }
+       }
+      }
+      if (head->items && head->items != (void**)(head + 1)) {
+       ip = (void*)head->items - ZOH_OFF;
+       /* ito = NULL; */
+      }
+     } else if (to == &dict__T) {
+      Td *head = (Td*)p;
+      int dokey = (head->keyType && head->keyType->nr >= 200);
+      int doitem = (head->itemType && head->itemType->nr >= 200);
+      if (head->array != head->smallArray && head->array) {
+       ip = (void*)head->array - ZOH_OFF;
+       /* ito = NULL; */
+      }
+      if (dokey || doitem) {
+       int todo;
+       CDictItem *item;
+       todo = (int)head->used;
+       for (item = head->array; todo > 0; ++item) {
+        if (item->flags & CDI_FLAG_USED) {
+         if (dokey) {
+          if (head->keyType == &iobj__T)
+           ADD_ITEM(&item->iokey, &iobj__T)
+          else
+           ADD_ITEM(item->key.ptr, head->keyType)
+         }
+         if (doitem) {
+          if (head->itemType == &iobj__T)
+           ADD_ITEM(&item->ioitem, &iobj__T)
+          else
+           ADD_ITEM(item->item.ptr, head->itemType)
+         }
+         --todo;
+        }
+       }
+      }
+     } else if (to == &cb__T) {
+      int i;
+      Tcbx *r = (Tcbx*)p;
+      if (r->toCount >= 0) {
+       ip = r->cb;
+       ito = &cb__T;
+       for (i = 0; i < r->toCount; ++i) {
+        void *pp = *(char**)((char*)r + r->to[i].off);
+        ADD_ITEM(pp, r->to[i].type)
+       }
+      }
+     } else {
+      int i;
+      To *tto = ((Tto*)to)->to;
+      for (i = 1; i <= tto->off; ++i) {
+       if (tto[i].type == &iobj__T) {
+        void *pp = (char*)p + tto[i].off;
+        ADD_ITEM(pp, tto[i].type)
+       } else
+        if (tto[i].type->nr >= 200)
+       {
+        void *pp = *(char**)((char*)p + tto[i].off);
+        ADD_ITEM(pp, tto[i].type)
+       }
+      }
+     }
+    }
+   }
+
+p_is_null:
+   if (ip) {
+    p = ip;
+    to = ito;
+   } else if (b && used > 0) {
+    --used;
+    p = b->items[used].var;
+    to = b->items[used].type;
+   } else if (b) {
+    gcs->todo = b->next;
+    b->next = gcs->empty;
+    gcs->empty = b;
+    b = gcs->todo;
+    if (b) {
+     used = b->used - 1;
+     p = b->items[used].var;
+     to = b->items[used].type;
+    } else {
+     used = GC_BLOCK_SIZE;
+     p = NULL;
+    }
+   } else p = NULL;
+  }
+ }
+
+ while (gcs->empty) {
+  b = gcs->empty->next;
+  free(gcs->empty);
+  gcs->empty = b;
+ }
+}
+#undef ADD_ITEM
+Zohf *ZgcCheckFinish(Zohf *firstUsedF) {
+ Zohf *prev = NULL;
+ Zohf *p = firstUsedF;
+ Zohf *newFirstUsedF = firstUsedF;
+ Zoh *np;
+ Zohf *rp;
+ while (p != ZOHF_LAST) {
+  np = p->np;
+  rp = (Zohf*)((Tip)np & ~3);
+  if (((Tip)np & 3) != newMark && (((Zohf *)p)->fok & FOK_OK) == 0) {
+   if (prev) prev->np = (Zoh*)(((Tip)prev->np & 3) | (Tip)rp);
+   else newFirstUsedF = rp;
+   p->np = (Zoh*)toFinish;
+   toFinish = p;
+  } else {
+   prev = p;
+  }
+  p = rp;
+ }
+ return newFirstUsedF;
+}
+
+void ZgcFinishMark(Tn *e) {
+ Zohf *p = toFinish;
+ while (p != ZOHF_LAST) {
+  To *to = p->to;
+  int i;
+  for (i = 1; i <= to->off; ++i)
+   if (to[i].type->nr >= 200)
+   {
+    void *pp = *(char**)((char*)p + to[i].off);
+    ZgcMarkItems(e, 0, pp, to[i].type);
+   }
+  p = (Zohf*)((Tip)(p->np) & ~3);
+ }
+}
+
+void ZgcFinishMoveBack() {
+ Zohf *p = toFinish;
+ while (p != ZOHF_LAST) {
+  if (((Tip)p->np & 3) != newMark) break;
+  p = (Zohf*)((Tip)(p->np) & ~3);
+ }
+ if (p != ZOHF_LAST) {
+  Zohf *np;
+  Zohf *prev = NULL;
+  p = toFinish;
+  while (p != ZOHF_LAST) {
+   np = (Zohf*)((Tip)(p->np) & ~3);
+   if (((Tip)p->np & 3) == newMark) {
+    if (usedListF == NULL) {
+     usedListF = ZaNmi(sizeof(Zohpf));
+     usedListF->firstUsedF = ZOHF_LAST;
+    }
+    p->np = (Zoh*)((Tip)usedListF->firstUsedF | newMark);
+    usedListF->firstUsedF = p;
+    if (prev) {
+     prev->np = (Zoh*)((Tip)np | ((Tip)(prev->np) & 3));
+    } else {
+     toFinish = np;
+    }
+   } else {
+    prev = p;
+   }
+   p = np;
+  }
+ }
+}
+
+void ZgcCheckFinishList(Tn *e) {
+ Zohpf *prevUsed = NULL;
+ Zohpf *p;
+ Zohpf *np;
+ for (p = usedListF; p; p = np) {
+  p->firstUsedF = ZgcCheckFinish(p->firstUsedF);
+  np = p->next;
+  if (p->firstUsedF == ZOHF_LAST) {
+   if (prevUsed == NULL) {
+    usedListF = p->next;
+   } else {
+    prevUsed->next = p->next;
+   }
+   free(p);
+  } else {
+   prevUsed = p;
+  }
+ }
+}
+
+/* free unmarked memory */
+Zoh *ZgcFree(Zoh *firstUsed) {
+ Zoh *prev = NULL;
+ Zoh *p = firstUsed;
+ Zoh *newFirstUsed = firstUsed;
+ Zoh *np;
+ while (p != &Zlast) {
+  np = p->np;
+  if (((Tip)np & 3) != newMark) {
+   np = (Zoh*)((Tip)np & ~3);
+   newFirstUsed = np;
+   ++ZgcFreeCount;
+   free(p);
+   p = np;
+  } else {
+   prev = p;
+   p = (Zoh*)((Tip)np & ~3);
+   break;
+  }
+ }
+ while (p != &Zlast) {
+  np = p->np;
+  if (((Tip)np & 3) != newMark) {
+   np = (Zoh*)((Tip)np & ~3);
+   prev->np = np;
+   ++ZgcFreeCount;
+   free(p);
+   p = np;
+  } else {
+   prev = p;
+   p = (Zoh*)((Tip)np & ~3);
+  }
+ }
+ return newFirstUsed;
+}
+
+void ZgcFreeList(Zohp **listp) {
+ Zohp *prevUsed = NULL;
+ Zohp *p;
+ Zohp *np;
+ Zohp *first;
+ pthread_mutex_lock(&usedListMutex);
+ first = *listp;
+ *listp = NULL;
+ pthread_mutex_unlock(&usedListMutex);
+ for (p = first; p; p = np) {
+  p->firstUsed = ZgcFree(p->firstUsed);
+  np = p->next;
+  if (p->firstUsed == &Zlast) {
+   if (prevUsed == NULL) {
+    first = p->next;
+   } else {
+    prevUsed->next = p->next;
+   }
+   free(p);
+  } else {
+   prevUsed = p;
+  }
+ }
+ pthread_mutex_lock(&usedListMutex);
+ if (*listp == NULL) {
+  *listp = first;
+ } else {
+  for (p = *listp; p->next; p = p->next)
+   ;
+  p->next = first;
+ }
+ pthread_mutex_unlock(&usedListMutex);
+}
+
+void ZgcLinkedRun() {
+ Tn *e = ZgetEnv();
+ int i;
+ struct timeval tv;
+ struct timespec ts;
+ Zsf sf;
+
+ if (e->inGC) return;
+ e->inGC = 1;
+ pthread_mutex_lock(&gcRunMutex);
+
+ pthread_mutex_lock(&threadsMutex);
+ gcSTW = 1;
+ for (i = 0; i < threads->itemCount; ++i) {
+  Tn *ie = ZListGetPtr(threads, i);
+  if (ie != e && !ie->finished) {
+   if (pthread_kill(ie->tid, GC_SIG) == ESRCH) {
+    // thread must have died
+    ie->finished = 1;
+   }
+   ie->timedOut = 0;
+  }
+ }
+ pthread_mutex_unlock(&threadsMutex);
+
+ gettimeofday(&tv, NULL);
+ ts.tv_sec = tv.tv_sec;
+ ts.tv_nsec = tv.tv_usec * 1000 + 10000000; /* 10 msec later */
+ if (ts.tv_nsec >= 1000000000L) {
+  ts.tv_nsec -= 1000000000L;
+  ++ts.tv_sec;
+ }
+ pthread_mutex_lock(&threadsMutex);
+ for (i = 0; i < threads->itemCount; ++i) {
+  Tn *ie = ZListGetPtr(threads, i);
+  if (ie != e && !ie->finished) {
+   pthread_mutex_lock(&ie->stateMutex);
+   if (ie->state != GC_STOPPED) {
+    if (pthread_kill(ie->tid, 0) == ESRCH) {
+     ie->finished = 1;
+    } else {
+     pthread_mutex_unlock(&threadsMutex);
+     i = -1; // start over, "threads" may change
+     if (!ie->timedOut) {
+      if (pthread_cond_timedwait(&ie->stateCond, &ie->stateMutex, &ts) == ETIMEDOUT) {
+       ie->timedOut = 1;
+       if (pthread_kill(ie->tid, GC_SIG) == ESRCH) {
+        // thread must have died
+        ie->finished = 1;
+       }
+      }
+     } else {
+      pthread_cond_wait(&ie->stateCond, &ie->stateMutex);
+     }
+     pthread_mutex_lock(&threadsMutex);
+    }
+   }
+   pthread_mutex_unlock(&ie->stateMutex);
+  }
+ }
+ pthread_mutex_unlock(&threadsMutex);
+
+ ZgcMarkTime = Y9Rj();
+ ZgcStwTime = Y9Rj();
+ newMark = newMark == 1 ? 2 : 1;
+ pthread_mutex_lock(&gcMarkPhaseMutex);
+ gcMarkPhase = 1;
+ pthread_cond_broadcast(&gcMarkPhaseCond);
+ pthread_mutex_unlock(&gcMarkPhaseMutex);
+
+ ZgcMarkItems(e, 1, NULL, NULL);
+
+ pthread_mutex_lock(&threadsMutex);
+ for (i = 0; i < threads->itemCount; ++i) {
+  Tn *ie = ZListGetPtr(threads, i);
+  if (ie != e && !ie->finished) {
+   pthread_mutex_lock(&ie->stateMutex);
+   while (ie->state == GC_STOPPED) pthread_cond_wait(&ie->stateCond, &ie->stateMutex);
+   pthread_mutex_unlock(&ie->stateMutex);
+  }
+ }
+ ZgcMarkTime = Y9Rj() - ZgcMarkTime;
+
+ for (i = 0; i < threads->itemCount; ++i) {
+  Tn *ie = ZListGetPtr(threads, i);
+  if (ie->firstUsed != &Zlast) {
+   Zohp *entry = ZaNmi(sizeof(Zohp));
+   entry->next = usedList;
+   usedList = entry;
+   entry->firstUsed = ie->firstUsed;
+   ie->firstUsed = &Zlast;
+  }
+  if (ie->firstUsedF != ZOHF_LAST) {
+   Zohpf *entry = ZaNmi(sizeof(Zohp));
+   entry->next = usedListF;
+   usedListF = entry;
+   entry->firstUsedF = ie->firstUsedF;
+   ie->firstUsedF = ZOHF_LAST;
+  }
+ }
+ pthread_mutex_unlock(&threadsMutex);
+
+ ZgcCheckFinishList(e);
+ ZgcFinishMark(e);
+ ZgcFinishMoveBack();
+
+ pthread_mutex_lock(&gcMarkPhaseMutex);
+ gcMarkPhase = 0;
+ gcSTW = 0;
+ pthread_cond_broadcast(&gcMarkPhaseCond);
+ pthread_mutex_unlock(&gcMarkPhaseMutex);
+ ZgcStwTime = Y9Rj() - ZgcStwTime;
+
+ ZgcFreeCount = 0;
+ ZgcFreeTime = Y9Rj();
+ ZgcFreeList(&usedList);
+ ZgcFreeList((Zohp**)&usedListF);
+ ZgcFreeTime = Y9Rj() - ZgcFreeTime;
+ ZgcUseCount -= ZgcFreeCount;
+ ZgcFinishTime = Y9Rj();
+ ZgcCallFinish(0);
+ ZgcFinishTime = Y9Rj() - ZgcFinishTime;
+ pthread_mutex_unlock(&gcRunMutex);
+ e->inGC = 0;
+}
+
 Tc *ZnewStringInit(Ti len, Tc **pp) {
  Ti rlen = len;
  int i;
@@ -2103,21 +2752,22 @@ Tc *ZnewString(Tc *p, Ti len) {
  memmove(pp, p, len);
  return res;
 }
-Tc YXwB[]="D:/zimbu/Config.zu";
-Tc Yzok[]="D:/zimbu/lib/ARGModule.zu";
-Tc Yhjo[]="D:/zimbu/lib/BOXModule.zu";
-Tc Y_4X[]="D:/zimbu/lib/EModule.zu";
-Tc Y_VG[]="D:/zimbu/lib/HTTPModule.zu";
-Tc YkTo[]="D:/zimbu/lib/IOModule.zu";
-Tc Yy_n[]="D:/zimbu/lib/LISTModule.zu";
-Tc YSsV[]="D:/zimbu/lib/PIPEModule.zu";
-Tc YHVE[]="D:/zimbu/lib/SETModule.zu";
-Tc YlLp[]="D:/zimbu/lib/STRINGModule.zu";
-Tc YaR1[]="D:/zimbu/lib/SYSModule.zu";
-Tc Ynl5[]="D:/zimbu/lib/THREADModule.zu";
-Tc Ypx4[]="D:/zimbu/lib/ZModule.zu";
-Tc Yqup[]="D:/zimbu/lib/ZUTModule.zu";
-Tc YOlS[]="D:/zimbu/lib/zut/ZUDIR/MainPage.zu";
+Tc YrLw[]="/Users/vec/workspace/zimbu/zimbuw32/Config.zu";
+Tc YrhZ[]="/Users/vec/workspace/zimbu/zimbuw32/lib/ARGModule.zu";
+Tc Y9b2[]="/Users/vec/workspace/zimbu/zimbuw32/lib/BOXModule.zu";
+Tc Yk2l[]="/Users/vec/workspace/zimbu/zimbuw32/lib/EModule.zu";
+Tc YhVr[]="/Users/vec/workspace/zimbu/zimbuw32/lib/HTTPModule.zu";
+Tc YM2R[]="/Users/vec/workspace/zimbu/zimbuw32/lib/IOModule.zu";
+Tc Y4hG[]="/Users/vec/workspace/zimbu/zimbuw32/lib/LISTModule.zu";
+Tc Y9rG[]="/Users/vec/workspace/zimbu/zimbuw32/lib/PIPEModule.zu";
+Tc YP1_[]="/Users/vec/workspace/zimbu/zimbuw32/lib/SETModule.zu";
+Tc YQQH[]="/Users/vec/workspace/zimbu/zimbuw32/lib/STRINGModule.zu";
+Tc Y2JG[]="/Users/vec/workspace/zimbu/zimbuw32/lib/SYSModule.zu";
+Tc YOf1[]="/Users/vec/workspace/zimbu/zimbuw32/lib/THREADModule.zu";
+Tc YRl_[]="/Users/vec/workspace/zimbu/zimbuw32/lib/TIMEModule.zu";
+Tc YqI3[]="/Users/vec/workspace/zimbu/zimbuw32/lib/ZModule.zu";
+Tc Yin3[]="/Users/vec/workspace/zimbu/zimbuw32/lib/ZUTModule.zu";
+Tc Yyqs[]="/Users/vec/workspace/zimbu/zimbuw32/lib/zut/ZUDIR/MainPage.zu";
 Tc Y0A6[]="MyController.zu";
 Tc Yo_F[]="OverController.zu";
 Tc YU8Q[]="ZUDIR/HelloMessage.zu";
@@ -3709,10 +4359,13 @@ Tcpos ZcTbl94909[]={
 {2,5},
 {3,5},
 {4,5},
-{8,5},
-{9,5},
-{13,5},
-{15,14},
+{5,5},
+{6,5},
+{10,5},
+{11,5},
+{14,5},
+{15,5},
+{17,14},
 };
 Tc Ys1a[]="IO";
 Tcpos ZcTbl7452[]={
@@ -4129,15 +4782,28 @@ Tcpos ZcTbl82363[]={
 {18,7},
 {19,14},
 };
+Tc YYkI[]="SET.Set__t1.Init()";
+Tcpos ZcTbl89012[]={
+{41,13},
+};
 Tc YUhT[]="SET.Set__t1.Iterator()";
 Tcpos ZcTbl98114[]={
 {82,11},
 {1,27},
 };
+Tc YjAA[]="SET.Set__t1.NEW()";
+Tcpos ZcTbl21378[]={
+{45,5},
+};
 Tc YqsZ[]="SET.Set__t1.ToString()";
 Tcpos ZcTbl74198[]={
 {77,11},
 {1,27},
+};
+Tc YFAP[]="SET.Set__t1.has()";
+Tcpos ZcTbl25860[]={
+{88,11},
+{1,20},
 };
 Tc YzJ7[]="SET.Set__t2.Init()";
 Tcpos ZcTbl99713[]={
@@ -4252,8 +4918,9 @@ Tcpos ZcTbl39877[]={
 {10,4},
 {9,9},
 {17,4},
-{44,4},
+{27,4},
 {53,4},
+{59,4},
 };
 Tc YEiU[]="THREAD.Server.start__p2/2()";
 Tcpos ZcTbl22103[]={
@@ -4275,6 +4942,11 @@ Tcpos ZcTbl84521[]={
 {193,11},
 {1,4},
 {4,14},
+};
+Tc YLwM[]="TIME.current()";
+Tcpos ZcTbl50841[]={
+{22,4},
+{5,12},
 };
 Tc Ym1t[]="Z.Pos.ToString()";
 Tcpos ZcTbl18187[]={
@@ -4326,6 +4998,20 @@ Tc Ydhc[]="ZUT.Context.hasCss()";
 Tcpos ZcTbl94874[]={
 {93,11},
 {1,24},
+};
+Tc YPGU[]="ZUT.Context.listen()";
+Tcpos ZcTbl26916[]={
+{120,11},
+{2,9},
+{3,25},
+{5,9},
+{6,11},
+{8,16},
+};
+Tc YFGm[]="ZUT.EventConfig.listen()";
+Tcpos ZcTbl12471[]={
+{35,11},
+{24,14},
 };
 Tc YbYe[]="ZUT.Page.NEW()";
 Tcpos ZcTbl11799[]={
@@ -4395,232 +5081,239 @@ Tcpos ZcTbl31851[]={
 {2,26},
 {3,5},
 {4,5},
-{7,5},
+{5,5},
 {8,5},
-{10,5},
+{9,5},
 {11,5},
-{13,5},
+{12,5},
 {14,5},
 {15,5},
-{17,14},
+{16,5},
+{18,14},
 };
 Tcode ZcodeTable[]={
 {0,Y19V,Yaa,ZcTbl0},
-{287,Yqup,YLkF,ZcTbl287},
-{412,Y_4X,YxLq,ZcTbl412},
-{1082,Ynl5,YGy0,ZcTbl1082},
-{1320,Yzok,YImu,ZcTbl1320},
-{1872,YkTo,YNFk,ZcTbl1872},
-{3273,Yzok,Y_VO,ZcTbl3273},
-{4839,Yzok,YGq4,ZcTbl4839},
-{4957,Y_VG,YvF0,ZcTbl4957},
-{4984,Y_4X,YJyB,ZcTbl4984},
+{287,Yin3,YLkF,ZcTbl287},
+{412,Yk2l,YxLq,ZcTbl412},
+{1082,YOf1,YGy0,ZcTbl1082},
+{1320,YrhZ,YImu,ZcTbl1320},
+{1872,YM2R,YNFk,ZcTbl1872},
+{3273,YrhZ,Y_VO,ZcTbl3273},
+{4839,YrhZ,YGq4,ZcTbl4839},
+{4957,YhVr,YvF0,ZcTbl4957},
+{4984,Yk2l,YJyB,ZcTbl4984},
 {5270,Y19V,Y9QD,ZcTbl5270},
-{6308,Y_4X,YR5_,ZcTbl6308},
-{7051,Y_4X,Y8Ap,ZcTbl7051},
-{7451,YkTo,Y4pE,ZcTbl7451},
-{7452,YkTo,Ys1a,ZcTbl7452},
-{7651,Ynl5,YIVA,ZcTbl7651},
-{8173,Y_VG,YEhH,ZcTbl8173},
-{10613,Y_4X,YCbo,ZcTbl10613},
-{11017,YkTo,YSYC,ZcTbl11017},
-{11217,Y_4X,YoZS,ZcTbl11217},
-{11603,Y_VG,YRZz,ZcTbl11603},
+{6308,Yk2l,YR5_,ZcTbl6308},
+{7051,Yk2l,Y8Ap,ZcTbl7051},
+{7451,YM2R,Y4pE,ZcTbl7451},
+{7452,YM2R,Ys1a,ZcTbl7452},
+{7651,YOf1,YIVA,ZcTbl7651},
+{8173,YhVr,YEhH,ZcTbl8173},
+{10613,Yk2l,YCbo,ZcTbl10613},
+{11017,YM2R,YSYC,ZcTbl11017},
+{11217,Yk2l,YoZS,ZcTbl11217},
+{11603,YhVr,YRZz,ZcTbl11603},
 {11684,Y0A6,Ydn1,ZcTbl11684},
-{11799,Yqup,YbYe,ZcTbl11799},
-{12035,YlLp,YuIh,ZcTbl12035},
-{12896,Y_4X,Y0Td,ZcTbl12896},
-{14099,Y_VG,Y4b2,ZcTbl14099},
-{14715,Y_4X,Y4SL,ZcTbl14715},
-{14832,YkTo,Y9tP,ZcTbl14832},
-{14874,Y_VG,Yxl5,ZcTbl14874},
+{11799,Yin3,YbYe,ZcTbl11799},
+{12035,YQQH,YuIh,ZcTbl12035},
+{12471,Yin3,YFGm,ZcTbl12471},
+{12896,Yk2l,Y0Td,ZcTbl12896},
+{14099,YhVr,Y4b2,ZcTbl14099},
+{14715,Yk2l,Y4SL,ZcTbl14715},
+{14832,YM2R,Y9tP,ZcTbl14832},
+{14874,YhVr,Yxl5,ZcTbl14874},
 {15542,YU8Q,Ye4h,ZcTbl15542},
-{15669,Y_4X,YMB8,ZcTbl15669},
-{15718,Y_4X,YEFs,ZcTbl15718},
-{15755,YkTo,YEgn,ZcTbl15755},
-{16350,Yzok,Ygzb,ZcTbl16350},
-{16768,Y_4X,YOoP,ZcTbl16768},
-{17179,Y_4X,Yk5m,ZcTbl17179},
-{17252,Y_4X,Y39r,ZcTbl17252},
-{17605,Ynl5,Yc45,ZcTbl17605},
-{18187,Ypx4,Ym1t,ZcTbl18187},
-{18292,Y_4X,Yh7q,ZcTbl18292},
-{18934,Y_4X,Y0TG,ZcTbl18934},
-{21418,Y_4X,YtpQ,ZcTbl21418},
-{21692,YSsV,YHPQ,ZcTbl21692},
-{22103,Ynl5,YEiU,ZcTbl22103},
-{22398,YXwB,YF2d,ZcTbl22398},
-{24697,Y_VG,YOXn,ZcTbl24697},
-{24916,Y_4X,Y9iJ,ZcTbl24916},
-{25958,Y_4X,Y4vu,ZcTbl25958},
-{26760,YkTo,YYk7,ZcTbl26760},
-{26854,Y_4X,YN54,ZcTbl26854},
-{27618,Y_4X,Y8mE,ZcTbl27618},
-{27908,Yqup,YT7t,ZcTbl27908},
-{29560,Yzok,YzK9,ZcTbl29560},
-{29585,Y_4X,YAVe,ZcTbl29585},
-{29660,Yzok,YEvo,ZcTbl29660},
-{31017,Yqup,YSyD,ZcTbl31017},
-{31079,Yzok,Y6Ad,ZcTbl31079},
-{31729,Y_4X,Y0DD,ZcTbl31729},
+{15669,Yk2l,YMB8,ZcTbl15669},
+{15718,Yk2l,YEFs,ZcTbl15718},
+{15755,YM2R,YEgn,ZcTbl15755},
+{16350,YrhZ,Ygzb,ZcTbl16350},
+{16768,Yk2l,YOoP,ZcTbl16768},
+{17179,Yk2l,Yk5m,ZcTbl17179},
+{17252,Yk2l,Y39r,ZcTbl17252},
+{17605,YOf1,Yc45,ZcTbl17605},
+{18187,YqI3,Ym1t,ZcTbl18187},
+{18292,Yk2l,Yh7q,ZcTbl18292},
+{18934,Yk2l,Y0TG,ZcTbl18934},
+{21378,YP1_,YjAA,ZcTbl21378},
+{21418,Yk2l,YtpQ,ZcTbl21418},
+{21692,Y9rG,YHPQ,ZcTbl21692},
+{22103,YOf1,YEiU,ZcTbl22103},
+{22398,YrLw,YF2d,ZcTbl22398},
+{24697,YhVr,YOXn,ZcTbl24697},
+{24916,Yk2l,Y9iJ,ZcTbl24916},
+{25860,YP1_,YFAP,ZcTbl25860},
+{25958,Yk2l,Y4vu,ZcTbl25958},
+{26760,YM2R,YYk7,ZcTbl26760},
+{26854,Yk2l,YN54,ZcTbl26854},
+{26916,Yin3,YPGU,ZcTbl26916},
+{27618,Yk2l,Y8mE,ZcTbl27618},
+{27908,Yin3,YT7t,ZcTbl27908},
+{29560,YrhZ,YzK9,ZcTbl29560},
+{29585,Yk2l,YAVe,ZcTbl29585},
+{29660,YrhZ,YEvo,ZcTbl29660},
+{31017,Yin3,YSyD,ZcTbl31017},
+{31079,YrhZ,Y6Ad,ZcTbl31079},
+{31729,Yk2l,Y0DD,ZcTbl31729},
 {31851,YN80,YEvl,ZcTbl31851},
-{31890,Y_4X,YwZj,ZcTbl31890},
-{31950,YOlS,YQkC,ZcTbl31950},
-{32086,Y_4X,Y1As,ZcTbl32086},
-{32191,Y_4X,Yc7B,ZcTbl32191},
-{32618,Yzok,YBSz,ZcTbl32618},
-{32864,Y_VG,YGL9,ZcTbl32864},
-{33183,Y_VG,Y1J3,ZcTbl33183},
-{33805,Y_4X,YZd2,ZcTbl33805},
-{34426,Y_VG,Yp9y,ZcTbl34426},
-{34477,Yhjo,YKgS,ZcTbl34477},
-{34822,Y_VG,YfxG,ZcTbl34822},
-{35007,Yqup,YlaH,ZcTbl35007},
-{35088,Y_4X,YcIS,ZcTbl35088},
-{35537,Y_VG,YBlz,ZcTbl35537},
-{36159,Y_4X,Y_4w,ZcTbl36159},
-{36277,YkTo,YaL5,ZcTbl36277},
-{36491,Y_4X,YYT9,ZcTbl36491},
-{37281,Y_VG,Y7n9,ZcTbl37281},
-{37363,YkTo,Y85R,ZcTbl37363},
-{38545,Y_VG,YXHL,ZcTbl38545},
-{38911,Yzok,YM2k,ZcTbl38911},
-{39877,Ynl5,Ys_j,ZcTbl39877},
-{42323,YaR1,YQ54,ZcTbl42323},
-{42983,Y_4X,Y9aV,ZcTbl42983},
-{43000,Yzok,YEFE,ZcTbl43000},
-{43124,Y_4X,Ygil,ZcTbl43124},
-{43744,YSsV,Y0n5,ZcTbl43744},
-{44130,Y_4X,YG80,ZcTbl44130},
-{45289,Y_4X,Y7gV,ZcTbl45289},
-{45331,YkTo,YlPR,ZcTbl45331},
+{31890,Yk2l,YwZj,ZcTbl31890},
+{31950,Yyqs,YQkC,ZcTbl31950},
+{32086,Yk2l,Y1As,ZcTbl32086},
+{32191,Yk2l,Yc7B,ZcTbl32191},
+{32618,YrhZ,YBSz,ZcTbl32618},
+{32864,YhVr,YGL9,ZcTbl32864},
+{33183,YhVr,Y1J3,ZcTbl33183},
+{33805,Yk2l,YZd2,ZcTbl33805},
+{34426,YhVr,Yp9y,ZcTbl34426},
+{34477,Y9b2,YKgS,ZcTbl34477},
+{34822,YhVr,YfxG,ZcTbl34822},
+{35007,Yin3,YlaH,ZcTbl35007},
+{35088,Yk2l,YcIS,ZcTbl35088},
+{35537,YhVr,YBlz,ZcTbl35537},
+{36159,Yk2l,Y_4w,ZcTbl36159},
+{36277,YM2R,YaL5,ZcTbl36277},
+{36491,Yk2l,YYT9,ZcTbl36491},
+{37281,YhVr,Y7n9,ZcTbl37281},
+{37363,YM2R,Y85R,ZcTbl37363},
+{38545,YhVr,YXHL,ZcTbl38545},
+{38911,YrhZ,YM2k,ZcTbl38911},
+{39877,YOf1,Ys_j,ZcTbl39877},
+{42323,Y2JG,YQ54,ZcTbl42323},
+{42983,Yk2l,Y9aV,ZcTbl42983},
+{43000,YrhZ,YEFE,ZcTbl43000},
+{43124,Yk2l,Ygil,ZcTbl43124},
+{43744,Y9rG,Y0n5,ZcTbl43744},
+{44130,Yk2l,YG80,ZcTbl44130},
+{45289,Yk2l,Y7gV,ZcTbl45289},
+{45331,YM2R,YlPR,ZcTbl45331},
 {45387,Yo_F,YCW7,ZcTbl45387},
-{45842,Yqup,YUji,ZcTbl45842},
-{46171,Y_4X,Y9VX,ZcTbl46171},
-{46640,Y_VG,YFGh,ZcTbl46640},
-{46761,YkTo,YN2v,ZcTbl46761},
-{48299,Y_4X,Y9Cv,ZcTbl48299},
-{49183,Y_4X,YgcH,ZcTbl49183},
-{49285,YkTo,Y1Ue,ZcTbl49285},
-{49822,YkTo,YIxT,ZcTbl49822},
-{51155,Yqup,YOor,ZcTbl51155},
-{51535,Y_4X,Y2Qj,ZcTbl51535},
-{52386,Y_4X,YgcM,ZcTbl52386},
-{52608,Y_4X,YqK0,ZcTbl52608},
-{52648,Yzok,YF9k,ZcTbl52648},
-{52701,Y_4X,Y0hW,ZcTbl52701},
-{52728,Y_4X,Yoiq,ZcTbl52728},
-{52989,Y_VG,YjKx,ZcTbl52989},
-{53063,Y_VG,Y5GQ,ZcTbl53063},
-{53325,Y_4X,YlJi,ZcTbl53325},
-{53377,Y_4X,Yp81,ZcTbl53377},
-{53428,Ynl5,YEgk,ZcTbl53428},
-{53863,Y_VG,Ykap,ZcTbl53863},
-{54331,Y_4X,YLzZ,ZcTbl54331},
-{56372,Y_4X,Y4u_,ZcTbl56372},
-{56381,Y_4X,Y99g,ZcTbl56381},
-{56573,Y_4X,YO_6,ZcTbl56573},
-{59819,YkTo,YGQL,ZcTbl59819},
-{60593,Y_4X,Y5LR,ZcTbl60593},
-{62213,YkTo,YU58,ZcTbl62213},
-{62809,Y_4X,Ylj3,ZcTbl62809},
-{63578,Y_4X,Yuz_,ZcTbl63578},
-{64255,Yqup,YRCe,ZcTbl64255},
-{64478,Yzok,YRbs,ZcTbl64478},
-{64531,YkTo,YrJP,ZcTbl64531},
-{64622,YSsV,YV0a,ZcTbl64622},
-{64970,YkTo,YrlY,ZcTbl64970},
-{66036,Y_4X,YQJA,ZcTbl66036},
-{66188,YkTo,YJ7z,ZcTbl66188},
-{66501,Yzok,YPPv,ZcTbl66501},
-{66582,Y_4X,Y4Jj,ZcTbl66582},
-{67925,Y_4X,YlfT,ZcTbl67925},
-{68304,YkTo,Y0Nw,ZcTbl68304},
-{68823,Ynl5,YCe5,ZcTbl68823},
-{69095,YaR1,YP_b,ZcTbl69095},
+{45842,Yin3,YUji,ZcTbl45842},
+{46171,Yk2l,Y9VX,ZcTbl46171},
+{46640,YhVr,YFGh,ZcTbl46640},
+{46761,YM2R,YN2v,ZcTbl46761},
+{48299,Yk2l,Y9Cv,ZcTbl48299},
+{49183,Yk2l,YgcH,ZcTbl49183},
+{49285,YM2R,Y1Ue,ZcTbl49285},
+{49822,YM2R,YIxT,ZcTbl49822},
+{50841,YRl_,YLwM,ZcTbl50841},
+{51155,Yin3,YOor,ZcTbl51155},
+{51535,Yk2l,Y2Qj,ZcTbl51535},
+{52386,Yk2l,YgcM,ZcTbl52386},
+{52608,Yk2l,YqK0,ZcTbl52608},
+{52648,YrhZ,YF9k,ZcTbl52648},
+{52701,Yk2l,Y0hW,ZcTbl52701},
+{52728,Yk2l,Yoiq,ZcTbl52728},
+{52989,YhVr,YjKx,ZcTbl52989},
+{53063,YhVr,Y5GQ,ZcTbl53063},
+{53325,Yk2l,YlJi,ZcTbl53325},
+{53377,Yk2l,Yp81,ZcTbl53377},
+{53428,YOf1,YEgk,ZcTbl53428},
+{53863,YhVr,Ykap,ZcTbl53863},
+{54331,Yk2l,YLzZ,ZcTbl54331},
+{56372,Yk2l,Y4u_,ZcTbl56372},
+{56381,Yk2l,Y99g,ZcTbl56381},
+{56573,Yk2l,YO_6,ZcTbl56573},
+{59819,YM2R,YGQL,ZcTbl59819},
+{60593,Yk2l,Y5LR,ZcTbl60593},
+{62213,YM2R,YU58,ZcTbl62213},
+{62809,Yk2l,Ylj3,ZcTbl62809},
+{63578,Yk2l,Yuz_,ZcTbl63578},
+{64255,Yin3,YRCe,ZcTbl64255},
+{64478,YrhZ,YRbs,ZcTbl64478},
+{64531,YM2R,YrJP,ZcTbl64531},
+{64622,Y9rG,YV0a,ZcTbl64622},
+{64970,YM2R,YrlY,ZcTbl64970},
+{66036,Yk2l,YQJA,ZcTbl66036},
+{66188,YM2R,YJ7z,ZcTbl66188},
+{66501,YrhZ,YPPv,ZcTbl66501},
+{66582,Yk2l,Y4Jj,ZcTbl66582},
+{67925,Yk2l,YlfT,ZcTbl67925},
+{68304,YM2R,Y0Nw,ZcTbl68304},
+{68823,YOf1,YCe5,ZcTbl68823},
+{69095,Y2JG,YP_b,ZcTbl69095},
 {69350,YN80,YjkD,ZcTbl69350},
-{69435,Y_4X,YNLE,ZcTbl69435},
-{71582,Y_VG,YlP9,ZcTbl71582},
-{71979,YHVE,YiL5,ZcTbl71979},
-{72007,YkTo,YzQB,ZcTbl72007},
-{72447,Yqup,YavA,ZcTbl72447},
-{73462,Y_VG,Y9NR,ZcTbl73462},
-{73471,Y_4X,Y_Qs,ZcTbl73471},
-{73472,Yqup,YBgm,ZcTbl73472},
-{73580,Y_4X,YF6S,ZcTbl73580},
-{73734,Ynl5,YL2R,ZcTbl73734},
-{73877,YkTo,Yuq9,ZcTbl73877},
-{74198,YHVE,YqsZ,ZcTbl74198},
-{74200,Y_VG,YHiL,ZcTbl74200},
-{75351,Yhjo,Y9Lx,ZcTbl75351},
-{75407,Yqup,Ynkd,ZcTbl75407},
-{75697,Yzok,YgDO,ZcTbl75697},
-{76254,YaR1,YvfVb,ZcTbl76254},
-{76361,Y_VG,Yv62,ZcTbl76361},
-{76461,YHVE,YELk,ZcTbl76461},
-{76644,Yzok,YImf,ZcTbl76644},
-{77164,Yzok,YTJ0b,ZcTbl77164},
-{78082,Y_4X,YbzA,ZcTbl78082},
-{79110,Y_4X,YkLW,ZcTbl79110},
-{79136,YkTo,Yofe,ZcTbl79136},
-{79874,Y_4X,YFnU,ZcTbl79874},
-{79935,Y_4X,YVJp,ZcTbl79935},
-{80111,Ynl5,YOJ5,ZcTbl80111},
-{80636,Yzok,YAAq,ZcTbl80636},
-{80644,Y_4X,YobA,ZcTbl80644},
-{80742,Y_VG,Y0Qs,ZcTbl80742},
-{81798,Yzok,YMnk,ZcTbl81798},
-{82363,YSsV,Ysl1,ZcTbl82363},
-{82533,Yzok,Yh2v,ZcTbl82533},
-{82534,Yzok,Yh2v,ZcTbl82534},
-{82618,YkTo,Yxlj,ZcTbl82618},
-{83606,Yhjo,YFeP,ZcTbl83606},
-{83985,Y_4X,Y6co,ZcTbl83985},
-{84506,Y_VG,Ys1T,ZcTbl84506},
-{84521,Ynl5,Y7wT,ZcTbl84521},
-{84668,Y_VG,YLdV,ZcTbl84668},
-{84870,YkTo,Y_pS,ZcTbl84870},
-{85000,Y_4X,Ycb9,ZcTbl85000},
-{85295,Yzok,Yza4,ZcTbl85295},
-{86061,Y_4X,Y8CZ,ZcTbl86061},
-{86176,YkTo,Y60W,ZcTbl86176},
-{86206,Yzok,YZNA,ZcTbl86206},
-{86699,Y_4X,Ym8y,ZcTbl86699},
-{86818,Y_4X,YlgI,ZcTbl86818},
+{69435,Yk2l,YNLE,ZcTbl69435},
+{71582,YhVr,YlP9,ZcTbl71582},
+{71979,YP1_,YiL5,ZcTbl71979},
+{72007,YM2R,YzQB,ZcTbl72007},
+{72447,Yin3,YavA,ZcTbl72447},
+{73462,YhVr,Y9NR,ZcTbl73462},
+{73471,Yk2l,Y_Qs,ZcTbl73471},
+{73472,Yin3,YBgm,ZcTbl73472},
+{73580,Yk2l,YF6S,ZcTbl73580},
+{73734,YOf1,YL2R,ZcTbl73734},
+{73877,YM2R,Yuq9,ZcTbl73877},
+{74198,YP1_,YqsZ,ZcTbl74198},
+{74200,YhVr,YHiL,ZcTbl74200},
+{75351,Y9b2,Y9Lx,ZcTbl75351},
+{75407,Yin3,Ynkd,ZcTbl75407},
+{75697,YrhZ,YgDO,ZcTbl75697},
+{76254,Y2JG,YvfVb,ZcTbl76254},
+{76361,YhVr,Yv62,ZcTbl76361},
+{76461,YP1_,YELk,ZcTbl76461},
+{76644,YrhZ,YImf,ZcTbl76644},
+{77164,YrhZ,YTJ0b,ZcTbl77164},
+{78082,Yk2l,YbzA,ZcTbl78082},
+{79110,Yk2l,YkLW,ZcTbl79110},
+{79136,YM2R,Yofe,ZcTbl79136},
+{79874,Yk2l,YFnU,ZcTbl79874},
+{79935,Yk2l,YVJp,ZcTbl79935},
+{80111,YOf1,YOJ5,ZcTbl80111},
+{80636,YrhZ,YAAq,ZcTbl80636},
+{80644,Yk2l,YobA,ZcTbl80644},
+{80742,YhVr,Y0Qs,ZcTbl80742},
+{81798,YrhZ,YMnk,ZcTbl81798},
+{82363,Y9rG,Ysl1,ZcTbl82363},
+{82533,YrhZ,Yh2v,ZcTbl82533},
+{82534,YrhZ,Yh2v,ZcTbl82534},
+{82618,YM2R,Yxlj,ZcTbl82618},
+{83606,Y9b2,YFeP,ZcTbl83606},
+{83985,Yk2l,Y6co,ZcTbl83985},
+{84506,YhVr,Ys1T,ZcTbl84506},
+{84521,YOf1,Y7wT,ZcTbl84521},
+{84668,YhVr,YLdV,ZcTbl84668},
+{84870,YM2R,Y_pS,ZcTbl84870},
+{85000,Yk2l,Ycb9,ZcTbl85000},
+{85295,YrhZ,Yza4,ZcTbl85295},
+{86061,Yk2l,Y8CZ,ZcTbl86061},
+{86176,YM2R,Y60W,ZcTbl86176},
+{86206,YrhZ,YZNA,ZcTbl86206},
+{86699,Yk2l,Ym8y,ZcTbl86699},
+{86818,Yk2l,YlgI,ZcTbl86818},
 {87203,Yo_F,YKWr,ZcTbl87203},
-{87235,Y_4X,YR5m,ZcTbl87235},
-{87671,Yzok,YHNQ,ZcTbl87671},
-{88155,Yqup,Yxtg,ZcTbl88155},
-{88986,Y_VG,YSio,ZcTbl88986},
-{89123,YkTo,YInv,ZcTbl89123},
-{89581,Y_4X,YAwk,ZcTbl89581},
-{89685,Y_4X,Y59h,ZcTbl89685},
-{89987,YkTo,YCbR,ZcTbl89987},
-{90280,Yy_n,YAph,ZcTbl90280},
-{90571,Y_4X,Ys9t,ZcTbl90571},
-{91620,Y_VG,YGWN,ZcTbl91620},
-{92163,Y_4X,YTjU,ZcTbl92163},
-{93453,Y_4X,YeMI,ZcTbl93453},
-{94336,Y_VG,Yd9V,ZcTbl94336},
-{94689,Y_4X,Ywpu,ZcTbl94689},
-{94823,YkTo,Yj_J,ZcTbl94823},
-{94874,Yqup,Ydhc,ZcTbl94874},
+{87235,Yk2l,YR5m,ZcTbl87235},
+{87671,YrhZ,YHNQ,ZcTbl87671},
+{88155,Yin3,Yxtg,ZcTbl88155},
+{88986,YhVr,YSio,ZcTbl88986},
+{89012,YP1_,YYkI,ZcTbl89012},
+{89123,YM2R,YInv,ZcTbl89123},
+{89581,Yk2l,YAwk,ZcTbl89581},
+{89685,Yk2l,Y59h,ZcTbl89685},
+{89987,YM2R,YCbR,ZcTbl89987},
+{90280,Y4hG,YAph,ZcTbl90280},
+{90571,Yk2l,Ys9t,ZcTbl90571},
+{91620,YhVr,YGWN,ZcTbl91620},
+{92163,Yk2l,YTjU,ZcTbl92163},
+{93453,Yk2l,YeMI,ZcTbl93453},
+{94336,YhVr,Yd9V,ZcTbl94336},
+{94689,Yk2l,Ywpu,ZcTbl94689},
+{94823,YM2R,Yj_J,ZcTbl94823},
+{94874,Yin3,Ydhc,ZcTbl94874},
 {94909,YU8Q,YgUp,ZcTbl94909},
-{95201,Y_4X,YhC6,ZcTbl95201},
-{95336,YkTo,Ylob,ZcTbl95336},
-{96107,Y_4X,YMF2,ZcTbl96107},
-{96282,Ynl5,Yz4h,ZcTbl96282},
-{96330,Y_VG,Y32H,ZcTbl96330},
-{97019,Y_4X,YgQK,ZcTbl97019},
-{97135,Y_4X,Y3yN,ZcTbl97135},
-{97619,YHVE,YB3B,ZcTbl97619},
-{97985,Y_4X,YVQQ,ZcTbl97985},
-{98114,YHVE,YUhT,ZcTbl98114},
-{98650,Y_VG,YXL6,ZcTbl98650},
-{99366,Y_VG,Y7FCa,ZcTbl99366},
-{99367,Y_VG,Y7FCa,ZcTbl99367},
-{99713,YHVE,YzJ7,ZcTbl99713},
-{99886,Y_4X,Y0Jk,ZcTbl99886},
+{95201,Yk2l,YhC6,ZcTbl95201},
+{95336,YM2R,Ylob,ZcTbl95336},
+{96107,Yk2l,YMF2,ZcTbl96107},
+{96282,YOf1,Yz4h,ZcTbl96282},
+{96330,YhVr,Y32H,ZcTbl96330},
+{97019,Yk2l,YgQK,ZcTbl97019},
+{97135,Yk2l,Y3yN,ZcTbl97135},
+{97619,YP1_,YB3B,ZcTbl97619},
+{97985,Yk2l,YVQQ,ZcTbl97985},
+{98114,YP1_,YUhT,ZcTbl98114},
+{98650,YhVr,YXL6,ZcTbl98650},
+{99366,YhVr,Y7FCa,ZcTbl99366},
+{99367,YhVr,Y7FCa,ZcTbl99367},
+{99713,YP1_,YzJ7,ZcTbl99713},
+{99886,Yk2l,Y0Jk,ZcTbl99886},
 };
 
 #ifdef SIGSEGV
@@ -4629,8 +5322,45 @@ void Zdeadly(int nr) {
 }
 #endif
 
-void ZthreadGC() {
+void ZwantGC(int nr) {
+ Tn *e = ZgetEnv();
+ if (e->wantGC || e->finished || e->topFrame == NULL || (e->topFrame->pos & 0x40000000) == 0) ZthreadGC();
+ else e->wantGC = 1;
 }
+void ZthreadGC() {
+ Tn *e = ZgetEnv();
+ if (e->inGC) return;
+ e->inGC = 1;
+ e->wantGC = 0;
+
+ // Let GC thread know we are waiting.
+ pthread_mutex_lock(&e->stateMutex);
+ e->state = GC_STOPPED;
+ pthread_cond_broadcast(&e->stateCond);
+ pthread_mutex_unlock(&e->stateMutex);
+
+ // Wait for mark phase to start.
+ pthread_mutex_lock(&gcMarkPhaseMutex);
+ while (!gcMarkPhase) pthread_cond_wait(&gcMarkPhaseCond, &gcMarkPhaseMutex);
+ pthread_mutex_unlock(&gcMarkPhaseMutex);
+
+ // Mark items on the stack.
+ ZgcMarkItems(e, 0, NULL, NULL);
+
+ // Let GC thread know we are done.
+ pthread_mutex_lock(&e->stateMutex);
+ e->state = GC_MARK_DONE;
+ pthread_cond_broadcast(&e->stateCond);
+ pthread_mutex_unlock(&e->stateMutex);
+
+ // Wait for end of mark phase.
+ pthread_mutex_lock(&gcMarkPhaseMutex);
+ while (gcMarkPhase) pthread_cond_wait(&gcMarkPhaseCond, &gcMarkPhaseMutex);
+ pthread_mutex_unlock(&gcMarkPhaseMutex);
+
+ e->inGC = 0;
+}
+
 Ti ZstringSizePtr(Tc *s, Tc **dp) {
  Tc *p;
  Ti len;
@@ -4650,6 +5380,7 @@ Ti ZstringSizePtr(Tc *s, Tc **dp) {
 }
 
 void ZgcRun() {
+ ZgcLinkedRun();
 }
 
 void ZthrowCstringNil(char *text) {
@@ -5187,7 +5918,6 @@ void ga_append(Tg *ga, char *str) {
   Tc *newData = ZaOff(newLen);
   if (ga->data != NULL) {
     memmove(newData, ga->data, ga->used);
-    Zfree(ga->data - ZOH_OFF);
   }
   ga->data = newData;
   ga->len = newLen;
@@ -5465,7 +6195,7 @@ void ZobjectToString(Tto *typearg, void *ptrarg, Tg *ga) {
   type = ((Tto*)ZiobjType(ptr));
   ptr = ((Tr*)ptr)->ptr;
  }
- if (ptr == NULL ) {
+ if (ptr == NULL || ((Zoh*)ptr)->np == NULL ) {
   ga_append(ga, "{NIL}");
  } else {
   int i;
@@ -5526,25 +6256,19 @@ void ZobjectToString(Tto *typearg, void *ptrarg, Tg *ga) {
 
 Tc *ZobjectToStringval(Tto *type, void *ptr) {
  Tg ga;
- Tc *r;
  ga.data = NULL;
  ga.used = 0;
  ++ZgetEnv()->tosNr;
  ZobjectToString(type, ptr, &ga);
- r = ZnewString(ga.data, ga.used);
- Zfree(ga.data - ZOH_OFF);
- return r;
+ return ZnewString(ga.data, ga.used);
 }
 Tc *ZiobjectToStringval(Tr tr) {
  Tg ga;
- Tc *r;
  ga.data = NULL;
  ga.used = 0;
  ++ZgetEnv()->tosNr;
  ZobjectToString((Tto*)tr.table[0], tr.ptr, &ga);
- r = ZnewString(ga.data, ga.used);
- Zfree(ga.data - ZOH_OFF);
- return r;
+ return ZnewString(ga.data, ga.used);
 }
 
 void ZitemToString(Tt *type, int useq, Tz val, Tg *ga) {
@@ -5594,9 +6318,6 @@ void ZitemToString(Tt *type, int useq, Tz val, Tg *ga) {
    case 82:
    case 83:
     sprintf(buf, ZFLOAT_FORMAT, val.fval);
-#ifdef __MINGW32__
-    ZcorrFloatStr(buf, NULL);
-#endif
     ga_append(ga, buf);
     break;
   }
@@ -5717,16 +6438,6 @@ int ZcopyItems(Tt *toType, int toSize, void *toPtr, Ti toOff, Tt *fromType, int 
  }
  return 1;
 }
-void ZfreeArray(Ta *head) {
- Ti i;
- Ti d;
- if (head == NULL) return;
- if (head->ptr && head->ptr != head + 1) {
-  Zfree(head->ptr - ZOH_OFF);
- }
- Zfree(head);
-}
-
 Ta *ZArrayInit(Ta *head, Tt *itemType, int itemSize, Ti size) {
  head->ptr = ZaOff(itemSize * size);
  head->dim = 1;
@@ -5843,7 +6554,6 @@ Tc *ZarrayToString(Ta *head, int useq) {
  ga.used = 0;
  ZArrayToStringGa(head, useq, &ga);
  r = ZnewString(ga.data, ga.used);
- Zfree(ga.data - ZOH_OFF);
  return r;
 }
 
@@ -5981,7 +6691,6 @@ Tc *ZListToString(Tl *head, int useq) {
  ga.used = 0;
  ZListToStringGa(head, useq, &ga);
  r = ZnewString(ga.data, ga.used);
- Zfree(ga.data - ZOH_OFF);
  return r;
 }
 
@@ -6582,7 +7291,6 @@ void ZDictResize(Td *d, int minitems) {
   d->last = newitem;
  }
 
- if (d->array != d->smallArray) Zfree((void*)d->array - ZOH_OFF);
  d->array = newarray;
  d->mask = newmask;
  d->filled = d->used;
@@ -6782,7 +7490,6 @@ Tc *ZDictToString(Td *d, int keyUseq, int itemUseq) {
  ga.used = 0;
  ZDictToStringGa(d, keyUseq, itemUseq, &ga);
  r = ZnewString(ga.data, ga.used);
- Zfree((void*)ga.data - ZOH_OFF);
  return r;
 }
 
@@ -6948,6 +7655,28 @@ Tc* ZcbYOFva(YOFva *cb, YJgz *arg0) {
  if (cb->t) return ((Tc* (*)(Tcb *, void *, YJgz*, Tc*))cb->cb->cfunc)(cb->cb, cb->t, arg0, cb->arg1);
  else return ((Tc* (*)(Tcb *, YJgz*, Tc*))cb->cb->cfunc)(cb->cb, arg0, cb->arg1);
 }
+/* including TIMEModule bodies */
+Ti Y9Rj() {
+ Ti Vusec;
+ Tn *e = ZgetEnv();
+ Zsf sf;
+ Ti r = 0;
+ sf.frof = NULL;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
+ Vusec = 0;
+ sf.pos=5084100;
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    Vusec = (Ti)tv.tv_sec * 1000000 + (Ti)tv.tv_usec;
+ sf.pos=1078825925;
+ r = Vusec;
+ e->topFrame = sf.prev;
+ return r;
+}
+/* TIMEModule done */
 /* including EModule bodies */
 Zfo YH0Vfo[4] = {{0,(Tt*)&Ytlm__T},{0,(Tt*)&YjUM__T},{0,(Tt*)&iobj__T},{0,0}};
 Tc *YH0V(Ytlm *t) {
@@ -6965,17 +7694,18 @@ Tc *YH0V(Ytlm *t) {
  }
  sf.frof = YH0Vfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=5153500;
+  sf.pos=1078895324;
   ZthrowThisNil();
  }
- sf.pos=5153501;
+ sf.pos=1078895325;
  Vw = Za(sizeof(YjUM));
- sf.pos=5153502;
+ sf.pos=1078895326;
  YxaJ(t, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=5153503;
+ sf.pos=1078895327;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -6992,31 +7722,32 @@ void YxaJ(Ytlm *t, Tr Aw) {
  }
  sf.frof = YxaJfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=4918300;
+  sf.pos=1078660124;
   ZthrowThisNil();
  }
  sf.pos=4918301;
  if ((t->Vpos != NULL))
  {
-  sf.pos=4918302;
+  sf.pos=1078660126;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(t->Vpos));
-  sf.pos=4918303;
+  sf.pos=1078660127;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
  }
  sf.pos=4918304;
  if (((t->Vmessage != NULL) && (ZbyteStringSize(t->Vmessage) != 0)))
  {
-  sf.pos=4918305;
+  sf.pos=1078660129;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YHbP));
-  sf.pos=4918306;
+  sf.pos=1078660130;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, t->Vmessage);
  }
  else
  {
-  sf.pos=4918307;
+  sf.pos=1078660131;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YDGe));
  }
  e->topFrame = sf.prev;
@@ -7038,17 +7769,18 @@ Tc *Yoww(Ytlm *t, Tb Averbose) {
  }
  sf.frof = Yowwfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=9713500;
+  sf.pos=1083455324;
   ZthrowThisNil();
  }
- sf.pos=9713501;
+ sf.pos=1083455325;
  Vw = Za(sizeof(YjUM));
- sf.pos=9713502;
+ sf.pos=1083455326;
  YxaJa(t, Averbose, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=9713503;
+ sf.pos=1083455327;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -7069,18 +7801,19 @@ void YxaJa(Ytlm *t, Tb Averbose, Tr Aw) {
  }
  sf.frof = YxaJafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=3649100;
+  sf.pos=1077390924;
   ZthrowThisNil();
  }
- sf.pos=3649101;
+ sf.pos=1077390925;
  YxaJ(t, Aw);
  sf.pos=3649102;
  if ((Averbose && (t->Vbacktrace != NULL)))
  {
-  sf.pos=3649103;
+  sf.pos=1077390927;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Y62e));
   sf.pos=3649104;
   {
@@ -7093,24 +7826,25 @@ void YxaJa(Ytlm *t, Tb Averbose, Tr Aw) {
    sf.pos=3649105;
    if ((Vpos->Vfilename == NULL))
    {
-    sf.pos=3649106;
+    sf.pos=1077390930;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yv6_));
    }
    else
    {
-    sf.pos=3649107;
+    sf.pos=1077390931;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yk));
-    sf.pos=3649108;
+    sf.pos=1077390932;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(Vpos));
     sf.pos=3649109;
     if ((Vpos->Vtext != NULL))
     {
-     sf.pos=3649110;
+     sf.pos=1077390934;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
-     sf.pos=3649111;
+     sf.pos=1077390935;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, Vpos->Vtext);
     }
    }
+   if (e->wantGC) ZthreadGC();
    sf.pos=3649112;
    }
   }
@@ -7141,15 +7875,16 @@ YEro *YE2c(YEro *t, Ti Avalue) {
  }
  sf.frof = YE2cfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=3189000; t = Za(sizeof(YEro));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1076930824; t = Za(sizeof(YEro));}
  sf.pos=3189001;
  t->Vvalue = Avalue;
- sf.pos=3189002;
+ sf.pos=1076930826;
  t->Vmessage = ZcS(((Tc*)&YxJ1), Zint2string(Avalue));
- sf.pos=3189003;
- t->Vbacktrace = (sf.pos=3189004, MZ__backtrace(1, -1));
+ sf.pos=1076930827;
+ t->Vbacktrace = (sf.pos=1076930828, MZ__backtrace(1, -1));
  e->topFrame = sf.prev;
  return t;
 }
@@ -7169,17 +7904,18 @@ Tc *Ydtua(YEro *t) {
  }
  sf.frof = Ydtuafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=1893400;
+  sf.pos=1075635224;
   ZthrowThisNil();
  }
- sf.pos=1893401;
+ sf.pos=1075635225;
  Vw = Za(sizeof(YjUM));
- sf.pos=1893402;
+ sf.pos=1075635226;
  YXHSa(t, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=1893403;
+ sf.pos=1075635227;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -7196,30 +7932,31 @@ void YXHSa(YEro *t, Tr Aw) {
  }
  sf.frof = YXHSafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=9216300;
+  sf.pos=1082958124;
   ZthrowThisNil();
  }
  sf.pos=9216301;
  if ((t->Vpos != NULL))
  {
-  sf.pos=9216302;
+  sf.pos=1082958126;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(t->Vpos));
-  sf.pos=9216303;
+  sf.pos=1082958127;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
  }
- sf.pos=9216304;
+ sf.pos=1082958128;
  ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YxJ1));
- sf.pos=9216305;
+ sf.pos=1082958129;
  ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, Zint2string(t->Vvalue));
  sf.pos=9216306;
  if (((t->Vmessage != NULL) && (ZbyteStringSize(t->Vmessage) != 0)))
  {
-  sf.pos=9216307;
+  sf.pos=1082958131;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
-  sf.pos=9216308;
+  sf.pos=1082958132;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, t->Vmessage);
  }
  e->topFrame = sf.prev;
@@ -7241,17 +7978,18 @@ Tc *YEro__Yoww(YEro *t, Tb Averbose) {
  }
  sf.frof = YEro__Yowwfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=9468900;
+  sf.pos=1083210724;
   ZthrowThisNil();
  }
- sf.pos=9468901;
+ sf.pos=1083210725;
  Vw = Za(sizeof(YjUM));
- sf.pos=9468902;
+ sf.pos=1083210726;
  YEro__YxaJa(t, Averbose, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=9468903;
+ sf.pos=1083210727;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -7272,18 +8010,19 @@ void YEro__YxaJa(YEro *t, Tb Averbose, Tr Aw) {
  }
  sf.frof = YEro__YxaJafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=4298300;
+  sf.pos=1078040124;
   ZthrowThisNil();
  }
- sf.pos=4298301;
+ sf.pos=1078040125;
  YXHSa(t, Aw);
  sf.pos=4298302;
  if ((Averbose && (t->Vbacktrace != NULL)))
  {
-  sf.pos=4298303;
+  sf.pos=1078040127;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Y62e));
   sf.pos=4298304;
   {
@@ -7296,24 +8035,25 @@ void YEro__YxaJa(YEro *t, Tb Averbose, Tr Aw) {
    sf.pos=4298305;
    if ((Vpos->Vfilename == NULL))
    {
-    sf.pos=4298306;
+    sf.pos=1078040130;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yv6_));
    }
    else
    {
-    sf.pos=4298307;
+    sf.pos=1078040131;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yk));
-    sf.pos=4298308;
+    sf.pos=1078040132;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(Vpos));
     sf.pos=4298309;
     if ((Vpos->Vtext != NULL))
     {
-     sf.pos=4298310;
+     sf.pos=1078040134;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
-     sf.pos=4298311;
+     sf.pos=1078040135;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, Vpos->Vtext);
     }
    }
+   if (e->wantGC) ZthreadGC();
    sf.pos=4298312;
    }
   }
@@ -7351,10 +8091,25 @@ char *StrYEro[] = {
  "backtrace",
 };
 Tto YEro__T = {390, (Tc*)&YJMo, Ydtua, StrYEro, 0, 0, 0, 0, ToYEro};
+Zfo YNabfo[4] = {{0,(Tt*)&YEro__T},{0,(Tt*)&YkxB__T},{0,(Tt*)&iobj__T},{0,0}};
 void YNab(YkxB *Apos, Ti Aval) {
  Tr ex;
+ Tn *e = ZgetEnv();
+ Zsf sf;
  YEro *Ve = 0;
  Tr t0 = {NULL};
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  YNabfo[0].off = (void*)&sf - (void*)&Ve;
+  YNabfo[1].off = (void*)&sf - (void*)&Apos;
+  YNabfo[2].off = (void*)&sf - (void*)&t0;
+ }
+ sf.frof = YNabfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  Ve = YE2c(NULL, Aval);
  Ve->Vpos = Apos;
  *Znao(&ex, Ve, YEro__Ytlm_I_imt, 1);
@@ -7371,15 +8126,16 @@ YKhn *YDNob(YKhn *t, Ti Asize, Ti Alimit) {
  }
  sf.frof = YDNobfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=8064400; t = Za(sizeof(YKhn));}
- sf.pos=8064401;
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1081806224; t = Za(sizeof(YKhn));}
+ sf.pos=1081806225;
  t->Vmessage = ZcS3(((Tc*)&YIBz), Zint2string(Asize), ((Tc*)&YDSH));
- sf.pos=8064402;
+ sf.pos=1081806226;
  t->Vpos = MZ__callerPos();
- sf.pos=8064403;
- t->Vbacktrace = (sf.pos=8064404, MZ__backtrace(1, Alimit));
+ sf.pos=1081806227;
+ t->Vbacktrace = (sf.pos=1081806228, MZ__backtrace(1, Alimit));
  e->topFrame = sf.prev;
  return t;
 }
@@ -7399,17 +8155,18 @@ Tc *YKhn__YwtA__YH0V(YKhn *t) {
  }
  sf.frof = YKhn__YwtA__YH0Vfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=8669900;
+  sf.pos=1082411724;
   ZthrowThisNil();
  }
- sf.pos=8669901;
+ sf.pos=1082411725;
  Vw = Za(sizeof(YjUM));
- sf.pos=8669902;
+ sf.pos=1082411726;
  YKhn__YwtA__YxaJ(t, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=8669903;
+ sf.pos=1082411727;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -7430,17 +8187,18 @@ Tc *YKhn__YwtA__Yoww(YKhn *t, Tb Averbose) {
  }
  sf.frof = YKhn__YwtA__Yowwfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=9057100;
+  sf.pos=1082798924;
   ZthrowThisNil();
  }
- sf.pos=9057101;
+ sf.pos=1082798925;
  Vw = Za(sizeof(YjUM));
- sf.pos=9057102;
+ sf.pos=1082798926;
  YKhn__YwtA__YxaJa(t, Averbose, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=9057103;
+ sf.pos=1082798927;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -7461,18 +8219,19 @@ void YKhn__YwtA__YxaJa(YKhn *t, Tb Averbose, Tr Aw) {
  }
  sf.frof = YKhn__YwtA__YxaJafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=1121700;
+  sf.pos=1074863524;
   ZthrowThisNil();
  }
- sf.pos=1121701;
+ sf.pos=1074863525;
  YKhn__YwtA__YxaJ(t, Aw);
  sf.pos=1121702;
  if ((Averbose && (t->Vbacktrace != NULL)))
  {
-  sf.pos=1121703;
+  sf.pos=1074863527;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Y62e));
   sf.pos=1121704;
   {
@@ -7485,24 +8244,25 @@ void YKhn__YwtA__YxaJa(YKhn *t, Tb Averbose, Tr Aw) {
    sf.pos=1121705;
    if ((Vpos->Vfilename == NULL))
    {
-    sf.pos=1121706;
+    sf.pos=1074863530;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yv6_));
    }
    else
    {
-    sf.pos=1121707;
+    sf.pos=1074863531;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yk));
-    sf.pos=1121708;
+    sf.pos=1074863532;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(Vpos));
     sf.pos=1121709;
     if ((Vpos->Vtext != NULL))
     {
-     sf.pos=1121710;
+     sf.pos=1074863534;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
-     sf.pos=1121711;
+     sf.pos=1074863535;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, Vpos->Vtext);
     }
    }
+   if (e->wantGC) ZthreadGC();
    sf.pos=1121712;
    }
   }
@@ -7522,31 +8282,32 @@ void YKhn__YwtA__YxaJ(YKhn *t, Tr Aw) {
  }
  sf.frof = YKhn__YwtA__YxaJfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=2141800;
+  sf.pos=1075883624;
   ZthrowThisNil();
  }
  sf.pos=2141801;
  if ((t->Vpos != NULL))
  {
-  sf.pos=2141802;
+  sf.pos=1075883626;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(t->Vpos));
-  sf.pos=2141803;
+  sf.pos=1075883627;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
  }
  sf.pos=2141804;
  if (((t->Vmessage != NULL) && (ZbyteStringSize(t->Vmessage) != 0)))
  {
-  sf.pos=2141805;
+  sf.pos=1075883629;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YHbP));
-  sf.pos=2141806;
+  sf.pos=1075883630;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, t->Vmessage);
  }
  else
  {
-  sf.pos=2141807;
+  sf.pos=1075883631;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YDGe));
  }
  e->topFrame = sf.prev;
@@ -7580,9 +8341,22 @@ char *StrYKhn[] = {
  "backtrace",
 };
 Tto YKhn__T = {390, (Tc*)&Y9Fv, YKhn__YwtA__YH0V, StrYKhn, 0, 0, 0, 0, ToYKhn};
+Zfo Y1KVfo[2] = {{0,(Tt*)&iobj__T},{0,0}};
 void Y1KV(Ti Asize) {
  Tr ex;
+ Tn *e = ZgetEnv();
+ Zsf sf;
  Tr t0 = {NULL};
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  Y1KVfo[0].off = (void*)&sf - (void*)&t0;
+ }
+ sf.frof = Y1KVfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  *Znao(&ex, YDNob(NULL, Asize, 30), YKhn__Ytlm_I_imt, 4);
  ZthrowIobject(ex);
 }
@@ -7598,15 +8372,16 @@ Y1uN *Y1uN__YwtA__YRHR(Y1uN *t, Tc *Amsg) {
  }
  sf.frof = Y1uN__YwtA__YRHRfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=3208600; t = Za(sizeof(Y1uN));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1076950424; t = Za(sizeof(Y1uN));}
  sf.pos=3208601;
  t->Vmessage = Amsg;
- sf.pos=3208602;
+ sf.pos=1076950426;
  t->Vpos = MZ__callerPos();
- sf.pos=3208603;
- t->Vbacktrace = (sf.pos=3208604, MZ__backtrace(1, -1));
+ sf.pos=1076950427;
+ t->Vbacktrace = (sf.pos=1076950428, MZ__backtrace(1, -1));
  e->topFrame = sf.prev;
  return t;
 }
@@ -7626,17 +8401,18 @@ Tc *Y1uN__YwtA__YH0V(Y1uN *t) {
  }
  sf.frof = Y1uN__YwtA__YH0Vfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=2685400;
+  sf.pos=1076427224;
   ZthrowThisNil();
  }
- sf.pos=2685401;
+ sf.pos=1076427225;
  Vw = Za(sizeof(YjUM));
- sf.pos=2685402;
+ sf.pos=1076427226;
  Y1uN__YwtA__YxaJ(t, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=2685403;
+ sf.pos=1076427227;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -7657,17 +8433,18 @@ Tc *Y1uN__YwtA__Yoww(Y1uN *t, Tb Averbose) {
  }
  sf.frof = Y1uN__YwtA__Yowwfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=7911000;
+  sf.pos=1081652824;
   ZthrowThisNil();
  }
- sf.pos=7911001;
+ sf.pos=1081652825;
  Vw = Za(sizeof(YjUM));
- sf.pos=7911002;
+ sf.pos=1081652826;
  Y1uN__YwtA__YxaJa(t, Averbose, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=7911003;
+ sf.pos=1081652827;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -7688,18 +8465,19 @@ void Y1uN__YwtA__YxaJa(Y1uN *t, Tb Averbose, Tr Aw) {
  }
  sf.frof = Y1uN__YwtA__YxaJafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=3508800;
+  sf.pos=1077250624;
   ZthrowThisNil();
  }
- sf.pos=3508801;
+ sf.pos=1077250625;
  Y1uN__YwtA__YxaJ(t, Aw);
  sf.pos=3508802;
  if ((Averbose && (t->Vbacktrace != NULL)))
  {
-  sf.pos=3508803;
+  sf.pos=1077250627;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Y62e));
   sf.pos=3508804;
   {
@@ -7712,24 +8490,25 @@ void Y1uN__YwtA__YxaJa(Y1uN *t, Tb Averbose, Tr Aw) {
    sf.pos=3508805;
    if ((Vpos->Vfilename == NULL))
    {
-    sf.pos=3508806;
+    sf.pos=1077250630;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yv6_));
    }
    else
    {
-    sf.pos=3508807;
+    sf.pos=1077250631;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yk));
-    sf.pos=3508808;
+    sf.pos=1077250632;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(Vpos));
     sf.pos=3508809;
     if ((Vpos->Vtext != NULL))
     {
-     sf.pos=3508810;
+     sf.pos=1077250634;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
-     sf.pos=3508811;
+     sf.pos=1077250635;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, Vpos->Vtext);
     }
    }
+   if (e->wantGC) ZthreadGC();
    sf.pos=3508812;
    }
   }
@@ -7749,31 +8528,32 @@ void Y1uN__YwtA__YxaJ(Y1uN *t, Tr Aw) {
  }
  sf.frof = Y1uN__YwtA__YxaJfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=4528900;
+  sf.pos=1078270724;
   ZthrowThisNil();
  }
  sf.pos=4528901;
  if ((t->Vpos != NULL))
  {
-  sf.pos=4528902;
+  sf.pos=1078270726;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(t->Vpos));
-  sf.pos=4528903;
+  sf.pos=1078270727;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
  }
  sf.pos=4528904;
  if (((t->Vmessage != NULL) && (ZbyteStringSize(t->Vmessage) != 0)))
  {
-  sf.pos=4528905;
+  sf.pos=1078270729;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YHbP));
-  sf.pos=4528906;
+  sf.pos=1078270730;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, t->Vmessage);
  }
  else
  {
-  sf.pos=4528907;
+  sf.pos=1078270731;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YDGe));
  }
  e->topFrame = sf.prev;
@@ -7807,10 +8587,26 @@ char *StrY1uN[] = {
  "backtrace",
 };
 Tto Y1uN__T = {390, (Tc*)&Y4wO, Y1uN__YwtA__YH0V, StrY1uN, 0, 0, 0, 0, ToY1uN};
+Zfo YvdVfo[5] = {{0,(Tt*)&string__T},{0,(Tt*)&Y1uN__T},{0,(Tt*)&YkxB__T},{0,(Tt*)&iobj__T},{0,0}};
 void YvdV(YkxB *Apos, Tc *Atext) {
  Tr ex;
+ Tn *e = ZgetEnv();
+ Zsf sf;
  Y1uN *Ve = 0;
  Tr t0 = {NULL};
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  YvdVfo[0].off = (void*)&sf - (void*)&Atext;
+  YvdVfo[1].off = (void*)&sf - (void*)&Ve;
+  YvdVfo[2].off = (void*)&sf - (void*)&Apos;
+  YvdVfo[3].off = (void*)&sf - (void*)&t0;
+ }
+ sf.frof = YvdVfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  Ve = Y1uN__YwtA__YRHR(NULL, Atext);
  if ((Apos != NULL))
  {
@@ -7831,15 +8627,16 @@ YAxe *YAxe__YwtA__YRHR(YAxe *t, Tc *Amsg) {
  }
  sf.frof = YAxe__YwtA__YRHRfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=7358000; t = Za(sizeof(YAxe));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1081099824; t = Za(sizeof(YAxe));}
  sf.pos=7358001;
  t->Vmessage = Amsg;
- sf.pos=7358002;
+ sf.pos=1081099826;
  t->Vpos = MZ__callerPos();
- sf.pos=7358003;
- t->Vbacktrace = (sf.pos=7358004, MZ__backtrace(1, -1));
+ sf.pos=1081099827;
+ t->Vbacktrace = (sf.pos=1081099828, MZ__backtrace(1, -1));
  e->topFrame = sf.prev;
  return t;
 }
@@ -7859,17 +8656,18 @@ Tc *YAxe__YwtA__YH0V(YAxe *t) {
  }
  sf.frof = YAxe__YwtA__YH0Vfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=6603600;
+  sf.pos=1080345424;
   ZthrowThisNil();
  }
- sf.pos=6603601;
+ sf.pos=1080345425;
  Vw = Za(sizeof(YjUM));
- sf.pos=6603602;
+ sf.pos=1080345426;
  YAxe__YwtA__YxaJ(t, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=6603603;
+ sf.pos=1080345427;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -7890,17 +8688,18 @@ Tc *YAxe__YwtA__Yoww(YAxe *t, Tb Averbose) {
  }
  sf.frof = YAxe__YwtA__Yowwfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=1829200;
+  sf.pos=1075571024;
   ZthrowThisNil();
  }
- sf.pos=1829201;
+ sf.pos=1075571025;
  Vw = Za(sizeof(YjUM));
- sf.pos=1829202;
+ sf.pos=1075571026;
  YAxe__YwtA__YxaJa(t, Averbose, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=1829203;
+ sf.pos=1075571027;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -7921,18 +8720,19 @@ void YAxe__YwtA__YxaJa(YAxe *t, Tb Averbose, Tr Aw) {
  }
  sf.frof = YAxe__YwtA__YxaJafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=2595800;
+  sf.pos=1076337624;
   ZthrowThisNil();
  }
- sf.pos=2595801;
+ sf.pos=1076337625;
  YAxe__YwtA__YxaJ(t, Aw);
  sf.pos=2595802;
  if ((Averbose && (t->Vbacktrace != NULL)))
  {
-  sf.pos=2595803;
+  sf.pos=1076337627;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Y62e));
   sf.pos=2595804;
   {
@@ -7945,24 +8745,25 @@ void YAxe__YwtA__YxaJa(YAxe *t, Tb Averbose, Tr Aw) {
    sf.pos=2595805;
    if ((Vpos->Vfilename == NULL))
    {
-    sf.pos=2595806;
+    sf.pos=1076337630;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yv6_));
    }
    else
    {
-    sf.pos=2595807;
+    sf.pos=1076337631;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yk));
-    sf.pos=2595808;
+    sf.pos=1076337632;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(Vpos));
     sf.pos=2595809;
     if ((Vpos->Vtext != NULL))
     {
-     sf.pos=2595810;
+     sf.pos=1076337634;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
-     sf.pos=2595811;
+     sf.pos=1076337635;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, Vpos->Vtext);
     }
    }
+   if (e->wantGC) ZthreadGC();
    sf.pos=2595812;
    }
   }
@@ -7982,31 +8783,32 @@ void YAxe__YwtA__YxaJ(YAxe *t, Tr Aw) {
  }
  sf.frof = YAxe__YwtA__YxaJfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=3615900;
+  sf.pos=1077357724;
   ZthrowThisNil();
  }
  sf.pos=3615901;
  if ((t->Vpos != NULL))
  {
-  sf.pos=3615902;
+  sf.pos=1077357726;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(t->Vpos));
-  sf.pos=3615903;
+  sf.pos=1077357727;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
  }
  sf.pos=3615904;
  if (((t->Vmessage != NULL) && (ZbyteStringSize(t->Vmessage) != 0)))
  {
-  sf.pos=3615905;
+  sf.pos=1077357729;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YHbP));
-  sf.pos=3615906;
+  sf.pos=1077357730;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, t->Vmessage);
  }
  else
  {
-  sf.pos=3615907;
+  sf.pos=1077357731;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YDGe));
  }
  e->topFrame = sf.prev;
@@ -8040,9 +8842,22 @@ char *StrYAxe[] = {
  "backtrace",
 };
 Tto YAxe__T = {390, (Tc*)&Y4QW, YAxe__YwtA__YH0V, StrYAxe, 0, 0, 0, 0, ToYAxe};
+Zfo YE93fo[2] = {{0,(Tt*)&iobj__T},{0,0}};
 void YE93(Ti Anr) {
  Tr ex;
+ Tn *e = ZgetEnv();
+ Zsf sf;
  Tr t0 = {NULL};
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  YE93fo[0].off = (void*)&sf - (void*)&t0;
+ }
+ sf.frof = YE93fo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if ((Anr == 11))
  {
   Tr ex;
@@ -8077,15 +8892,16 @@ YVNj *YVNj__YwtA__YRHRa(YVNj *t, YkxB *Apos, Tc *Amsg) {
  }
  sf.frof = YVNj__YwtA__YRHRafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=6357800; t = Za(sizeof(YVNj));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1080099624; t = Za(sizeof(YVNj));}
  sf.pos=6357801;
  t->Vmessage = Amsg;
- sf.pos=6357802;
+ sf.pos=1080099626;
  t->Vpos = Apos;
- sf.pos=6357803;
- t->Vbacktrace = (sf.pos=6357804, MZ__backtrace(1, -1));
+ sf.pos=1080099627;
+ t->Vbacktrace = (sf.pos=1080099628, MZ__backtrace(1, -1));
  e->topFrame = sf.prev;
  return t;
 }
@@ -8101,15 +8917,16 @@ YVNj *YVNj__YwtA__YRHR(YVNj *t, Tc *Amsg) {
  }
  sf.frof = YVNj__YwtA__YRHRfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=5337700; t = Za(sizeof(YVNj));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1079079524; t = Za(sizeof(YVNj));}
  sf.pos=5337701;
  t->Vmessage = Amsg;
- sf.pos=5337702;
+ sf.pos=1079079526;
  t->Vpos = MZ__callerPos();
- sf.pos=5337703;
- t->Vbacktrace = (sf.pos=5337704, MZ__backtrace(1, -1));
+ sf.pos=1079079527;
+ t->Vbacktrace = (sf.pos=1079079528, MZ__backtrace(1, -1));
  e->topFrame = sf.prev;
  return t;
 }
@@ -8129,17 +8946,18 @@ Tc *YVNj__YwtA__YH0V(YVNj *t) {
  }
  sf.frof = YVNj__YwtA__YH0Vfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=8958100;
+  sf.pos=1082699924;
   ZthrowThisNil();
  }
- sf.pos=8958101;
+ sf.pos=1082699925;
  Vw = Za(sizeof(YjUM));
- sf.pos=8958102;
+ sf.pos=1082699926;
  YVNj__YwtA__YxaJ(t, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=8958103;
+ sf.pos=1082699927;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -8160,17 +8978,18 @@ Tc *YVNj__YwtA__Yoww(YVNj *t, Tb Averbose) {
  }
  sf.frof = YVNj__YwtA__Yowwfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=9345300;
+  sf.pos=1083087124;
   ZthrowThisNil();
  }
- sf.pos=9345301;
+ sf.pos=1083087125;
  Vw = Za(sizeof(YjUM));
- sf.pos=9345302;
+ sf.pos=1083087126;
  YVNj__YwtA__YxaJa(t, Averbose, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=9345303;
+ sf.pos=1083087127;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -8191,18 +9010,19 @@ void YVNj__YwtA__YxaJa(YVNj *t, Tb Averbose, Tr Aw) {
  }
  sf.frof = YVNj__YwtA__YxaJafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=9610700;
+  sf.pos=1083352524;
   ZthrowThisNil();
  }
- sf.pos=9610701;
+ sf.pos=1083352525;
  YVNj__YwtA__YxaJ(t, Aw);
  sf.pos=9610702;
  if ((Averbose && (t->Vbacktrace != NULL)))
  {
-  sf.pos=9610703;
+  sf.pos=1083352527;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Y62e));
   sf.pos=9610704;
   {
@@ -8215,24 +9035,25 @@ void YVNj__YwtA__YxaJa(YVNj *t, Tb Averbose, Tr Aw) {
    sf.pos=9610705;
    if ((Vpos->Vfilename == NULL))
    {
-    sf.pos=9610706;
+    sf.pos=1083352530;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yv6_));
    }
    else
    {
-    sf.pos=9610707;
+    sf.pos=1083352531;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yk));
-    sf.pos=9610708;
+    sf.pos=1083352532;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(Vpos));
     sf.pos=9610709;
     if ((Vpos->Vtext != NULL))
     {
-     sf.pos=9610710;
+     sf.pos=1083352534;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
-     sf.pos=9610711;
+     sf.pos=1083352535;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, Vpos->Vtext);
     }
    }
+   if (e->wantGC) ZthreadGC();
    sf.pos=9610712;
    }
   }
@@ -8252,31 +9073,32 @@ void YVNj__YwtA__YxaJ(YVNj *t, Tr Aw) {
  }
  sf.frof = YVNj__YwtA__YxaJfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=630800;
+  sf.pos=1074372624;
   ZthrowThisNil();
  }
  sf.pos=630801;
  if ((t->Vpos != NULL))
  {
-  sf.pos=630802;
+  sf.pos=1074372626;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(t->Vpos));
-  sf.pos=630803;
+  sf.pos=1074372627;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
  }
  sf.pos=630804;
  if (((t->Vmessage != NULL) && (ZbyteStringSize(t->Vmessage) != 0)))
  {
-  sf.pos=630805;
+  sf.pos=1074372629;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YHbP));
-  sf.pos=630806;
+  sf.pos=1074372630;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, t->Vmessage);
  }
  else
  {
-  sf.pos=630807;
+  sf.pos=1074372631;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YDGe));
  }
  e->topFrame = sf.prev;
@@ -8310,9 +9132,23 @@ char *StrYVNj[] = {
  "backtrace",
 };
 Tto YVNj__T = {390, (Tc*)&Ysqt, YVNj__YwtA__YH0V, StrYVNj, 0, 0, 0, 0, ToYVNj};
+Zfo Y3w6fo[3] = {{0,(Tt*)&string__T},{0,(Tt*)&iobj__T},{0,0}};
 void Y3w6(Tc *Atext) {
  Tr ex;
+ Tn *e = ZgetEnv();
+ Zsf sf;
  Tr t0 = {NULL};
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  Y3w6fo[0].off = (void*)&sf - (void*)&Atext;
+  Y3w6fo[1].off = (void*)&sf - (void*)&t0;
+ }
+ sf.frof = Y3w6fo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  *Znao(&ex, YVNj__YwtA__YRHR(NULL, Atext), YVNj__Ytlm_I_imt, 7);
  ZthrowIobject(ex);
 }
@@ -8328,15 +9164,16 @@ Yalz *Yalz__YwtA__YRHR(Yalz *t, Tc *Amsg) {
  }
  sf.frof = Yalz__YwtA__YRHRfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=6059300; t = Za(sizeof(Yalz));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1079801124; t = Za(sizeof(Yalz));}
  sf.pos=6059301;
  t->Vmessage = Amsg;
- sf.pos=6059302;
+ sf.pos=1079801126;
  t->Vpos = MZ__callerPos();
- sf.pos=6059303;
- t->Vbacktrace = (sf.pos=6059304, MZ__backtrace(1, -1));
+ sf.pos=1079801127;
+ t->Vbacktrace = (sf.pos=1079801128, MZ__backtrace(1, -1));
  e->topFrame = sf.prev;
  return t;
 }
@@ -8356,17 +9193,18 @@ Tc *Yalz__YwtA__YH0V(Yalz *t) {
  }
  sf.frof = Yalz__YwtA__YH0Vfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=5270100;
+  sf.pos=1079011924;
   ZthrowThisNil();
  }
- sf.pos=5270101;
+ sf.pos=1079011925;
  Vw = Za(sizeof(YjUM));
- sf.pos=5270102;
+ sf.pos=1079011926;
  Yalz__YwtA__YxaJ(t, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=5270103;
+ sf.pos=1079011927;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -8387,17 +9225,18 @@ Tc *Yalz__YwtA__Yoww(Yalz *t, Tb Averbose) {
  }
  sf.frof = Yalz__YwtA__Yowwfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=5657300;
+  sf.pos=1079399124;
   ZthrowThisNil();
  }
- sf.pos=5657301;
+ sf.pos=1079399125;
  Vw = Za(sizeof(YjUM));
- sf.pos=5657302;
+ sf.pos=1079399126;
  Yalz__YwtA__YxaJa(t, Averbose, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=5657303;
+ sf.pos=1079399127;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -8418,18 +9257,19 @@ void Yalz__YwtA__YxaJa(Yalz *t, Tb Averbose, Tr Aw) {
  }
  sf.frof = Yalz__YwtA__YxaJafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=4617100;
+  sf.pos=1078358924;
   ZthrowThisNil();
  }
- sf.pos=4617101;
+ sf.pos=1078358925;
  Yalz__YwtA__YxaJ(t, Aw);
  sf.pos=4617102;
  if ((Averbose && (t->Vbacktrace != NULL)))
  {
-  sf.pos=4617103;
+  sf.pos=1078358927;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Y62e));
   sf.pos=4617104;
   {
@@ -8442,24 +9282,25 @@ void Yalz__YwtA__YxaJa(Yalz *t, Tb Averbose, Tr Aw) {
    sf.pos=4617105;
    if ((Vpos->Vfilename == NULL))
    {
-    sf.pos=4617106;
+    sf.pos=1078358930;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yv6_));
    }
    else
    {
-    sf.pos=4617107;
+    sf.pos=1078358931;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yk));
-    sf.pos=4617108;
+    sf.pos=1078358932;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(Vpos));
     sf.pos=4617109;
     if ((Vpos->Vtext != NULL))
     {
-     sf.pos=4617110;
+     sf.pos=1078358934;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
-     sf.pos=4617111;
+     sf.pos=1078358935;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, Vpos->Vtext);
     }
    }
+   if (e->wantGC) ZthreadGC();
    sf.pos=4617112;
    }
   }
@@ -8479,31 +9320,32 @@ void Yalz__YwtA__YxaJ(Yalz *t, Tr Aw) {
  }
  sf.frof = Yalz__YwtA__YxaJfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=5637200;
+  sf.pos=1079379024;
   ZthrowThisNil();
  }
  sf.pos=5637201;
  if ((t->Vpos != NULL))
  {
-  sf.pos=5637202;
+  sf.pos=1079379026;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(t->Vpos));
-  sf.pos=5637203;
+  sf.pos=1079379027;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
  }
  sf.pos=5637204;
  if (((t->Vmessage != NULL) && (ZbyteStringSize(t->Vmessage) != 0)))
  {
-  sf.pos=5637205;
+  sf.pos=1079379029;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YHbP));
-  sf.pos=5637206;
+  sf.pos=1079379030;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, t->Vmessage);
  }
  else
  {
-  sf.pos=5637207;
+  sf.pos=1079379031;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YDGe));
  }
  e->topFrame = sf.prev;
@@ -8537,9 +9379,23 @@ char *StrYalz[] = {
  "backtrace",
 };
 Tto Yalz__T = {390, (Tc*)&YEZq, Yalz__YwtA__YH0V, StrYalz, 0, 0, 0, 0, ToYalz};
+Zfo Yaezfo[3] = {{0,(Tt*)&string__T},{0,(Tt*)&iobj__T},{0,0}};
 void Yaez(Tc *Atext) {
  Tr ex;
+ Tn *e = ZgetEnv();
+ Zsf sf;
  Tr t0 = {NULL};
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  Yaezfo[0].off = (void*)&sf - (void*)&Atext;
+  Yaezfo[1].off = (void*)&sf - (void*)&t0;
+ }
+ sf.frof = Yaezfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  *Znao(&ex, Yalz__YwtA__YRHR(NULL, Atext), Yalz__Ytlm_I_imt, 10);
  ZthrowIobject(ex);
 }
@@ -8556,15 +9412,16 @@ Yw3O *Yw3O__Yalz__YwtA__YRHRa(Yw3O *t, YkxB *Apos, Tc *Amsg) {
  }
  sf.frof = Yw3O__Yalz__YwtA__YRHRafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=6658200; t = Za(sizeof(Yw3O));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1080400024; t = Za(sizeof(Yw3O));}
  sf.pos=6658201;
  t->Vmessage = Amsg;
- sf.pos=6658202;
+ sf.pos=1080400026;
  t->Vpos = Apos;
- sf.pos=6658203;
- t->Vbacktrace = (sf.pos=6658204, MZ__backtrace(1, -1));
+ sf.pos=1080400027;
+ t->Vbacktrace = (sf.pos=1080400028, MZ__backtrace(1, -1));
  e->topFrame = sf.prev;
  return t;
 }
@@ -8580,15 +9437,16 @@ Yw3O *Yw3O__Yalz__YwtA__YRHR(Yw3O *t, Tc *Amsg) {
  }
  sf.frof = Yw3O__Yalz__YwtA__YRHRfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=5638100; t = Za(sizeof(Yw3O));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1079379924; t = Za(sizeof(Yw3O));}
  sf.pos=5638101;
  t->Vmessage = Amsg;
- sf.pos=5638102;
+ sf.pos=1079379926;
  t->Vpos = MZ__callerPos();
- sf.pos=5638103;
- t->Vbacktrace = (sf.pos=5638104, MZ__backtrace(1, -1));
+ sf.pos=1079379927;
+ t->Vbacktrace = (sf.pos=1079379928, MZ__backtrace(1, -1));
  e->topFrame = sf.prev;
  return t;
 }
@@ -8608,17 +9466,18 @@ Tc *Yw3O__Yalz__YwtA__YH0V(Yw3O *t) {
  }
  sf.frof = Yw3O__Yalz__YwtA__YH0Vfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=3172900;
+  sf.pos=1076914724;
   ZthrowThisNil();
  }
- sf.pos=3172901;
+ sf.pos=1076914725;
  Vw = Za(sizeof(YjUM));
- sf.pos=3172902;
+ sf.pos=1076914726;
  Yw3O__Yalz__YwtA__YxaJ(t, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=3172903;
+ sf.pos=1076914727;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -8639,17 +9498,18 @@ Tc *Yw3O__Yalz__YwtA__Yoww(Yw3O *t, Tb Averbose) {
  }
  sf.frof = Yw3O__Yalz__YwtA__Yowwfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=8398500;
+  sf.pos=1082140324;
   ZthrowThisNil();
  }
- sf.pos=8398501;
+ sf.pos=1082140325;
  Vw = Za(sizeof(YjUM));
- sf.pos=8398502;
+ sf.pos=1082140326;
  Yw3O__Yalz__YwtA__YxaJa(t, Averbose, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=8398503;
+ sf.pos=1082140327;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -8666,31 +9526,32 @@ void Yw3O__Yalz__YwtA__YxaJ(Yw3O *t, Tr Aw) {
  }
  sf.frof = Yw3O__Yalz__YwtA__YxaJfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=5260800;
+  sf.pos=1079002624;
   ZthrowThisNil();
  }
  sf.pos=5260801;
  if ((t->Vpos != NULL))
  {
-  sf.pos=5260802;
+  sf.pos=1079002626;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(t->Vpos));
-  sf.pos=5260803;
+  sf.pos=1079002627;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
  }
  sf.pos=5260804;
  if (((t->Vmessage != NULL) && (ZbyteStringSize(t->Vmessage) != 0)))
  {
-  sf.pos=5260805;
+  sf.pos=1079002629;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YHbP));
-  sf.pos=5260806;
+  sf.pos=1079002630;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, t->Vmessage);
  }
  else
  {
-  sf.pos=5260807;
+  sf.pos=1079002631;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YDGe));
  }
  e->topFrame = sf.prev;
@@ -8712,18 +9573,19 @@ void Yw3O__Yalz__YwtA__YxaJa(Yw3O *t, Tb Averbose, Tr Aw) {
  }
  sf.frof = Yw3O__Yalz__YwtA__YxaJafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=6280900;
+  sf.pos=1080022724;
   ZthrowThisNil();
  }
- sf.pos=6280901;
+ sf.pos=1080022725;
  Yw3O__Yalz__YwtA__YxaJ(t, Aw);
  sf.pos=6280902;
  if ((Averbose && (t->Vbacktrace != NULL)))
  {
-  sf.pos=6280903;
+  sf.pos=1080022727;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Y62e));
   sf.pos=6280904;
   {
@@ -8736,24 +9598,25 @@ void Yw3O__Yalz__YwtA__YxaJa(Yw3O *t, Tb Averbose, Tr Aw) {
    sf.pos=6280905;
    if ((Vpos->Vfilename == NULL))
    {
-    sf.pos=6280906;
+    sf.pos=1080022730;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yv6_));
    }
    else
    {
-    sf.pos=6280907;
+    sf.pos=1080022731;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yk));
-    sf.pos=6280908;
+    sf.pos=1080022732;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(Vpos));
     sf.pos=6280909;
     if ((Vpos->Vtext != NULL))
     {
-     sf.pos=6280910;
+     sf.pos=1080022734;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
-     sf.pos=6280911;
+     sf.pos=1080022735;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, Vpos->Vtext);
     }
    }
+   if (e->wantGC) ZthreadGC();
    sf.pos=6280912;
    }
   }
@@ -8789,9 +9652,23 @@ char *StrYw3O[] = {
  "backtrace",
 };
 Tto Yw3O__T = {390, (Tc*)&YFK2, Yw3O__Yalz__YwtA__YH0V, StrYw3O, 0, 0, 0, 0, ToYw3O};
+Zfo Y6NTfo[3] = {{0,(Tt*)&string__T},{0,(Tt*)&iobj__T},{0,0}};
 void Y6NT(Ti Aindex, Tc *Amsg) {
  Tr ex;
+ Tn *e = ZgetEnv();
+ Zsf sf;
  Tr t0 = {NULL};
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  Y6NTfo[0].off = (void*)&sf - (void*)&Amsg;
+  Y6NTfo[1].off = (void*)&sf - (void*)&t0;
+ }
+ sf.frof = Y6NTfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  *Znao(&ex, Yw3O__Yalz__YwtA__YRHR(NULL, ZcS3(Amsg, ((Tc*)&YFDa), Zint2string(Aindex))), Yw3O__Ytlm_I_imt, 11);
  ZthrowIobject(ex);
 }
@@ -8807,15 +9684,16 @@ Y2EX *Y2EX__Yalz__YwtA__YRHR(Y2EX *t, Tc *Amsg) {
  }
  sf.frof = Y2EX__Yalz__YwtA__YRHRfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=2958500; t = Za(sizeof(Y2EX));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1076700324; t = Za(sizeof(Y2EX));}
  sf.pos=2958501;
  t->Vmessage = Amsg;
- sf.pos=2958502;
+ sf.pos=1076700326;
  t->Vpos = MZ__callerPos();
- sf.pos=2958503;
- t->Vbacktrace = (sf.pos=2958504, MZ__backtrace(1, -1));
+ sf.pos=1076700327;
+ t->Vbacktrace = (sf.pos=1076700328, MZ__backtrace(1, -1));
  e->topFrame = sf.prev;
  return t;
 }
@@ -8835,17 +9713,18 @@ Tc *Y2EX__Yalz__YwtA__YH0V(Y2EX *t) {
  }
  sf.frof = Y2EX__Yalz__YwtA__YH0Vfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=1566900;
+  sf.pos=1075308724;
   ZthrowThisNil();
  }
- sf.pos=1566901;
+ sf.pos=1075308725;
  Vw = Za(sizeof(YjUM));
- sf.pos=1566902;
+ sf.pos=1075308726;
  Y2EX__Yalz__YwtA__YxaJ(t, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=1566903;
+ sf.pos=1075308727;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -8866,17 +9745,18 @@ Tc *Y2EX__Yalz__YwtA__Yoww(Y2EX *t, Tb Averbose) {
  }
  sf.frof = Y2EX__Yalz__YwtA__Yowwfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=6792500;
+  sf.pos=1080534324;
   ZthrowThisNil();
  }
- sf.pos=6792501;
+ sf.pos=1080534325;
  Vw = Za(sizeof(YjUM));
- sf.pos=6792502;
+ sf.pos=1080534326;
  Y2EX__Yalz__YwtA__YxaJa(t, Averbose, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=6792503;
+ sf.pos=1080534327;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -8893,31 +9773,32 @@ void Y2EX__Yalz__YwtA__YxaJ(Y2EX *t, Tr Aw) {
  }
  sf.frof = Y2EX__Yalz__YwtA__YxaJfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=4312400;
+  sf.pos=1078054224;
   ZthrowThisNil();
  }
  sf.pos=4312401;
  if ((t->Vpos != NULL))
  {
-  sf.pos=4312402;
+  sf.pos=1078054226;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(t->Vpos));
-  sf.pos=4312403;
+  sf.pos=1078054227;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
  }
  sf.pos=4312404;
  if (((t->Vmessage != NULL) && (ZbyteStringSize(t->Vmessage) != 0)))
  {
-  sf.pos=4312405;
+  sf.pos=1078054229;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YHbP));
-  sf.pos=4312406;
+  sf.pos=1078054230;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, t->Vmessage);
  }
  else
  {
-  sf.pos=4312407;
+  sf.pos=1078054231;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YDGe));
  }
  e->topFrame = sf.prev;
@@ -8939,18 +9820,19 @@ void Y2EX__Yalz__YwtA__YxaJa(Y2EX *t, Tb Averbose, Tr Aw) {
  }
  sf.frof = Y2EX__Yalz__YwtA__YxaJafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=5332500;
+  sf.pos=1079074324;
   ZthrowThisNil();
  }
- sf.pos=5332501;
+ sf.pos=1079074325;
  Y2EX__Yalz__YwtA__YxaJ(t, Aw);
  sf.pos=5332502;
  if ((Averbose && (t->Vbacktrace != NULL)))
  {
-  sf.pos=5332503;
+  sf.pos=1079074327;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Y62e));
   sf.pos=5332504;
   {
@@ -8963,24 +9845,25 @@ void Y2EX__Yalz__YwtA__YxaJa(Y2EX *t, Tb Averbose, Tr Aw) {
    sf.pos=5332505;
    if ((Vpos->Vfilename == NULL))
    {
-    sf.pos=5332506;
+    sf.pos=1079074330;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yv6_));
    }
    else
    {
-    sf.pos=5332507;
+    sf.pos=1079074331;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yk));
-    sf.pos=5332508;
+    sf.pos=1079074332;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(Vpos));
     sf.pos=5332509;
     if ((Vpos->Vtext != NULL))
     {
-     sf.pos=5332510;
+     sf.pos=1079074334;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
-     sf.pos=5332511;
+     sf.pos=1079074335;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, Vpos->Vtext);
     }
    }
+   if (e->wantGC) ZthreadGC();
    sf.pos=5332512;
    }
   }
@@ -9016,15 +9899,44 @@ char *StrY2EX[] = {
  "backtrace",
 };
 Tto Y2EX__T = {390, (Tc*)&YRiW, Y2EX__Yalz__YwtA__YH0V, StrY2EX, 0, 0, 0, 0, ToY2EX};
+Zfo Yxmkfo[3] = {{0,(Tt*)&string__T},{0,(Tt*)&iobj__T},{0,0}};
 void Yxmk(Ti Akey, Tc *Amsg) {
  Tr ex;
+ Tn *e = ZgetEnv();
+ Zsf sf;
  Tr t0 = {NULL};
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  Yxmkfo[0].off = (void*)&sf - (void*)&Amsg;
+  Yxmkfo[1].off = (void*)&sf - (void*)&t0;
+ }
+ sf.frof = Yxmkfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  *Znao(&ex, Y2EX__Yalz__YwtA__YRHR(NULL, ZcS3(Amsg, ((Tc*)&Ym6C), Zint2string(Akey))), Y2EX__Ytlm_I_imt, 12);
  ZthrowIobject(ex);
 }
+Zfo Y5LTfo[4] = {{0,(Tt*)&string__T},{0,(Tt*)&string__T},{0,(Tt*)&iobj__T},{0,0}};
 void Y5LT(Tc *Akey, Tc *Amsg) {
  Tr ex;
+ Tn *e = ZgetEnv();
+ Zsf sf;
  Tr t0 = {NULL};
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  Y5LTfo[0].off = (void*)&sf - (void*)&Akey;
+  Y5LTfo[1].off = (void*)&sf - (void*)&Amsg;
+  Y5LTfo[2].off = (void*)&sf - (void*)&t0;
+ }
+ sf.frof = Y5LTfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  *Znao(&ex, Y2EX__Yalz__YwtA__YRHR(NULL, ZcS5(Amsg, ((Tc*)&YJ3Y), Akey, ((Tc*)&YI), (Tc*)1)), Y2EX__Ytlm_I_imt, 12);
  ZthrowIobject(ex);
 }
@@ -9041,15 +9953,16 @@ YX0i *YX0i__Yalz__YwtA__YRHRa(YX0i *t, YkxB *Apos, Tc *Amsg) {
  }
  sf.frof = YX0i__Yalz__YwtA__YRHRafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=9520100; t = Za(sizeof(YX0i));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1083261924; t = Za(sizeof(YX0i));}
  sf.pos=9520101;
  t->Vmessage = Amsg;
- sf.pos=9520102;
+ sf.pos=1083261926;
  t->Vpos = Apos;
- sf.pos=9520103;
- t->Vbacktrace = (sf.pos=9520104, MZ__backtrace(1, -1));
+ sf.pos=1083261927;
+ t->Vbacktrace = (sf.pos=1083261928, MZ__backtrace(1, -1));
  e->topFrame = sf.prev;
  return t;
 }
@@ -9065,15 +9978,16 @@ YX0i *YX0i__Yalz__YwtA__YRHR(YX0i *t, Tc *Amsg) {
  }
  sf.frof = YX0i__Yalz__YwtA__YRHRfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=8500000; t = Za(sizeof(YX0i));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1082241824; t = Za(sizeof(YX0i));}
  sf.pos=8500001;
  t->Vmessage = Amsg;
- sf.pos=8500002;
+ sf.pos=1082241826;
  t->Vpos = MZ__callerPos();
- sf.pos=8500003;
- t->Vbacktrace = (sf.pos=8500004, MZ__backtrace(1, -1));
+ sf.pos=1082241827;
+ t->Vbacktrace = (sf.pos=1082241828, MZ__backtrace(1, -1));
  e->topFrame = sf.prev;
  return t;
 }
@@ -9093,17 +10007,18 @@ Tc *YX0i__Yalz__YwtA__YH0V(YX0i *t) {
  }
  sf.frof = YX0i__Yalz__YwtA__YH0Vfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=5272800;
+  sf.pos=1079014624;
   ZthrowThisNil();
  }
- sf.pos=5272801;
+ sf.pos=1079014625;
  Vw = Za(sizeof(YjUM));
- sf.pos=5272802;
+ sf.pos=1079014626;
  YX0i__Yalz__YwtA__YxaJ(t, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=5272803;
+ sf.pos=1079014627;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -9124,17 +10039,18 @@ Tc *YX0i__Yalz__YwtA__Yoww(YX0i *t, Tb Averbose) {
  }
  sf.frof = YX0i__Yalz__YwtA__Yowwfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=498400;
+  sf.pos=1074240224;
   ZthrowThisNil();
  }
- sf.pos=498401;
+ sf.pos=1074240225;
  Vw = Za(sizeof(YjUM));
- sf.pos=498402;
+ sf.pos=1074240226;
  YX0i__Yalz__YwtA__YxaJa(t, Averbose, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=498403;
+ sf.pos=1074240227;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -9151,31 +10067,32 @@ void YX0i__Yalz__YwtA__YxaJ(YX0i *t, Tr Aw) {
  }
  sf.frof = YX0i__Yalz__YwtA__YxaJfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=1471500;
+  sf.pos=1075213324;
   ZthrowThisNil();
  }
  sf.pos=1471501;
  if ((t->Vpos != NULL))
  {
-  sf.pos=1471502;
+  sf.pos=1075213326;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(t->Vpos));
-  sf.pos=1471503;
+  sf.pos=1075213327;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
  }
  sf.pos=1471504;
  if (((t->Vmessage != NULL) && (ZbyteStringSize(t->Vmessage) != 0)))
  {
-  sf.pos=1471505;
+  sf.pos=1075213329;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YHbP));
-  sf.pos=1471506;
+  sf.pos=1075213330;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, t->Vmessage);
  }
  else
  {
-  sf.pos=1471507;
+  sf.pos=1075213331;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YDGe));
  }
  e->topFrame = sf.prev;
@@ -9197,18 +10114,19 @@ void YX0i__Yalz__YwtA__YxaJa(YX0i *t, Tb Averbose, Tr Aw) {
  }
  sf.frof = YX0i__Yalz__YwtA__YxaJafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=2491600;
+  sf.pos=1076233424;
   ZthrowThisNil();
  }
- sf.pos=2491601;
+ sf.pos=1076233425;
  YX0i__Yalz__YwtA__YxaJ(t, Aw);
  sf.pos=2491602;
  if ((Averbose && (t->Vbacktrace != NULL)))
  {
-  sf.pos=2491603;
+  sf.pos=1076233427;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Y62e));
   sf.pos=2491604;
   {
@@ -9221,24 +10139,25 @@ void YX0i__Yalz__YwtA__YxaJa(YX0i *t, Tb Averbose, Tr Aw) {
    sf.pos=2491605;
    if ((Vpos->Vfilename == NULL))
    {
-    sf.pos=2491606;
+    sf.pos=1076233430;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yv6_));
    }
    else
    {
-    sf.pos=2491607;
+    sf.pos=1076233431;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yk));
-    sf.pos=2491608;
+    sf.pos=1076233432;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(Vpos));
     sf.pos=2491609;
     if ((Vpos->Vtext != NULL))
     {
-     sf.pos=2491610;
+     sf.pos=1076233434;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
-     sf.pos=2491611;
+     sf.pos=1076233435;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, Vpos->Vtext);
     }
    }
+   if (e->wantGC) ZthreadGC();
    sf.pos=2491612;
    }
   }
@@ -9274,15 +10193,44 @@ char *StrYX0i[] = {
  "backtrace",
 };
 Tto YX0i__T = {390, (Tc*)&Y9_h, YX0i__Yalz__YwtA__YH0V, StrYX0i, 0, 0, 0, 0, ToYX0i};
+Zfo YL9Zfo[3] = {{0,(Tt*)&string__T},{0,(Tt*)&iobj__T},{0,0}};
 void YL9Z(Ti Akey, Tc *Amsg) {
  Tr ex;
+ Tn *e = ZgetEnv();
+ Zsf sf;
  Tr t0 = {NULL};
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  YL9Zfo[0].off = (void*)&sf - (void*)&Amsg;
+  YL9Zfo[1].off = (void*)&sf - (void*)&t0;
+ }
+ sf.frof = YL9Zfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  *Znao(&ex, YX0i__Yalz__YwtA__YRHR(NULL, ZcS3(Amsg, ((Tc*)&Y9qa), Zint2string(Akey))), YX0i__Ytlm_I_imt, 14);
  ZthrowIobject(ex);
 }
+Zfo YEeXfo[4] = {{0,(Tt*)&string__T},{0,(Tt*)&string__T},{0,(Tt*)&iobj__T},{0,0}};
 void YEeX(Tc *Akey, Tc *Amsg) {
  Tr ex;
+ Tn *e = ZgetEnv();
+ Zsf sf;
  Tr t0 = {NULL};
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  YEeXfo[0].off = (void*)&sf - (void*)&Akey;
+  YEeXfo[1].off = (void*)&sf - (void*)&Amsg;
+  YEeXfo[2].off = (void*)&sf - (void*)&t0;
+ }
+ sf.frof = YEeXfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  *Znao(&ex, YX0i__Yalz__YwtA__YRHR(NULL, ZcS5(Amsg, ((Tc*)&YMKM), Akey, ((Tc*)&YI), (Tc*)1)), YX0i__Ytlm_I_imt, 14);
  ZthrowIobject(ex);
 }
@@ -9298,15 +10246,16 @@ YzSI *YzSI__Ylz1__YwtA__YRHR(YzSI *t, Tc *Amsg) {
  }
  sf.frof = YzSI__Ylz1__YwtA__YRHRfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=7347100; t = Za(sizeof(YzSI));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1081088924; t = Za(sizeof(YzSI));}
  sf.pos=7347101;
  t->Vmessage = Amsg;
- sf.pos=7347102;
+ sf.pos=1081088926;
  t->Vpos = MZ__callerPos();
- sf.pos=7347103;
- t->Vbacktrace = (sf.pos=7347104, MZ__backtrace(1, -1));
+ sf.pos=1081088927;
+ t->Vbacktrace = (sf.pos=1081088928, MZ__backtrace(1, -1));
  e->topFrame = sf.prev;
  return t;
 }
@@ -9326,17 +10275,18 @@ Tc *YzSI__Ylz1__YwtA__YH0V(YzSI *t) {
  }
  sf.frof = YzSI__Ylz1__YwtA__YH0Vfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=1717900;
+  sf.pos=1075459724;
   ZthrowThisNil();
  }
- sf.pos=1717901;
+ sf.pos=1075459725;
  Vw = Za(sizeof(YjUM));
- sf.pos=1717902;
+ sf.pos=1075459726;
  YzSI__Ylz1__YwtA__YxaJ(t, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=1717903;
+ sf.pos=1075459727;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -9357,17 +10307,18 @@ Tc *YzSI__Ylz1__YwtA__Yoww(YzSI *t, Tb Averbose) {
  }
  sf.frof = YzSI__Ylz1__YwtA__Yowwfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=6943500;
+  sf.pos=1080685324;
   ZthrowThisNil();
  }
- sf.pos=6943501;
+ sf.pos=1080685325;
  Vw = Za(sizeof(YjUM));
- sf.pos=6943502;
+ sf.pos=1080685326;
  YzSI__Ylz1__YwtA__YxaJa(t, Averbose, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=6943503;
+ sf.pos=1080685327;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -9384,31 +10335,32 @@ void YzSI__Ylz1__YwtA__YxaJ(YzSI *t, Tr Aw) {
  }
  sf.frof = YzSI__Ylz1__YwtA__YxaJfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=4413000;
+  sf.pos=1078154824;
   ZthrowThisNil();
  }
  sf.pos=4413001;
  if ((t->Vpos != NULL))
  {
-  sf.pos=4413002;
+  sf.pos=1078154826;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(t->Vpos));
-  sf.pos=4413003;
+  sf.pos=1078154827;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
  }
  sf.pos=4413004;
  if (((t->Vmessage != NULL) && (ZbyteStringSize(t->Vmessage) != 0)))
  {
-  sf.pos=4413005;
+  sf.pos=1078154829;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YHbP));
-  sf.pos=4413006;
+  sf.pos=1078154830;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, t->Vmessage);
  }
  else
  {
-  sf.pos=4413007;
+  sf.pos=1078154831;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YDGe));
  }
  e->topFrame = sf.prev;
@@ -9430,18 +10382,19 @@ void YzSI__Ylz1__YwtA__YxaJa(YzSI *t, Tb Averbose, Tr Aw) {
  }
  sf.frof = YzSI__Ylz1__YwtA__YxaJafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=5433100;
+  sf.pos=1079174924;
   ZthrowThisNil();
  }
- sf.pos=5433101;
+ sf.pos=1079174925;
  YzSI__Ylz1__YwtA__YxaJ(t, Aw);
  sf.pos=5433102;
  if ((Averbose && (t->Vbacktrace != NULL)))
  {
-  sf.pos=5433103;
+  sf.pos=1079174927;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Y62e));
   sf.pos=5433104;
   {
@@ -9454,24 +10407,25 @@ void YzSI__Ylz1__YwtA__YxaJa(YzSI *t, Tb Averbose, Tr Aw) {
    sf.pos=5433105;
    if ((Vpos->Vfilename == NULL))
    {
-    sf.pos=5433106;
+    sf.pos=1079174930;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yv6_));
    }
    else
    {
-    sf.pos=5433107;
+    sf.pos=1079174931;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yk));
-    sf.pos=5433108;
+    sf.pos=1079174932;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(Vpos));
     sf.pos=5433109;
     if ((Vpos->Vtext != NULL))
     {
-     sf.pos=5433110;
+     sf.pos=1079174934;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
-     sf.pos=5433111;
+     sf.pos=1079174935;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, Vpos->Vtext);
     }
    }
+   if (e->wantGC) ZthreadGC();
    sf.pos=5433112;
    }
   }
@@ -9519,15 +10473,16 @@ YXKl *YXKl__YwtA__YRHR(YXKl *t, Tc *Amsg) {
  }
  sf.frof = YXKl__YwtA__YRHRfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=4829900; t = Za(sizeof(YXKl));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1078571724; t = Za(sizeof(YXKl));}
  sf.pos=4829901;
  t->Vmessage = Amsg;
- sf.pos=4829902;
+ sf.pos=1078571726;
  t->Vpos = MZ__callerPos();
- sf.pos=4829903;
- t->Vbacktrace = (sf.pos=4829904, MZ__backtrace(1, -1));
+ sf.pos=1078571727;
+ t->Vbacktrace = (sf.pos=1078571728, MZ__backtrace(1, -1));
  e->topFrame = sf.prev;
  return t;
 }
@@ -9547,17 +10502,18 @@ Tc *YXKl__YwtA__YH0V(YXKl *t) {
  }
  sf.frof = YXKl__YwtA__YH0Vfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=7993500;
+  sf.pos=1081735324;
   ZthrowThisNil();
  }
- sf.pos=7993501;
+ sf.pos=1081735325;
  Vw = Za(sizeof(YjUM));
- sf.pos=7993502;
+ sf.pos=1081735326;
  YXKl__YwtA__YxaJ(t, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=7993503;
+ sf.pos=1081735327;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -9578,17 +10534,18 @@ Tc *YXKl__YwtA__Yoww(YXKl *t, Tb Averbose) {
  }
  sf.frof = YXKl__YwtA__Yowwfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=3219100;
+  sf.pos=1076960924;
   ZthrowThisNil();
  }
- sf.pos=3219101;
+ sf.pos=1076960925;
  Vw = Za(sizeof(YjUM));
- sf.pos=3219102;
+ sf.pos=1076960926;
  YXKl__YwtA__YxaJa(t, Averbose, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=3219103;
+ sf.pos=1076960927;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -9609,18 +10566,19 @@ void YXKl__YwtA__YxaJa(YXKl *t, Tb Averbose, Tr Aw) {
  }
  sf.frof = YXKl__YwtA__YxaJafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=8968500;
+  sf.pos=1082710324;
   ZthrowThisNil();
  }
- sf.pos=8968501;
+ sf.pos=1082710325;
  YXKl__YwtA__YxaJ(t, Aw);
  sf.pos=8968502;
  if ((Averbose && (t->Vbacktrace != NULL)))
  {
-  sf.pos=8968503;
+  sf.pos=1082710327;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Y62e));
   sf.pos=8968504;
   {
@@ -9633,24 +10591,25 @@ void YXKl__YwtA__YxaJa(YXKl *t, Tb Averbose, Tr Aw) {
    sf.pos=8968505;
    if ((Vpos->Vfilename == NULL))
    {
-    sf.pos=8968506;
+    sf.pos=1082710330;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yv6_));
    }
    else
    {
-    sf.pos=8968507;
+    sf.pos=1082710331;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yk));
-    sf.pos=8968508;
+    sf.pos=1082710332;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(Vpos));
     sf.pos=8968509;
     if ((Vpos->Vtext != NULL))
     {
-     sf.pos=8968510;
+     sf.pos=1082710334;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
-     sf.pos=8968511;
+     sf.pos=1082710335;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, Vpos->Vtext);
     }
    }
+   if (e->wantGC) ZthreadGC();
    sf.pos=8968512;
    }
   }
@@ -9670,31 +10629,32 @@ void YXKl__YwtA__YxaJ(YXKl *t, Tr Aw) {
  }
  sf.frof = YXKl__YwtA__YxaJfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=9988600;
+  sf.pos=1083730424;
   ZthrowThisNil();
  }
  sf.pos=9988601;
  if ((t->Vpos != NULL))
  {
-  sf.pos=9988602;
+  sf.pos=1083730426;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(t->Vpos));
-  sf.pos=9988603;
+  sf.pos=1083730427;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
  }
  sf.pos=9988604;
  if (((t->Vmessage != NULL) && (ZbyteStringSize(t->Vmessage) != 0)))
  {
-  sf.pos=9988605;
+  sf.pos=1083730429;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YHbP));
-  sf.pos=9988606;
+  sf.pos=1083730430;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, t->Vmessage);
  }
  else
  {
-  sf.pos=9988607;
+  sf.pos=1083730431;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YDGe));
  }
  e->topFrame = sf.prev;
@@ -9728,9 +10688,23 @@ char *StrYXKl[] = {
  "backtrace",
 };
 Tto YXKl__T = {390, (Tc*)&YTj3, YXKl__YwtA__YH0V, StrYXKl, 0, 0, 0, 0, ToYXKl};
+Zfo YkuVfo[3] = {{0,(Tt*)&string__T},{0,(Tt*)&iobj__T},{0,0}};
 void YkuV(Tc *Amsg) {
  Tr ex;
+ Tn *e = ZgetEnv();
+ Zsf sf;
  Tr t0 = {NULL};
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  YkuVfo[0].off = (void*)&sf - (void*)&Amsg;
+  YkuVfo[1].off = (void*)&sf - (void*)&t0;
+ }
+ sf.frof = YkuVfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  *Znao(&ex, YXKl__YwtA__YRHR(NULL, Amsg), YXKl__Ytlm_I_imt, 19);
  ZthrowIobject(ex);
 }
@@ -9745,15 +10719,16 @@ YuDC *YdhH(YuDC *t) {
  }
  sf.frof = YdhHfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=8723500; t = Za(sizeof(YuDC));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1082465324; t = Za(sizeof(YuDC));}
  sf.pos=8723501;
  t->Vmessage = ((Tc*)&Ynjz);
- sf.pos=8723502;
+ sf.pos=1082465326;
  t->Vpos = MZ__callerPos();
- sf.pos=8723503;
- t->Vbacktrace = (sf.pos=8723504, MZ__backtrace(1, -1));
+ sf.pos=1082465327;
+ t->Vbacktrace = (sf.pos=1082465328, MZ__backtrace(1, -1));
  e->topFrame = sf.prev;
  return t;
 }
@@ -9773,17 +10748,18 @@ Tc *YuDC__YwtA__YH0V(YuDC *t) {
  }
  sf.frof = YuDC__YwtA__YH0Vfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=1289600;
+  sf.pos=1075031424;
   ZthrowThisNil();
  }
- sf.pos=1289601;
+ sf.pos=1075031425;
  Vw = Za(sizeof(YjUM));
- sf.pos=1289602;
+ sf.pos=1075031426;
  YuDC__YwtA__YxaJ(t, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=1289603;
+ sf.pos=1075031427;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -9804,17 +10780,18 @@ Tc *YuDC__YwtA__Yoww(YuDC *t, Tb Averbose) {
  }
  sf.frof = YuDC__YwtA__Yowwfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=1676800;
+  sf.pos=1075418624;
   ZthrowThisNil();
  }
- sf.pos=1676801;
+ sf.pos=1075418625;
  Vw = Za(sizeof(YjUM));
- sf.pos=1676802;
+ sf.pos=1075418626;
  YuDC__YwtA__YxaJa(t, Averbose, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=1676803;
+ sf.pos=1075418627;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -9835,18 +10812,19 @@ void YuDC__YwtA__YxaJa(YuDC *t, Tb Averbose, Tr Aw) {
  }
  sf.frof = YuDC__YwtA__YxaJafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=8681800;
+  sf.pos=1082423624;
   ZthrowThisNil();
  }
- sf.pos=8681801;
+ sf.pos=1082423625;
  YuDC__YwtA__YxaJ(t, Aw);
  sf.pos=8681802;
  if ((Averbose && (t->Vbacktrace != NULL)))
  {
-  sf.pos=8681803;
+  sf.pos=1082423627;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Y62e));
   sf.pos=8681804;
   {
@@ -9859,24 +10837,25 @@ void YuDC__YwtA__YxaJa(YuDC *t, Tb Averbose, Tr Aw) {
    sf.pos=8681805;
    if ((Vpos->Vfilename == NULL))
    {
-    sf.pos=8681806;
+    sf.pos=1082423630;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yv6_));
    }
    else
    {
-    sf.pos=8681807;
+    sf.pos=1082423631;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yk));
-    sf.pos=8681808;
+    sf.pos=1082423632;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(Vpos));
     sf.pos=8681809;
     if ((Vpos->Vtext != NULL))
     {
-     sf.pos=8681810;
+     sf.pos=1082423634;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
-     sf.pos=8681811;
+     sf.pos=1082423635;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, Vpos->Vtext);
     }
    }
+   if (e->wantGC) ZthreadGC();
    sf.pos=8681812;
    }
   }
@@ -9896,31 +10875,32 @@ void YuDC__YwtA__YxaJ(YuDC *t, Tr Aw) {
  }
  sf.frof = YuDC__YwtA__YxaJfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=9701900;
+  sf.pos=1083443724;
   ZthrowThisNil();
  }
  sf.pos=9701901;
  if ((t->Vpos != NULL))
  {
-  sf.pos=9701902;
+  sf.pos=1083443726;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(t->Vpos));
-  sf.pos=9701903;
+  sf.pos=1083443727;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
  }
  sf.pos=9701904;
  if (((t->Vmessage != NULL) && (ZbyteStringSize(t->Vmessage) != 0)))
  {
-  sf.pos=9701905;
+  sf.pos=1083443729;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YHbP));
-  sf.pos=9701906;
+  sf.pos=1083443730;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, t->Vmessage);
  }
  else
  {
-  sf.pos=9701907;
+  sf.pos=1083443731;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YDGe));
  }
  e->topFrame = sf.prev;
@@ -9954,10 +10934,24 @@ char *StrYuDC[] = {
  "backtrace",
 };
 Tto YuDC__T = {390, (Tc*)&YCoZ, YuDC__YwtA__YH0V, StrYuDC, 0, 0, 0, 0, ToYuDC};
+Zfo YTuGfo[3] = {{0,(Tt*)&YuDC__T},{0,(Tt*)&iobj__T},{0,0}};
 void YTuG(Ti Apos) {
  Tr ex;
+ Tn *e = ZgetEnv();
+ Zsf sf;
  YuDC *Ve = 0;
  Tr t0 = {NULL};
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  YTuGfo[0].off = (void*)&sf - (void*)&Ve;
+  YTuGfo[1].off = (void*)&sf - (void*)&t0;
+ }
+ sf.frof = YTuGfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  Ve = YdhH(NULL);
  Ve->Vpos = MZ__posnr2pos(NULL, Apos);
  *Znao(&ex, Ve, YuDC__Ytlm_I_imt, 24);
@@ -9975,15 +10969,16 @@ YrHq *YrHq__YwtA__YRHR(YrHq *t, Tc *Amsg) {
  }
  sf.frof = YrHq__YwtA__YRHRfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=7808200; t = Za(sizeof(YrHq));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1081550024; t = Za(sizeof(YrHq));}
  sf.pos=7808201;
  t->Vmessage = Amsg;
- sf.pos=7808202;
+ sf.pos=1081550026;
  t->Vpos = MZ__callerPos();
- sf.pos=7808203;
- t->Vbacktrace = (sf.pos=7808204, MZ__backtrace(1, -1));
+ sf.pos=1081550027;
+ t->Vbacktrace = (sf.pos=1081550028, MZ__backtrace(1, -1));
  e->topFrame = sf.prev;
  return t;
 }
@@ -10003,17 +10998,18 @@ Tc *YrHq__YwtA__YH0V(YrHq *t) {
  }
  sf.frof = YrHq__YwtA__YH0Vfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=2761800;
+  sf.pos=1076503624;
   ZthrowThisNil();
  }
- sf.pos=2761801;
+ sf.pos=1076503625;
  Vw = Za(sizeof(YjUM));
- sf.pos=2761802;
+ sf.pos=1076503626;
  YrHq__YwtA__YxaJ(t, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=2761803;
+ sf.pos=1076503627;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -10034,17 +11030,18 @@ Tc *YrHq__YwtA__Yoww(YrHq *t, Tb Averbose) {
  }
  sf.frof = YrHq__YwtA__Yowwfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=7987400;
+  sf.pos=1081729224;
   ZthrowThisNil();
  }
- sf.pos=7987401;
+ sf.pos=1081729225;
  Vw = Za(sizeof(YjUM));
- sf.pos=7987402;
+ sf.pos=1081729226;
  YrHq__YwtA__YxaJa(t, Averbose, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=7987403;
+ sf.pos=1081729227;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -10065,18 +11062,19 @@ void YrHq__YwtA__YxaJa(YrHq *t, Tb Averbose, Tr Aw) {
  }
  sf.frof = YrHq__YwtA__YxaJafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=41200;
+  sf.pos=1073783024;
   ZthrowThisNil();
  }
- sf.pos=41201;
+ sf.pos=1073783025;
  YrHq__YwtA__YxaJ(t, Aw);
  sf.pos=41202;
  if ((Averbose && (t->Vbacktrace != NULL)))
  {
-  sf.pos=41203;
+  sf.pos=1073783027;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Y62e));
   sf.pos=41204;
   {
@@ -10089,24 +11087,25 @@ void YrHq__YwtA__YxaJa(YrHq *t, Tb Averbose, Tr Aw) {
    sf.pos=41205;
    if ((Vpos->Vfilename == NULL))
    {
-    sf.pos=41206;
+    sf.pos=1073783030;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yv6_));
    }
    else
    {
-    sf.pos=41207;
+    sf.pos=1073783031;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yk));
-    sf.pos=41208;
+    sf.pos=1073783032;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(Vpos));
     sf.pos=41209;
     if ((Vpos->Vtext != NULL))
     {
-     sf.pos=41210;
+     sf.pos=1073783034;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
-     sf.pos=41211;
+     sf.pos=1073783035;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, Vpos->Vtext);
     }
    }
+   if (e->wantGC) ZthreadGC();
    sf.pos=41212;
    }
   }
@@ -10126,31 +11125,32 @@ void YrHq__YwtA__YxaJ(YrHq *t, Tr Aw) {
  }
  sf.frof = YrHq__YwtA__YxaJfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=1061300;
+  sf.pos=1074803124;
   ZthrowThisNil();
  }
  sf.pos=1061301;
  if ((t->Vpos != NULL))
  {
-  sf.pos=1061302;
+  sf.pos=1074803126;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(t->Vpos));
-  sf.pos=1061303;
+  sf.pos=1074803127;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
  }
  sf.pos=1061304;
  if (((t->Vmessage != NULL) && (ZbyteStringSize(t->Vmessage) != 0)))
  {
-  sf.pos=1061305;
+  sf.pos=1074803129;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YHbP));
-  sf.pos=1061306;
+  sf.pos=1074803130;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, t->Vmessage);
  }
  else
  {
-  sf.pos=1061307;
+  sf.pos=1074803131;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YDGe));
  }
  e->topFrame = sf.prev;
@@ -10184,10 +11184,26 @@ char *StrYrHq[] = {
  "backtrace",
 };
 Tto YrHq__T = {390, (Tc*)&YVki, YrHq__YwtA__YH0V, StrYrHq, 0, 0, 0, 0, ToYrHq};
+Zfo YUSHfo[5] = {{0,(Tt*)&string__T},{0,(Tt*)&YrHq__T},{0,(Tt*)&YkxB__T},{0,(Tt*)&iobj__T},{0,0}};
 void YUSH(YkxB *Apos, Tc *Atext) {
  Tr ex;
+ Tn *e = ZgetEnv();
+ Zsf sf;
  YrHq *Ve = 0;
  Tr t0 = {NULL};
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  YUSHfo[0].off = (void*)&sf - (void*)&Atext;
+  YUSHfo[1].off = (void*)&sf - (void*)&Ve;
+  YUSHfo[2].off = (void*)&sf - (void*)&Apos;
+  YUSHfo[3].off = (void*)&sf - (void*)&t0;
+ }
+ sf.frof = YUSHfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  Ve = YrHq__YwtA__YRHR(NULL, Atext);
  if ((Apos != NULL))
  {
@@ -10196,7 +11212,20 @@ void YUSH(YkxB *Apos, Tc *Atext) {
  *Znao(&ex, Ve, YrHq__Ytlm_I_imt, 26);
  ZthrowIobject(ex);
 }
+Zfo YxISfo[2] = {{0,(Tt*)&iobj__T},{0,0}};
 void YxIS(Tr Ae) {
+ Tn *e = ZgetEnv();
+ Zsf sf;
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  YxISfo[0].off = (void*)&sf - (void*)&Ae;
+ }
+ sf.frof = YxISfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
       static int entered = 0;
       int didEnter = entered;
       entered = 1;
@@ -10213,6 +11242,7 @@ void YxIS(Tr Ae) {
   if (!didEnter) beforeExit();
   exit(1);
  }
+ e->topFrame = sf.prev;
  return;
 }
 Zfo YvL0fo[2] = {{0,(Tt*)&iobj__T},{0,0}};
@@ -10226,13 +11256,14 @@ void YvL0(Tr Ae) {
  }
  sf.frof = YvL0fo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=5238600;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1078980424;
  Ylxt();
- sf.pos=5238601;
+ sf.pos=1078980425;
  YQar(Ae, 1, YeNQ);
- sf.pos=5238617;
+ sf.pos=1078980441;
  ((Ts (*)(void*))(YeNQ.table[18]))(YeNQ.ptr);
  e->topFrame = sf.prev;
  return;
@@ -10324,16 +11355,17 @@ YK7s *YPsV(YK7s *t) {
  }
  sf.frof = YPsVfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=6462200; t = Za(sizeof(YK7s));}
- sf.pos=6462201;
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1080204024; t = Za(sizeof(YK7s));}
+ sf.pos=1080204025;
  t->VitemList = ZnewList((Tt*)&bool__T, 0);
- sf.pos=6462202;
+ sf.pos=1080204026;
  t->Vlock = YCyl(NULL);
- sf.pos=6462203;
+ sf.pos=1080204027;
  t->VreadCond = YXGL(NULL);
- sf.pos=6462204;
+ sf.pos=1080204028;
  t->VwriteCond = YXGL(NULL);
  sf.pos=6462205;
  t->VbufferSize = 1;
@@ -10355,13 +11387,14 @@ Ts YWty(YK7s *t, Tb Aitem) {
  }
  sf.frof = YWtyfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=8236300;
+  sf.pos=1081978124;
   ZthrowThisNil();
  }
- sf.pos=8236301;
+ sf.pos=1081978125;
  YHl9(t->Vlock);
  sf.pos=8236302;
  while (1)
@@ -10369,33 +11402,33 @@ Ts YWty(YK7s *t, Tb Aitem) {
   sf.pos=8236303;
   if (!(t->VisOpen))
   {
-   sf.pos=8236304;
+   sf.pos=1081978128;
    Yvoo(t->Vlock);
-   sf.pos=8236305;
+   sf.pos=1081978129;
    r = 0;
    rt = 1;
    goto YFdj;
   }
-  sf.pos=8236306;
+  sf.pos=1081978130;
   if ((ZListSize(t->VitemList) < t->VbufferSize))
   {
-   sf.pos=8236307;
+   sf.pos=1081978131;
    ZListInsert((Tl*)t->VitemList, 0, (Tz)(Ti)Aitem);
    rt = 2;
    goto YFdj;
   }
-  sf.pos=8236308;
+  sf.pos=1081978132;
   YN6a(t->VwriteCond, t->Vlock);
 YFdj:
   if (rt == 2) { rt &= 1; break; }
   if (rt) goto Ytc1;
  sf.pos=8236309;
  }
- sf.pos=8236310;
+ sf.pos=1081978134;
  Yvoo(t->Vlock);
- sf.pos=8236311;
+ sf.pos=1081978135;
  YjFj(t->VreadCond, 1);
- sf.pos=8236312;
+ sf.pos=1081978136;
  r = 1;
 Ytc1:
  e->topFrame = sf.prev;
@@ -10415,30 +11448,31 @@ Tb YIWK(YK7s *t, Ts *Rst) {
  }
  sf.frof = YIWKfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=2169200;
+  sf.pos=1075911024;
   ZthrowThisNil();
  }
- sf.pos=2169201;
+ sf.pos=1075911025;
  YHl9(t->Vlock);
  sf.pos=2169202;
  while (1)
  {
-  sf.pos=2169203;
+  sf.pos=1075911027;
   if ((ZListSize(t->VitemList) > 0))
   {
    Tb Vs;
    sf.pos=2169204;
    (*Rst) = 1;
-   sf.pos=2169205;
+   sf.pos=1075911029;
    Vs = ZListRemoveIntItem((Tl*)t->VitemList, -1);
-   sf.pos=2169206;
+   sf.pos=1075911030;
    Yvoo(t->Vlock);
-   sf.pos=2169207;
+   sf.pos=1075911031;
    YjFj(t->VwriteCond, 0);
-   sf.pos=2169208;
+   sf.pos=1075911032;
    r = Vs;
    rt = 1;
    goto YUf8;
@@ -10451,17 +11485,17 @@ Tb YIWK(YK7s *t, Ts *Rst) {
    rt = 2;
    goto YUf8;
   }
-  sf.pos=2169211;
+  sf.pos=1075911035;
   YN6a(t->VreadCond, t->Vlock);
 YUf8:
   if (rt == 2) { rt &= 1; break; }
   if (rt) goto YbVa;
  sf.pos=2169212;
  }
- sf.pos=2169213;
+ sf.pos=1075911037;
  Yvoo(t->Vlock);
  Vret = 0;
- sf.pos=2169214;
+ sf.pos=1075911038;
  r = Vret;
 YbVa:
  e->topFrame = sf.prev;
@@ -10480,14 +11514,15 @@ Tb YIWKa(YK7s *t) {
  }
  sf.frof = YIWKafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=4374400;
+  sf.pos=1078116224;
   ZthrowThisNil();
  }
  Vst = 0;
- sf.pos=4374401;
+ sf.pos=1078116225;
  r = YIWK(t, &(Vst));
  e->topFrame = sf.prev;
  return r;
@@ -10527,15 +11562,16 @@ Ti Yyxi(Tc *Acommand) {
  }
  sf.frof = Yyxifo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=7625400;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1081367224;
  Vcmd = ZcS(Acommand, ((Tc*)&YM));
  Vr = 0;
  sf.pos=7625401;
     fflush(stdout);
     Vr = system(ZgetCstring(Vcmd));
- sf.pos=7625402;
+ sf.pos=1081367226;
  r = Vr;
  e->topFrame = sf.prev;
  return r;
@@ -10554,12 +11590,14 @@ Tc *Yhy5(Tc *Aname) {
  }
  sf.frof = Yhy5fo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=4232300;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1077974124;
  Vres = (Tc*)getenv(ZgetCstring(Aname));
  if (Vres != NULL) Vres = Zstr((char*)Vres);
- sf.pos=4232301;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1077974125;
  r = Vres;
  e->topFrame = sf.prev;
  return r;
@@ -10585,17 +11623,18 @@ Ts YNAV(Tc *Apage) {
  }
  sf.frof = YNAVfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=6909500;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1080651324;
  Vbrowser = Yhy5(((Tc*)&Y1ke));
  sf.pos=6909501;
  if (((Vbrowser == NULL) || (ZbyteStringSize(Vbrowser) == 0)))
  {
-  sf.pos=6909502;
+  sf.pos=1080651326;
   if (YpPE(((Tc*)&Ya0g)))
   {
-   sf.pos=6909503;
+   sf.pos=1080651327;
    r = (((Yyxi(ZcS3(((Tc*)&Y0rB), Apage, ((Tc*)&YN))) == 0)) ? (1) : (0));
    rt = 1;
    goto YKzv;
@@ -10604,7 +11643,7 @@ Ts YNAV(Tc *Apage) {
 #if defined(__MINGW32__) || defined(_MSC_VER)
       ShellExecute(0, "open", ZgetCstring(Apage), 0, 0, 1);
 #endif
-  sf.pos=6909505;
+  sf.pos=1080651329;
   {
    Tfl Zf2i;
    Zf2 = (t0 = ZnewList((Tt*)&string__T, 5), ZLap((Tl*)t0, (Tz)(void*)((Tc*)&YCuE)), ZLap((Tl*)t0, (Tz)(void*)((Tc*)&YwLx)), ZLap((Tl*)t0, (Tz)(void*)((Tc*)&YUjM)), ZLap((Tl*)t0, (Tz)(void*)((Tc*)&YJPW)), ZLap((Tl*)t0, (Tz)(void*)((Tc*)&Y6Qb)));
@@ -10612,19 +11651,20 @@ Ts YNAV(Tc *Apage) {
    Zf2i.valp = (void*)&Vn;
    Zf2i.i = 0;
    for (; ZforListPtrCont(&Zf2i); ) {
-   sf.pos=6909506;
+   sf.pos=1080651330;
    Vbrowser = Ycmi(Vn);
-   sf.pos=6909507;
+   sf.pos=1080651331;
    if (Y_3K(Vbrowser))
    {
     rt = 2;
     goto YSsF;
    }
-   sf.pos=6909508;
+   sf.pos=1080651332;
    Vbrowser = NULL;
 YSsF:
    if (rt == 2) { rt &= 1; break; }
-   sf.pos=6909509;
+   if (e->wantGC) ZthreadGC();
+   sf.pos=1080651333;
    }
   }
 YKzv:
@@ -10633,12 +11673,12 @@ YKzv:
  sf.pos=6909510;
  if ((Vbrowser == NULL))
  {
-  sf.pos=6909511;
+  sf.pos=1080651335;
   r = 0;
   rt = 1;
   goto Y1Dd;
  }
- sf.pos=6909512;
+ sf.pos=1080651336;
  r = (((Yyxi(ZcS5(Vbrowser, ((Tc*)&Y5Y), Apage, ((Tc*)&YN), (Tc*)1)) == 0)) ? (1) : (0));
 Y1Dd:
  e->topFrame = sf.prev;
@@ -10657,10 +11697,11 @@ YSM1 *YF0N(YSM1 *t) {
  }
  sf.frof = YF0Nfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=4664000; t = Za(sizeof(YSM1));}
- sf.pos=4664001;
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1078405824; t = Za(sizeof(YSM1));}
+ sf.pos=1078405825;
  t->VheaderItems = ZnewDict((Tt*)&string__T, (Tt*)&string__T, 0);
  e->topFrame = sf.prev;
  return t;
@@ -10685,25 +11726,26 @@ Tc *YuPP(YSM1 *t) {
  }
  sf.frof = YuPPfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=8466800;
+  sf.pos=1082208624;
   ZthrowThisNil();
  }
- sf.pos=8466801;
+ sf.pos=1082208625;
  Vw = Za(sizeof(YjUM));
- sf.pos=8466802;
+ sf.pos=1082208626;
  YjUM__YRt7(Vw, ZcS(((Tc*)&Y5wx), Zenum2string(MHTTPModule__ERequestType, t->Vtype)));
- sf.pos=8466803;
+ sf.pos=1082208627;
  YjUM__YRt7(Vw, ZcS(((Tc*)&YXBd), t->Vpath));
- sf.pos=8466804;
+ sf.pos=1082208628;
  YjUM__YRt7(Vw, ZcS(((Tc*)&YrAc), t->Vparams));
- sf.pos=8466805;
+ sf.pos=1082208629;
  YjUM__YRt7(Vw, ZcS(((Tc*)&Y1xf), t->VhttpVersion));
- sf.pos=8466806;
+ sf.pos=1082208630;
  YjUM__YRt7(Vw, ((Tc*)&YiH8));
- sf.pos=8466807;
+ sf.pos=1082208631;
  {
   Tfl Zf1i;
   Zf1 = ZDictKeys(t->VheaderItems, 0);
@@ -10711,18 +11753,19 @@ Tc *YuPP(YSM1 *t) {
   Zf1i.valp = (void*)&Vi;
   Zf1i.i = 0;
   for (; ZforListPtrCont(&Zf1i); ) {
-  sf.pos=8466808;
+  sf.pos=1082208632;
   YjUM__YRt7(Vw, ZcS3(Vi, ((Tc*)&YFDa), (t0 = ((Tc *)ZDictGetPtr(t->VheaderItems, (Tz)(void*)Vi)))));
-  sf.pos=8466809;
+  if (e->wantGC) ZthreadGC();
+  sf.pos=1082208633;
   }
  }
  sf.pos=8466810;
  if ((t->Vbody != NULL))
  {
-  sf.pos=8466811;
+  sf.pos=1082208635;
   YjUM__YRt7(Vw, ZcS(((Tc*)&YLih), ZbyteStringCheckUtf8(t->Vbody)));
  }
- sf.pos=8466812;
+ sf.pos=1082208636;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -10756,16 +11799,17 @@ YKeB *YikN(YKeB *t) {
  }
  sf.frof = YikNfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=3482200; t = Za(sizeof(YKeB));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1077224024; t = Za(sizeof(YKeB));}
  sf.pos=3482201;
  t->Vcode = 200;
  sf.pos=3482202;
  t->Vmsg = ((Tc*)&Y0ab);
- sf.pos=3482203;
+ sf.pos=1077224027;
  t->VheaderItems = ZnewDict((Tt*)&string__T, (Tt*)&string__T, 0);
- sf.pos=3482204;
+ sf.pos=1077224028;
  YDSB(t, ((Tc*)&Ylqg));
  sf.pos=3482205;
  t->Vbody = ((Tc*)&YBMI);
@@ -10783,13 +11827,14 @@ void YjIQ(YKeB *t, Ti Alength) {
  }
  sf.frof = YjIQfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=1487400;
+  sf.pos=1075229224;
   ZthrowThisNil();
  }
- sf.pos=1487401;
+ sf.pos=1075229225;
  *((Tc **)ZDictGetPtrP(t->VheaderItems, (Tz)(void*)((Tc*)&Y95C))) = ZcS(Zint2string(Alength), ((Tc*)&Ya));
  e->topFrame = sf.prev;
  return;
@@ -10806,13 +11851,14 @@ void YDSB(YKeB *t, Tc *Atype) {
  }
  sf.frof = YDSBfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=8450600;
+  sf.pos=1082192424;
   ZthrowThisNil();
  }
- sf.pos=8450601;
+ sf.pos=1082192425;
  *((Tc **)ZDictGetPtrP(t->VheaderItems, (Tz)(void*)((Tc*)&YPoL))) = Atype;
  e->topFrame = sf.prev;
  return;
@@ -10845,14 +11891,15 @@ YtzZ *Y89Z(YtzZ *t, Y1QG *Aserver, YSM1 *Arequest, YKeB *Aresponse) {
  }
  sf.frof = Y89Zfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=9162000; t = Za(sizeof(YtzZ));}
- sf.pos=9162001;
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1082903824; t = Za(sizeof(YtzZ));}
+ sf.pos=1082903825;
  t->Vserver = Aserver;
- sf.pos=9162002;
+ sf.pos=1082903826;
  t->Vrequest = Arequest;
- sf.pos=9162003;
+ sf.pos=1082903827;
  t->Vresponse = Aresponse;
  e->topFrame = sf.prev;
  return t;
@@ -10881,9 +11928,10 @@ YphE *Ytlk(YphE *t, Tc *Ato) {
  }
  sf.frof = Ytlkfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=7346200; t = Za(sizeof(YphE));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1081088024; t = Za(sizeof(YphE));}
  sf.pos=7346201;
  t->Vname = ((Tc*)&YRBq);
  sf.pos=7346202;
@@ -10908,21 +11956,22 @@ Tb YSxaa(YphE *t, YtzZ *Acontext) {
  }
  sf.frof = YSxaafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=5298900;
+  sf.pos=1079040724;
   ZthrowThisNil();
  }
- sf.pos=5298901;
+ sf.pos=1079040725;
  Acontext->Vresponse->Vbody = ZcS8(((Tc*)&Yme1), ((Tc*)&Y8Uo), Acontext->Vserver->Vbase, t->VtoURL, ((Tc*)&YG9), (t0 = Acontext->Vserver->Vbase), t->VtoURL, ((Tc*)&YFDK));
  sf.pos=5298902;
  Acontext->Vresponse->Vcode = t->Vcode;
  sf.pos=5298903;
  Acontext->Vresponse->Vmsg = ((Tc*)&YKIR);
- sf.pos=5298904;
+ sf.pos=1079040728;
  *((Tc **)ZDictGetPtrP(Acontext->Vresponse->VheaderItems, (Tz)(void*)((Tc*)&YEsW))) = t->VtoURL;
- sf.pos=5298905;
+ sf.pos=1079040729;
  r = 1;
  e->topFrame = sf.prev;
  return r;
@@ -10939,19 +11988,20 @@ void YphE__Y3fn(YphE *t, Tc *Apath) {
  }
  sf.frof = YphE__Y3fnfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=817300;
+  sf.pos=1074559124;
   ZthrowThisNil();
  }
  sf.pos=817301;
  if ((t->Vpaths == NULL))
  {
-  sf.pos=817302;
+  sf.pos=1074559126;
   t->Vpaths = ZnewList((Tt*)&string__T, 0);
  }
- sf.pos=817303;
+ sf.pos=1074559127;
  ZLap((Tl*)t->Vpaths, (Tz)(void*)Apath);
  e->topFrame = sf.prev;
  return;
@@ -10974,10 +12024,11 @@ Tb YphE__YU_W(YphE *t, YtzZ *Acontext) {
  }
  sf.frof = YphE__YU_Wfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=3318300;
+  sf.pos=1077060124;
   ZthrowThisNil();
  }
  sf.pos=3318301;
@@ -10997,13 +12048,13 @@ Tb YphE__YU_W(YphE *t, YtzZ *Acontext) {
     sf.pos=3318304;
     if ((t->VmimeType != NULL))
     {
-     sf.pos=3318305;
+     sf.pos=1077060129;
      YDSB(Acontext->Vresponse, t->VmimeType);
     }
-    sf.pos=3318306;
+    sf.pos=1077060130;
     if (YSxaa(t, Acontext))
     {
-     sf.pos=3318307;
+     sf.pos=1077060131;
      r = 1;
      rt = 1;
      goto YbmA;
@@ -11013,13 +12064,14 @@ YbmA:
    }
 YNgR:
    if (rt) goto YSGl;
+   if (e->wantGC) ZthreadGC();
    sf.pos=3318308;
    }
   }
 YSGl:
   if (rt) goto YrIx;
  }
- sf.pos=3318309;
+ sf.pos=1077060133;
  r = 0;
 YrIx:
  e->topFrame = sf.prev;
@@ -11037,10 +12089,11 @@ void YphE__YuzN(YphE *t, Tc *Atype) {
  }
  sf.frof = YphE__YuzNfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=2469700;
+  sf.pos=1076211524;
   ZthrowThisNil();
  }
  sf.pos=2469701;
@@ -11087,9 +12140,10 @@ YX8j *Yb5K(YX8j *t, Tc *AfileName) {
  }
  sf.frof = Yb5Kfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=9433600; t = Za(sizeof(YX8j));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1083175424; t = Za(sizeof(YX8j));}
  sf.pos=9433601;
  t->Vname = ((Tc*)&YAkv);
  sf.pos=9433602;
@@ -11110,17 +12164,18 @@ Tb Y3hma(YX8j *t, YtzZ *Acontext) {
  }
  sf.frof = Y3hmafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=5386300;
+  sf.pos=1079128124;
   ZthrowThisNil();
  }
- sf.pos=5386301;
+ sf.pos=1079128125;
  Yl0k(ZcS5(((Tc*)&Y95j), Acontext->Vserver->VfileRoot, ((Tc*)&YV), t->VfileName, (Tc*)1));
- sf.pos=5386302;
+ sf.pos=1079128126;
  Acontext->Vresponse->Vbody = YDJh(ZcS3(Acontext->Vserver->VfileRoot, ((Tc*)&YV), t->VfileName));
- sf.pos=5386303;
+ sf.pos=1079128127;
  r = 1;
  e->topFrame = sf.prev;
  return r;
@@ -11137,19 +12192,20 @@ void YX8j__Y3fn(YX8j *t, Tc *Apath) {
  }
  sf.frof = YX8j__Y3fnfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=5306300;
+  sf.pos=1079048124;
   ZthrowThisNil();
  }
  sf.pos=5306301;
  if ((t->Vpaths == NULL))
  {
-  sf.pos=5306302;
+  sf.pos=1079048126;
   t->Vpaths = ZnewList((Tt*)&string__T, 0);
  }
- sf.pos=5306303;
+ sf.pos=1079048127;
  ZLap((Tl*)t->Vpaths, (Tz)(void*)Apath);
  e->topFrame = sf.prev;
  return;
@@ -11172,10 +12228,11 @@ Tb YX8j__YU_W(YX8j *t, YtzZ *Acontext) {
  }
  sf.frof = YX8j__YU_Wfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=3854500;
+  sf.pos=1077596324;
   ZthrowThisNil();
  }
  sf.pos=3854501;
@@ -11195,13 +12252,13 @@ Tb YX8j__YU_W(YX8j *t, YtzZ *Acontext) {
     sf.pos=3854504;
     if ((t->VmimeType != NULL))
     {
-     sf.pos=3854505;
+     sf.pos=1077596329;
      YDSB(Acontext->Vresponse, t->VmimeType);
     }
-    sf.pos=3854506;
+    sf.pos=1077596330;
     if (Y3hma(t, Acontext))
     {
-     sf.pos=3854507;
+     sf.pos=1077596331;
      r = 1;
      rt = 1;
      goto YzW5;
@@ -11211,13 +12268,14 @@ YzW5:
    }
 YCxc:
    if (rt) goto YIo4;
+   if (e->wantGC) ZthreadGC();
    sf.pos=3854508;
    }
   }
 YIo4:
   if (rt) goto YENa;
  }
- sf.pos=3854509;
+ sf.pos=1077596333;
  r = 0;
 YENa:
  e->topFrame = sf.prev;
@@ -11235,10 +12293,11 @@ void YX8j__YuzN(YX8j *t, Tc *Atype) {
  }
  sf.frof = YX8j__YuzNfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=1160300;
+  sf.pos=1074902124;
   ZthrowThisNil();
  }
  sf.pos=1160301;
@@ -11283,9 +12342,10 @@ YzRH *YDye(YzRH *t, Tcb *Afunc) {
  }
  sf.frof = YDyefo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=8898600; t = Za(sizeof(YzRH));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1082640424; t = Za(sizeof(YzRH));}
  sf.pos=8898601;
  t->Vname = ((Tc*)&YEgW);
  sf.pos=8898602;
@@ -11306,15 +12366,16 @@ Tb Y9y4a(YzRH *t, YtzZ *Acontext) {
  }
  sf.frof = Y9y4afo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=3728100;
+  sf.pos=1077469924;
   ZthrowThisNil();
  }
- sf.pos=3728101;
+ sf.pos=1077469925;
  Acontext->Vresponse->Vbody = ((Tc* (*)(Tcb *, YtzZ*))t->VserveFunc->cfunc)((Tcb*)t->VserveFunc, Acontext);
- sf.pos=3728102;
+ sf.pos=1077469926;
  r = 1;
  e->topFrame = sf.prev;
  return r;
@@ -11331,19 +12392,20 @@ void YzRH__Y3fn(YzRH *t, Tc *Apath) {
  }
  sf.frof = YzRH__Y3fnfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=3553700;
+  sf.pos=1077295524;
   ZthrowThisNil();
  }
  sf.pos=3553701;
  if ((t->Vpaths == NULL))
  {
-  sf.pos=3553702;
+  sf.pos=1077295526;
   t->Vpaths = ZnewList((Tt*)&string__T, 0);
  }
- sf.pos=3553703;
+ sf.pos=1077295527;
  ZLap((Tl*)t->Vpaths, (Tz)(void*)Apath);
  e->topFrame = sf.prev;
  return;
@@ -11366,10 +12428,11 @@ Tb YzRH__YU_W(YzRH *t, YtzZ *Acontext) {
  }
  sf.frof = YzRH__YU_Wfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=1409900;
+  sf.pos=1075151724;
   ZthrowThisNil();
  }
  sf.pos=1409901;
@@ -11389,13 +12452,13 @@ Tb YzRH__YU_W(YzRH *t, YtzZ *Acontext) {
     sf.pos=1409904;
     if ((t->VmimeType != NULL))
     {
-     sf.pos=1409905;
+     sf.pos=1075151729;
      YDSB(Acontext->Vresponse, t->VmimeType);
     }
-    sf.pos=1409906;
+    sf.pos=1075151730;
     if (Y9y4a(t, Acontext))
     {
-     sf.pos=1409907;
+     sf.pos=1075151731;
      r = 1;
      rt = 1;
      goto YMWq;
@@ -11405,13 +12468,14 @@ YMWq:
    }
 YFPB:
    if (rt) goto YHWo;
+   if (e->wantGC) ZthreadGC();
    sf.pos=1409908;
    }
   }
 YHWo:
   if (rt) goto YWRD;
  }
- sf.pos=1409909;
+ sf.pos=1075151733;
  r = 0;
 YWRD:
  e->topFrame = sf.prev;
@@ -11429,10 +12493,11 @@ void YzRH__YuzN(YzRH *t, Tc *Atype) {
  }
  sf.frof = YzRH__YuzNfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=495700;
+  sf.pos=1074237524;
   ZthrowThisNil();
  }
  sf.pos=495701;
@@ -11476,18 +12541,19 @@ Y1QG *YAvl(Y1QG *t, Ti Aport) {
  }
  sf.frof = YAvlfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=9633000; t = Y1QGa(NULL);}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1083374824; t = Y1QGa(NULL);}
  sf.pos=9633001;
  t->Vport = Aport;
  sf.pos=9633002;
  if ((t->Vport != 80))
  {
-  sf.pos=9633003;
+  sf.pos=1083374827;
   t->Vbase =  ZcS(t->Vbase, ZcS(((Tc*)&Y5), Zint2string(t->Vport)));
  }
- sf.pos=9633004;
+ sf.pos=1083374828;
  t->VfileRoot = ZcS(YzHL(), ((Tc*)&Ycao));
  e->topFrame = sf.prev;
  return t;
@@ -11504,13 +12570,14 @@ void Yb8i(Y1QG *t, Tr Aservlet) {
  }
  sf.frof = Yb8ifo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=9865000;
+  sf.pos=1083606824;
   ZthrowThisNil();
  }
- sf.pos=9865001;
+ sf.pos=1083606825;
  ZLapIobj((Tl*)t->Vservlets, Aservlet);
  e->topFrame = sf.prev;
  return;
@@ -11539,15 +12606,16 @@ void YC4d(Y1QG *t, YfsL *Apage) {
  }
  sf.frof = YC4dfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=7158200;
+  sf.pos=1080900024;
   ZthrowThisNil();
  }
- sf.pos=7158201;
+ sf.pos=1080900025;
  Vcb = ZaYuVGa(NULL, NULL, NULL, (&ZCB_YZ05), Apage);
- sf.pos=7158202;
+ sf.pos=1080900026;
  Vservlet = Zao(YDye(NULL, ((Tcb*)Vcb)), YzRH__YtrZ_I_imt, 3);
  sf.pos=7158203;
  {
@@ -11557,12 +12625,13 @@ void YC4d(Y1QG *t, YfsL *Apage) {
   Zf1i.valp = (void*)&Vpath;
   Zf1i.i = 0;
   for (; ZforListPtrCont(&Zf1i); ) {
-  sf.pos=7158204;
+  sf.pos=1080900028;
   ((void (*)(void*, Tc*))(Vservlet.table[4]))(Vservlet.ptr, Vpath);
+  if (e->wantGC) ZthreadGC();
   sf.pos=7158205;
   }
  }
- sf.pos=7158206;
+ sf.pos=1080900030;
  ZLapIobj((Tl*)t->Vservlets, Vservlet);
  sf.pos=7158207;
  {
@@ -11572,14 +12641,15 @@ void YC4d(Y1QG *t, YfsL *Apage) {
   Zf11i.valp = (void*)&Vfile;
   Zf11i.i = 0;
   for (; ZforListPtrCont(&Zf11i); ) {
-  sf.pos=7158208;
+  sf.pos=1080900032;
   Vservlet = *Znao(&Vservlet, Yb5K(NULL, Vfile), YX8j__YtrZ_I_imt, 1);
-  sf.pos=7158209;
+  sf.pos=1080900033;
   ((void (*)(void*, Tc*))(Vservlet.table[4]))(Vservlet.ptr, ZcS(((Tc*)&YV), Vfile));
-  sf.pos=7158210;
+  sf.pos=1080900034;
   ((void (*)(void*, Tc*))(Vservlet.table[6]))(Vservlet.ptr, ((Tc*)&YZQt));
-  sf.pos=7158211;
+  sf.pos=1080900035;
   ZLapIobj((Tl*)t->Vservlets, Vservlet);
+  if (e->wantGC) ZthreadGC();
   sf.pos=7158212;
   }
  }
@@ -11603,17 +12673,18 @@ void Yv7Q(Y1QG *t, Tc *Afrom, Tc *Ato) {
  }
  sf.frof = Yv7Qfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=8074200;
+  sf.pos=1081816024;
   ZthrowThisNil();
  }
- sf.pos=8074201;
+ sf.pos=1081816025;
  Vservlet = Ytlk(NULL, Ato);
- sf.pos=8074202;
+ sf.pos=1081816026;
  YphE__Y3fn(Vservlet, Afrom);
- sf.pos=8074203;
+ sf.pos=1081816027;
  Yb8i(t, *Znao(&t0, Vservlet, YphE__YtrZ_I_imt, 0));
  e->topFrame = sf.prev;
  return;
@@ -11675,17 +12746,18 @@ void YVBU(Y1QG *t) {
  }
  sf.frof = YVBUfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=9936600;
+  sf.pos=1083678424;
   ZthrowThisNil();
  }
  sf.pos=9936601;
  VlistenArg = t->VlistenQueueLen;
- sf.pos=9936602;
+ sf.pos=1083678426;
  Yhx8();
- sf.pos=9936603;
+ sf.pos=1083678427;
 #if defined(__MINGW32__) || defined(_MSC_VER)
       {
         static int did_init = 0;
@@ -11737,6 +12809,7 @@ void YVBU(Y1QG *t) {
         char req_string[MAX_HEADER_SIZE];
         socklen_t addr_len = sizeof(client_addr);
         int len;
+ if (e->wantGC) ZthreadGC();
  sf.pos=9936604;
 
         fd = accept(serv_fd, (struct sockaddr *)&client_addr, &addr_len);
@@ -11750,12 +12823,13 @@ void YVBU(Y1QG *t) {
           if (len < 0) perror("HTTP.Server read header");
           continue;
         }
- sf.pos=9936605;
+ sf.pos=1083678429;
         req_string[len] = 0;
         VreqString = Zstr(req_string);
- sf.pos=9936606;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1083678430;
  Vreq = YF0N(NULL);
- sf.pos=9936607;
+ sf.pos=1083678431;
  Vsi = ZstringFindChar(VreqString, 32, 0);
  sf.pos=9936608;
  if ((Vsi < 0))
@@ -11763,7 +12837,7 @@ void YVBU(Y1QG *t) {
   sf.pos=9936609;
           continue;
  }
- sf.pos=9936610;
+ sf.pos=1083678434;
  Vmethod = ZstringToLower(ZstringSlice(VreqString, 0, (Vsi - 1), 0));
  sf.pos=9936611;
  {
@@ -11772,7 +12846,7 @@ void YVBU(Y1QG *t) {
   Zf1.count = 9;
   Zf1.idx = 0;
   for (ZforEnumGetEnum(&Zf1, &Vt); ZforEnumContEnum(&Zf1); ZforEnumNextEnum(&Zf1, &Vt)) {
-  sf.pos=9936612;
+  sf.pos=1083678436;
   if ((ZstringCmp(Zenum2string(MHTTPModule__ERequestType, Vt), Vmethod) == 0))
   {
    sf.pos=9936613;
@@ -11782,51 +12856,52 @@ void YVBU(Y1QG *t) {
   }
 Yj3e:
   if (rt == 2) { rt &= 1; break; }
+  if (e->wantGC) ZthreadGC();
   sf.pos=9936614;
   }
  }
- sf.pos=9936615;
+ sf.pos=1083678439;
  while ((ZstringGetChar(VreqString, Vsi) == 32))
  {
   sf.pos=9936616;
   ++(Vsi);
- sf.pos=9936617;
+ sf.pos=1083678441;
  }
  sf.pos=9936618;
  Vei = Vsi;
- sf.pos=9936619;
+ sf.pos=1083678443;
  while (((ZstringGetChar(VreqString, Vei) != 32) && (ZstringGetChar(VreqString, Vei) != 0)))
  {
   sf.pos=9936620;
   ++(Vei);
- sf.pos=9936621;
+ sf.pos=1083678445;
  }
- sf.pos=9936622;
+ sf.pos=1083678446;
  Vreq->Vpath = ZstringSlice(VreqString, Vsi, (Vei - 1), 0);
- sf.pos=9936623;
+ sf.pos=1083678447;
  Vqi = ZstringFindChar(Vreq->Vpath, 63, 0);
  sf.pos=9936624;
  if ((Vqi >= 0))
  {
-  sf.pos=9936625;
+  sf.pos=1083678449;
   Vreq->Vparams = ZstringSlice(Vreq->Vpath, (Vqi + 1), -1, 0);
-  sf.pos=9936626;
+  sf.pos=1083678450;
   Vreq->Vpath = ZstringSlice(Vreq->Vpath, 0, (Vqi - 1), 0);
  }
- sf.pos=9936627;
+ sf.pos=1083678451;
  while ((ZstringGetChar(VreqString, Vei) == 32))
  {
   sf.pos=9936628;
   ++(Vei);
- sf.pos=9936629;
+ sf.pos=1083678453;
  }
- sf.pos=9936630;
+ sf.pos=1083678454;
  Veol = ZstringFindChar2(VreqString, 10, Vei, 0);
  Vbol = 0;
  sf.pos=9936631;
  if ((Veol < 0))
  {
-  sf.pos=9936632;
+  sf.pos=1083678456;
   Veol = (ZstringSize(VreqString) - 1);
   sf.pos=9936633;
   Vbol = Veol;
@@ -11837,14 +12912,14 @@ Yj3e:
   Vbol = (Veol + 1);
   sf.pos=9936635;
   --(Veol);
-  sf.pos=9936636;
+  sf.pos=1083678460;
   if ((ZstringGetChar(VreqString, Veol) == 13))
   {
    sf.pos=9936637;
    --(Veol);
   }
  }
- sf.pos=9936638;
+ sf.pos=1083678462;
  Vreq->VhttpVersion = ZstringSlice(VreqString, Vei, Veol, 0);
  sf.pos=9936639;
  if ((t->Vverbosity != 0))
@@ -11854,7 +12929,7 @@ Yj3e:
   sf.pos=9936641;
   if ((Vreq->Vparams != NULL))
   {
-   sf.pos=9936642;
+   sf.pos=1083678466;
    Vparams = ZcS3(((Tc*)&Yj86), Vreq->Vparams, ((Tc*)&YN));
   }
   sf.pos=9936643;
@@ -11862,15 +12937,15 @@ Yj3e:
   sf.pos=9936644;
   if ((ZstringCmp(Vreq->VhttpVersion, ((Tc*)&Ye88)) != 0))
   {
-   sf.pos=9936645;
+   sf.pos=1083678469;
    Vvers = ZcS3(((Tc*)&YmUM), Vreq->VhttpVersion, ((Tc*)&YN));
   }
-  sf.pos=9936646;
+  sf.pos=1083678470;
   Yl0k(ZcS8(((Tc*)&YpFn), ZstringToUpper(Zenum2string(MHTTPModule__ERequestType, Vreq->Vtype)), ((Tc*)&Y5Y), (t0 = Vreq->Vpath), ((Tc*)&YN), Vparams, Vvers, (Tc*)1));
   sf.pos=9936647;
   if ((t->Vverbosity == 2))
   {
-   sf.pos=9936648;
+   sf.pos=1083678472;
    Yl0k(ZcS3(((Tc*)&YUqj), VreqString, ((Tc*)&YN)));
   }
  }
@@ -11878,19 +12953,19 @@ Yj3e:
  while (1)
  {
   Ti Vcolon;
-  sf.pos=9936650;
+  sf.pos=1083678474;
   Veol = ZstringFindChar2(VreqString, 10, Vbol, 0);
   sf.pos=9936651;
   if ((Veol < 0))
   {
-   sf.pos=9936652;
+   sf.pos=1083678476;
    Yl0k(((Tc*)&Yetr));
-   sf.pos=9936653;
+   sf.pos=1083678477;
    Vbol = ZstringSize(VreqString);
    rt = 2;
    goto Yaoy;
   }
-  sf.pos=9936654;
+  sf.pos=1083678478;
   if (((Veol == Vbol) || (((Veol == (Vbol + 1)) && (ZstringGetChar(VreqString, Vbol) == 13)))))
   {
    sf.pos=9936655;
@@ -11898,13 +12973,13 @@ Yj3e:
    rt = 2;
    goto Yaoy;
   }
-  sf.pos=9936656;
+  sf.pos=1083678480;
   Vcolon = ZstringFindChar2(VreqString, 58, Vbol, 0);
   sf.pos=9936657;
   if ((Vcolon > 0))
   {
    Ti VfieldStart;
-   sf.pos=9936658;
+   sf.pos=1083678482;
    VfieldName = ZstringToLower(ZstringSlice(VreqString, Vbol, (Vcolon - 1), 0));
    sf.pos=9936659;
    VfieldValue = ((Tc*)&Ya);
@@ -11916,29 +12991,29 @@ Yj3e:
     Ti VfieldEnd;
     sf.pos=9936662;
     VfieldEnd = (Veol - 1);
-    sf.pos=9936663;
+    sf.pos=1083678487;
     if ((ZstringGetChar(VreqString, VfieldEnd) == 13))
     {
      sf.pos=9936664;
      --(VfieldEnd);
     }
-    sf.pos=9936665;
+    sf.pos=1083678489;
     while ((Y2jx(ZstringGetChar(VreqString, VfieldStart)) && (VfieldStart <= VfieldEnd)))
     {
      sf.pos=9936666;
      ++(VfieldStart);
-    sf.pos=9936667;
+    sf.pos=1083678491;
     }
-    sf.pos=9936668;
+    sf.pos=1083678492;
     while ((Y2jx(ZstringGetChar(VreqString, VfieldEnd)) && (VfieldEnd >= VfieldStart)))
     {
      sf.pos=9936669;
      --(VfieldEnd);
-    sf.pos=9936670;
+    sf.pos=1083678494;
     }
-    sf.pos=9936671;
+    sf.pos=1083678495;
     VfieldValue =  ZcS(VfieldValue, ZstringSlice(VreqString, VfieldStart, VfieldEnd, 0));
-    sf.pos=9936672;
+    sf.pos=1083678496;
     if (!(Y2jx(ZstringGetChar(VreqString, (Veol + 1)))))
     {
      rt = 2;
@@ -11946,7 +13021,7 @@ Yj3e:
     }
     sf.pos=9936673;
     Vbol = (Veol + 1);
-    sf.pos=9936674;
+    sf.pos=1083678498;
     Veol = ZstringFindChar2(VreqString, 10, Vbol, 0);
     sf.pos=9936675;
     if ((Veol < 0))
@@ -11956,19 +13031,19 @@ Yj3e:
     }
     sf.pos=9936676;
     VfieldStart = (Vbol + 1);
-    sf.pos=9936677;
+    sf.pos=1083678501;
     VfieldValue =  ZcS(VfieldValue, ((Tc*)&YG));
 YU1X:
     if (rt == 2) { rt &= 1; break; }
    sf.pos=9936678;
    }
-   sf.pos=9936679;
+   sf.pos=1083678503;
    if (ZDictHas(Vreq->VheaderItems, (Tz)(void*)VfieldName))
    {
-    sf.pos=9936680;
+    sf.pos=1083678504;
     VfieldValue = ZcS3(((Tc *)ZDictGetPtr(Vreq->VheaderItems, (Tz)(void*)VfieldName)), ((Tc*)&Ydha), VfieldValue);
    }
-   sf.pos=9936681;
+   sf.pos=1083678505;
    *((Tc **)ZDictGetPtrP(Vreq->VheaderItems, (Tz)(void*)VfieldName)) = VfieldValue;
   }
   sf.pos=9936682;
@@ -11980,31 +13055,31 @@ Yaoy:
  sf.pos=9936684;
  if ((t->Vverbosity == 2))
  {
-  sf.pos=9936685;
+  sf.pos=1083678509;
   Yl0k(ZcS(((Tc*)&Y5UY), ZDictToString(Vreq->VheaderItems, 1, 1)));
  }
  sf.pos=9936686;
  VbodySize = 0;
- sf.pos=9936687;
+ sf.pos=1083678511;
  if (ZDictHas(Vreq->VheaderItems, (Tz)(void*)((Tc*)&YSBt)))
  {
-  sf.pos=9936688;
+  sf.pos=1083678512;
   VbodySize = ZstringToInt(((Tc *)ZDictGetPtr(Vreq->VheaderItems, (Tz)(void*)((Tc*)&YSBt))), 1, 0);
   sf.pos=9936689;
   if ((t->Vverbosity != 0))
   {
-   sf.pos=9936690;
+   sf.pos=1083678514;
    Yl0k(ZcS(((Tc*)&Y6Ov), Zint2string(VbodySize)));
   }
  }
  sf.pos=9936691;
  if ((VbodySize > 0))
  {
-  sf.pos=9936692;
+  sf.pos=1083678516;
   Vwriter = Za(sizeof(YjUM));
-  sf.pos=9936693;
+  sf.pos=1083678517;
   YJqza(Vwriter, ZstringSlice(VreqString, Vbol, -1, 0));
-  sf.pos=9936694;
+  sf.pos=1083678518;
   while ((Yd3R(Vwriter) < VbodySize))
   {
    Ti Vlen;
@@ -12012,20 +13087,21 @@ Yaoy:
    sf.pos=9936695;
    if ((t->Vverbosity == 2))
    {
-    sf.pos=9936696;
+    sf.pos=1083678520;
     Yl0k(((Tc*)&YLqJ));
    }
    sf.pos=9936697;
             Vlen = sckt_read(fd, req_string, MAX_HEADER_SIZE - 1);
             if (Vlen > 0) {
               req_string[Vlen] = 0;
-   sf.pos=9936698;
+   sf.pos=1083678522;
               VreqString = Zstr(req_string);
             }
+   if (e->wantGC) ZthreadGC();
    sf.pos=9936699;
    if ((t->Vverbosity == 2))
    {
-    sf.pos=9936700;
+    sf.pos=1083678524;
     Yl0k(ZcS(((Tc*)&Ylp1), Zint2string(Vlen)));
    }
    sf.pos=9936701;
@@ -12034,35 +13110,35 @@ Yaoy:
     rt = 2;
     goto YAno;
    }
-   sf.pos=9936702;
+   sf.pos=1083678526;
    YJqza(Vwriter, VreqString);
 YAno:
    if (rt == 2) { rt &= 1; break; }
-  sf.pos=9936703;
+  sf.pos=1083678527;
   }
-  sf.pos=9936704;
+  sf.pos=1083678528;
   Vreq->Vbody = YbNW(Vwriter);
   sf.pos=9936705;
   if ((t->Vverbosity == 2))
   {
-   sf.pos=9936706;
+   sf.pos=1083678530;
    Yvcu(ZcS3(((Tc*)&YLih), Zint2string(ZbyteStringSize(Vreq->Vbody)), ((Tc*)&YrD_)));
-   sf.pos=9936707;
+   sf.pos=1083678531;
    if ((ZbyteStringSize(Vreq->Vbody) > 1000))
    {
-    sf.pos=9936708;
+    sf.pos=1083678532;
     Yl0k(ZstringSlice(ZbyteStringCheckUtf8(Vreq->Vbody), 0, 500, 0));
-    sf.pos=9936709;
+    sf.pos=1083678533;
     Yl0k(((Tc*)&YKUO));
-    sf.pos=9936710;
+    sf.pos=1083678534;
     Yvcu(ZstringSlice(ZbyteStringCheckUtf8(Vreq->Vbody), -500, -1, 0));
    }
    else
    {
-    sf.pos=9936711;
+    sf.pos=1083678535;
     Yvcu(ZbyteStringCheckUtf8(Vreq->Vbody));
    }
-   sf.pos=9936712;
+   sf.pos=1083678536;
    Yl0k(((Tc*)&YN));
   }
  }
@@ -12073,10 +13149,10 @@ YAno:
  }
  sf.pos=9936714;
  t->Vbusy = 1;
- sf.pos=9936715;
+ sf.pos=1083678539;
  Vresp = YikN(NULL);
  Vdone = 0;
- sf.pos=9936716;
+ sf.pos=1083678540;
  Vcontext = Y89Z(NULL, t, Vreq, Vresp);
  sf.pos=9936717;
  {
@@ -12084,7 +13160,7 @@ YAno:
   Tn *te = ZgetEnv();
   int try_index = te->tryCtxUsed;
   volatile int did_jump = 0;
-  sf.pos=9936718;
+  sf.pos=1083678542;
   ZtryDeeper(te, &sf);
   if (setjmp(te->tryCtx[try_index].jmpBuf) != 0) {
    ++did_jump;
@@ -12100,7 +13176,7 @@ YAno:
     Zf3i.valp = (void*)&Vservlet;
     Zf3i.i = 0;
     for (; ZforListIobjCont(&Zf3i); ) {
-    sf.pos=9936720;
+    sf.pos=1083678544;
     if (((Tb (*)(void*, YtzZ*))(((Tr)Vservlet).table[5]))(((Tr)Vservlet).ptr, ((YtzZ*)Vcontext)))
     {
      sf.pos=9936721;
@@ -12110,6 +13186,7 @@ YAno:
     }
 YouY:
     if (rt == 2) { rt &= 1; break; }
+    if (e->wantGC) ZthreadGC();
     sf.pos=9936722;
     }
    }
@@ -12122,12 +13199,12 @@ YouY:
    sf.pos=9936723;
    if ((t->Vverbosity == 2))
    {
-    sf.pos=9936724;
+    sf.pos=1083678548;
     Yl0k(ZcS(((Tc*)&Y_P0), ((Tc* (*)(void*, Tb))(((Tr)Ve).table[9]))(((Tr)Ve).ptr, 1)));
    }
    else
    {
-    sf.pos=9936725;
+    sf.pos=1083678549;
     Yl0k(ZcS(((Tc*)&Y_P0), ((Tc* (*)(void*))(((Tr)Ve).table[6]))(((Tr)Ve).ptr)));
    }
   }
@@ -12143,12 +13220,12 @@ YouY:
   sf.pos=9936729;
   Vresp->Vbody = ((Tc*)&YaLI);
  }
- sf.pos=9936730;
+ sf.pos=1083678554;
  YjIQ(Vresp, ZstringSize(Vresp->Vbody));
- sf.pos=9936731;
+ sf.pos=1083678555;
  VrespString = ZcS5(((Tc*)&Y5E7), Zint2string(Vresp->Vcode), ((Tc*)&YG), (t0 = Vresp->Vmsg), ((Tc*)&Yau));
  VrespLen = 0;
- sf.pos=9936732;
+ sf.pos=1083678556;
  {
   Tfl Zf1i;
   Zf1 = ZDictKeys(Vresp->VheaderItems, 0);
@@ -12156,49 +13233,51 @@ YouY:
   Zf1i.valp = (void*)&Vkey;
   Zf1i.i = 0;
   for (; ZforListPtrCont(&Zf1i); ) {
-  sf.pos=9936733;
+  sf.pos=1083678557;
   VrespString =  ZcS(VrespString, ZcS5(Vkey, ((Tc*)&YFDa), (t0 = ((Tc *)ZDictGetPtr(Vresp->VheaderItems, (Tz)(void*)Vkey))), ((Tc*)&Yau), (Tc*)1));
-  sf.pos=9936734;
+  if (e->wantGC) ZthreadGC();
+  sf.pos=1083678558;
   }
  }
- sf.pos=9936735;
+ sf.pos=1083678559;
  VrespLen = ZstringSize(VrespString);
  sf.pos=9936736;
  if ((t->Vverbosity != 0))
  {
-  sf.pos=9936737;
+  sf.pos=1083678561;
   Yl0k(ZcS(((Tc*)&YkHK), Zint2string(Vresp->Vcode)));
   sf.pos=9936738;
   if ((t->Vverbosity == 2))
   {
-   sf.pos=9936739;
+   sf.pos=1083678563;
    Yl0k(ZcS(((Tc*)&Y5UY), ZDictToString(Vresp->VheaderItems, 1, 1)));
-   sf.pos=9936740;
+   sf.pos=1083678564;
    Yvcu(((Tc*)&Y6wd));
-   sf.pos=9936741;
+   sf.pos=1083678565;
    if ((ZstringSize(Vresp->Vbody) > 1000))
    {
-    sf.pos=9936742;
+    sf.pos=1083678566;
     Yl0k(ZstringSlice(Vresp->Vbody, 0, 500, 0));
-    sf.pos=9936743;
+    sf.pos=1083678567;
     Yl0k(((Tc*)&YKUO));
-    sf.pos=9936744;
+    sf.pos=1083678568;
     Yvcu(ZstringSlice(Vresp->Vbody, -500, -1, 0));
    }
    else
    {
-    sf.pos=9936745;
+    sf.pos=1083678569;
     Yvcu(Vresp->Vbody);
    }
-   sf.pos=9936746;
+   sf.pos=1083678570;
    Yl0k(((Tc*)&YN));
   }
  }
  sf.pos=9936747;
         /* dummy loop so that we can use "break" to get to sckt_close() */
         for (;;) {
- sf.pos=9936748;
+ sf.pos=1083678572;
           char *s = ZgetCstring(VrespString);
+ if (e->wantGC) ZthreadGC();
  sf.pos=9936749;
           if (sckt_write(fd, s, (size_t)VrespLen) <= 0)
           {
@@ -12210,15 +13289,16 @@ YouY:
  {
   sf.pos=9936751;
   VrespString = Vresp->Vbody;
-  sf.pos=9936752;
+  sf.pos=1083678576;
   VrespLen = ZstringSize(VrespString);
   sf.pos=9936753;
             if (sckt_write(fd, "\r\n", 2) != 2) {
               perror("HTTP.Server write separator");
               break;
             }
-  sf.pos=9936754;
+  sf.pos=1083678578;
             char *s = ZgetCstring(VrespString);
+  if (e->wantGC) ZthreadGC();
   sf.pos=9936755;
             if (VrespLen > 0 && sckt_write(fd, s, (size_t)VrespLen) <= 0)
             {
@@ -12235,7 +13315,7 @@ YouY:
  sf.pos=9936758;
  if (t->VdidQuit)
  {
-  sf.pos=9936759;
+  sf.pos=1083678583;
   YWty(t->VquitPipe, 1);
  }
  sf.pos=9936760;
@@ -12256,13 +13336,14 @@ Ts YQj8(Y1QG *t, Tc *Apage) {
  }
  sf.frof = YQj8fo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=7636100;
+  sf.pos=1081377924;
   ZthrowThisNil();
  }
- sf.pos=7636101;
+ sf.pos=1081377925;
  r = YNAV(ZcS5(((Tc*)&YhLu), Zint2string(t->Vport), ((Tc*)&YV), Apage, (Tc*)1));
  e->topFrame = sf.prev;
  return r;
@@ -12278,13 +13359,14 @@ void YqJz(Y1QG *t) {
  }
  sf.frof = YqJzfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=3442600;
+  sf.pos=1077184424;
   ZthrowThisNil();
  }
- sf.pos=3442601;
+ sf.pos=1077184425;
  while (((YIWKa(t->VquitPipe) == 0) && !(t->VdidQuit)))
   ;
  e->topFrame = sf.prev;
@@ -12303,10 +13385,11 @@ void Y1QG__YTgs__Y7C8(Y1QG *t) {
  }
  sf.frof = Y1QG__YTgs__Y7C8fo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=3987700;
+  sf.pos=1077729524;
   ZthrowThisNil();
  }
  sf.pos=3987701;
@@ -12327,19 +13410,33 @@ void Y1QG__YTgs__Y7C8(Y1QG *t) {
  e->startFrames[i].prev = prev;
  prev = &e->startFrames[i];
  ++i;
+  if (e->wantGC) ZthreadGC();
   sf.pos=3987704;
   }
  }
  sf.pos=3987705;
  sf.prev = prev;
- sf.pos=3987706;
- pthread_mutex_lock(&threadsMutex);
- ZLa(threads, -1, (Tz)(void*)e);
- pthread_mutex_unlock(&threadsMutex);
+ sf.pos=1077729530;
+ for (;;) {
+  pthread_mutex_lock(&gcMarkPhaseMutex);
+  while (gcSTW || gcMarkPhase) pthread_cond_wait(&gcMarkPhaseCond, &gcMarkPhaseMutex);
+  pthread_mutex_unlock(&gcMarkPhaseMutex);
+  pthread_mutex_lock(&threadsMutex);
+  if (gcSTW) {
+   pthread_mutex_unlock(&threadsMutex);
+  } else {
+   ZLa(threads, -1, (Tz)(void*)e);
+   pthread_mutex_unlock(&threadsMutex);
+   break;
+  }
+ }
+ if (e->wantGC) ZthreadGC();
  sf.pos=3987707;
  YVBU(t);
 
  e->finished = 1;
+ sf.pos=3987708;
+ if (e->wantGC) ZthreadGC();
  e->topFrame = sf.prev;
  return;
 }
@@ -12356,17 +13453,18 @@ void Y1QG__YTgs__YSuw(Y1QG *t) {
  }
  sf.frof = Y1QG__YTgs__YSuwfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=2210300;
+  sf.pos=1075952124;
   ZthrowThisNil();
  }
  sf.pos=2210301;
  Zsf *top = e->topFrame;
- sf.pos=2210302;
+ sf.pos=1075952126;
  t->Vstack = ZnewList((Tt*)&int__T, 0);
- sf.pos=2210303;
+ sf.pos=1075952127;
  while ((ZListSize(t->Vstack) < 30))
  {
   Ti Ventry;
@@ -12375,9 +13473,9 @@ void Y1QG__YTgs__YSuw(Y1QG *t) {
   if (top == NULL) break;
   Ventry = top->pos;
   top = top->prev;
-  sf.pos=2210305;
+  sf.pos=1075952129;
   ZListInsert((Tl*)t->Vstack, 0, (Tz)(Ti)Ventry);
- sf.pos=2210306;
+ sf.pos=1075952130;
  }
  sf.pos=2210307;
  if (pthread_create(&t->Vthread_id, NULL, (void *(*)(void *))Y1QG__YTgs__Y7C8, t) != 0) {
@@ -12385,7 +13483,7 @@ void Y1QG__YTgs__YSuw(Y1QG *t) {
  if (1)
  {
   Tr ex;
-  sf.pos=2210309;
+  sf.pos=1075952133;
   *Znao(&ex, YgC4__YwtA__YRHR(NULL, ((Tc*)&YgzQ)), YgC4__Ytlm_I_imt, 31);
   ZthrowIobject(ex);
  }
@@ -12412,20 +13510,34 @@ Ts Y1QG__YTgs__Y2Cz(Y1QG *t, Te _fr) {
  }
  sf.frof = Y1QG__YTgs__Y2Czfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=9628200;
+  sf.pos=1083370024;
   ZthrowThisNil();
  }
  sf.pos=9628201;
  pthread_detach(t->Vthread_id);
- sf.pos=9628202;
+ sf.pos=1083370026;
  r = 1;
  e->topFrame = sf.prev;
  return r;
 }
+Zfo Y1QG__YcCuafo[2] = {{0,(Tt*)&Y1QG__T},{0,0}};
 void Y1QG__YcCua(Y1QG *t) {
+ Tn *e = ZgetEnv();
+ Zsf sf;
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  Y1QG__YcCuafo[0].off = (void*)&sf - (void*)&t;
+ }
+ sf.frof = Y1QG__YcCuafo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
    ZthrowThisNil();
  }
@@ -12433,6 +13545,7 @@ void Y1QG__YcCua(Y1QG *t) {
  {
   ((void (*)(Tcb *))t->Vproc->cfunc)((Tcb*)t->Vproc);
  }
+ e->topFrame = sf.prev;
  return;
 }
 Zfo Y1QGafo[2] = {{0,(Tt*)&Y1QG__T},{0,0}};
@@ -12447,17 +13560,18 @@ Y1QG *Y1QGa(Y1QG *t) {
  }
  sf.frof = Y1QGafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  sf.pos=3286400;
  t->VlistenQueueLen = 50;
- sf.pos=3286401;
+ sf.pos=1077028225;
  t->Vservlets = ZnewList((Tt*)&iobj__T, 0);
  sf.pos=3286402;
  t->Vbase = ((Tc*)&YoWK);
  sf.pos=3286403;
  t->Vverbosity = 1;
- sf.pos=3286404;
+ sf.pos=1077028228;
  t->VquitPipe = YPsV(NULL);
  e->topFrame = sf.prev;
  return t;
@@ -12498,20 +13612,36 @@ Tb Y2jx(Ti Ac) {
  Tb r = 0;
  sf.frof = NULL;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=7420000;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1081161824;
  r = ((Ac == 32) || (Ac == 9));
  e->topFrame = sf.prev;
  return r;
 }
 /* HTTPModule done */
 /* including ZModule bodies */
+Zfo Ypp_afo[3] = {{0,(Tt*)&YkxB__T},{0,(Tt*)&string__T},{0,0}};
 YkxB *Ypp_a(YkxB *t, Tc *Afilename, Ti Alnum, Ti Acol) {
+ Tn *e = ZgetEnv();
+ Zsf sf;
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  Ypp_afo[0].off = (void*)&sf - (void*)&t;
+  Ypp_afo[1].off = (void*)&sf - (void*)&Afilename;
+ }
+ sf.frof = Ypp_afo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {t = Za(sizeof(YkxB));}
  t->Vfilename = Afilename;
  t->Vlnum = Alnum;
  t->Vcol = Acol;
+ e->topFrame = sf.prev;
  return t;
 }
 Zfo YpI_fo[3] = {{0,(Tt*)&YkxB__T},{0,(Tt*)&YjUM__T},{0,0}};
@@ -12528,34 +13658,35 @@ Tc *YpI_(YkxB *t) {
  }
  sf.frof = YpI_fo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=1818700;
+  sf.pos=1075560524;
   ZthrowThisNil();
  }
- sf.pos=1818701;
+ sf.pos=1075560525;
  Vw = Za(sizeof(YjUM));
  sf.pos=1818702;
  if ((t->Vfilename == NULL))
  {
-  sf.pos=1818703;
+  sf.pos=1075560527;
   YJqza(Vw, ((Tc*)&YKo1));
  }
  else
  {
-  sf.pos=1818704;
+  sf.pos=1075560528;
   YJqza(Vw, t->Vfilename);
  }
- sf.pos=1818705;
+ sf.pos=1075560529;
  YJqza(Vw, ((Tc*)&YBpY));
- sf.pos=1818706;
+ sf.pos=1075560530;
  YjUM__YHhZb(Vw, t->Vlnum);
- sf.pos=1818707;
+ sf.pos=1075560531;
  YJqza(Vw, ((Tc*)&Y8ES));
- sf.pos=1818708;
+ sf.pos=1075560532;
  YjUM__YHhZb(Vw, t->Vcol);
- sf.pos=1818709;
+ sf.pos=1075560533;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -12592,24 +13723,25 @@ Tc *Yvnf(Tc *Athis, Ti Afrom, Ti Ato) {
  }
  sf.frof = Yvnffo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  sf.pos=1203500;
  if (Athis == NULL)
  {
-  sf.pos=1203501;
+  sf.pos=1074945325;
   r = NULL;
   rt = 1;
   goto YIVu;
  }
- sf.pos=1203502;
+ sf.pos=1074945326;
  Vi = ZstringFindChar(Athis, Afrom, 0);
  sf.pos=1203503;
  if ((Vi >= 0))
  {
   Ti VnextChar;
   VnextChar = 0;
-  sf.pos=1203504;
+  sf.pos=1074945328;
   Vw = Za(sizeof(YjUM));
   sf.pos=1203505;
   while ((Vi >= 0))
@@ -12617,25 +13749,25 @@ Tc *Yvnf(Tc *Athis, Ti Afrom, Ti Ato) {
    sf.pos=1203506;
    if ((Vi > VnextChar))
    {
-    sf.pos=1203507;
+    sf.pos=1074945331;
     YJqza(Vw, ZstringSlice(Athis, VnextChar, (Vi - 1), 0));
    }
-   sf.pos=1203508;
+   sf.pos=1074945332;
    YjUM__Ydti(Vw, Ato);
    sf.pos=1203509;
    VnextChar = (Vi + 1);
-   sf.pos=1203510;
+   sf.pos=1074945334;
    Vi = ZstringFindChar2(Athis, Afrom, VnextChar, 0);
   sf.pos=1203511;
   }
-  sf.pos=1203512;
+  sf.pos=1074945336;
   YJqza(Vw, ZstringSlice(Athis, VnextChar, -1, 0));
-  sf.pos=1203513;
+  sf.pos=1074945337;
   r = YbNW(Vw);
   rt = 1;
   goto YIVu;
  }
- sf.pos=1203514;
+ sf.pos=1074945338;
  r = Athis;
 YIVu:
  e->topFrame = sf.prev;
@@ -12651,26 +13783,27 @@ int JConfig(int round) {
   Tn *e = ZgetEnv();
   Zsf sf;
   sf.prev = e->topFrame;
-  sf.pos = 0;
+  sf.pos = 0x40000000;
   sf.frof = NULL;
   e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
   round_done = round;
  if (round == 1) {
-   sf.pos=2239800;
+   sf.pos=1075981624;
    Y4fD = YttT(NULL, ((Tc*)&YYa), ((Tc*)&Yef1), 0, ((Tc*)&YtSW));
-   sf.pos=2239803;
+   sf.pos=1075981627;
    Y6Gp = ((YzqH *)Znio(2, 2239802, (YzqH__Y836(YBtk(NULL, NULL, ((Tc*)&YsHb), ((Tc*)&YsHb), ((Tc*)&YhxU)), ((Tc*)&YeLO)))));
-   sf.pos=2239804;
+   sf.pos=1075981628;
    YJ5o = YBtk(NULL, NULL, ((Tc*)&YApf), ((Tc*)&YXja), ((Tc*)&Yl1G));
-   sf.pos=2239805;
+   sf.pos=1075981629;
    Y6ma = YBtk(NULL, NULL, ((Tc*)&Yerz), ((Tc*)&Ya), ((Tc*)&YTzz));
-   sf.pos=2239806;
+   sf.pos=1075981630;
    YMSZ = YttT(NULL, NULL, ((Tc*)&Y_e2), 0, ((Tc*)&Yslo));
   }
  if (round == 2001) {
-   sf.pos=2239801;
+   sf.pos=1075981625;
    YEPH = YHoR(Y4fD);
-   sf.pos=2239807;
+   sf.pos=1075981631;
    YSaE = YHoR(YMSZ);
   }
   e->topFrame = sf.prev;
@@ -12690,15 +13823,16 @@ YgC4 *YgC4__YwtA__YRHR(YgC4 *t, Tc *Amsg) {
  }
  sf.frof = YgC4__YwtA__YRHRfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=9798500; t = Za(sizeof(YgC4));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1083540324; t = Za(sizeof(YgC4));}
  sf.pos=9798501;
  t->Vmessage = Amsg;
- sf.pos=9798502;
+ sf.pos=1083540326;
  t->Vpos = MZ__callerPos();
- sf.pos=9798503;
- t->Vbacktrace = (sf.pos=9798504, MZ__backtrace(1, -1));
+ sf.pos=1083540327;
+ t->Vbacktrace = (sf.pos=1083540328, MZ__backtrace(1, -1));
  e->topFrame = sf.prev;
  return t;
 }
@@ -12718,17 +13852,18 @@ Tc *YgC4__YwtA__YH0V(YgC4 *t) {
  }
  sf.frof = YgC4__YwtA__YH0Vfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=3380500;
+  sf.pos=1077122324;
   ZthrowThisNil();
  }
- sf.pos=3380501;
+ sf.pos=1077122325;
  Vw = Za(sizeof(YjUM));
- sf.pos=3380502;
+ sf.pos=1077122326;
  YgC4__YwtA__YxaJ(t, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=3380503;
+ sf.pos=1077122327;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -12749,17 +13884,18 @@ Tc *YgC4__YwtA__Yoww(YgC4 *t, Tb Averbose) {
  }
  sf.frof = YgC4__YwtA__Yowwfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=8606100;
+  sf.pos=1082347924;
   ZthrowThisNil();
  }
- sf.pos=8606101;
+ sf.pos=1082347925;
  Vw = Za(sizeof(YjUM));
- sf.pos=8606102;
+ sf.pos=1082347926;
  YgC4__YwtA__YxaJa(t, Averbose, *Znao(&t0, Vw, YjUM__YdXi_imt, 2));
- sf.pos=8606103;
+ sf.pos=1082347927;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -12780,18 +13916,19 @@ void YgC4__YwtA__YxaJa(YgC4 *t, Tb Averbose, Tr Aw) {
  }
  sf.frof = YgC4__YwtA__YxaJafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=705100;
+  sf.pos=1074446924;
   ZthrowThisNil();
  }
- sf.pos=705101;
+ sf.pos=1074446925;
  YgC4__YwtA__YxaJ(t, Aw);
  sf.pos=705102;
  if ((Averbose && (t->Vbacktrace != NULL)))
  {
-  sf.pos=705103;
+  sf.pos=1074446927;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Y62e));
   sf.pos=705104;
   {
@@ -12804,24 +13941,25 @@ void YgC4__YwtA__YxaJa(YgC4 *t, Tb Averbose, Tr Aw) {
    sf.pos=705105;
    if ((Vpos->Vfilename == NULL))
    {
-    sf.pos=705106;
+    sf.pos=1074446930;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yv6_));
    }
    else
    {
-    sf.pos=705107;
+    sf.pos=1074446931;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&Yk));
-    sf.pos=705108;
+    sf.pos=1074446932;
     ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(Vpos));
     sf.pos=705109;
     if ((Vpos->Vtext != NULL))
     {
-     sf.pos=705110;
+     sf.pos=1074446934;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
-     sf.pos=705111;
+     sf.pos=1074446935;
      ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, Vpos->Vtext);
     }
    }
+   if (e->wantGC) ZthreadGC();
    sf.pos=705112;
    }
   }
@@ -12841,31 +13979,32 @@ void YgC4__YwtA__YxaJ(YgC4 *t, Tr Aw) {
  }
  sf.frof = YgC4__YwtA__YxaJfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=1725200;
+  sf.pos=1075467024;
   ZthrowThisNil();
  }
  sf.pos=1725201;
  if ((t->Vpos != NULL))
  {
-  sf.pos=1725202;
+  sf.pos=1075467026;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, YpI_(t->Vpos));
-  sf.pos=1725203;
+  sf.pos=1075467027;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YFDa));
  }
  sf.pos=1725204;
  if (((t->Vmessage != NULL) && (ZbyteStringSize(t->Vmessage) != 0)))
  {
-  sf.pos=1725205;
+  sf.pos=1075467029;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YHbP));
-  sf.pos=1725206;
+  sf.pos=1075467030;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, t->Vmessage);
  }
  else
  {
-  sf.pos=1725207;
+  sf.pos=1075467031;
   ((Ts (*)(void*, Tc*))(Aw.table[1]))(Aw.ptr, ((Tc*)&YDGe));
  }
  e->topFrame = sf.prev;
@@ -12911,15 +14050,16 @@ Ts YTgs__Y2Cz(YTgs *t, Te _fr) {
  }
  sf.frof = YTgs__Y2Czfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=8452100;
+  sf.pos=1082193924;
   ZthrowThisNil();
  }
  sf.pos=8452101;
  pthread_detach(t->Vthread_id);
- sf.pos=8452102;
+ sf.pos=1082193926;
  r = 1;
  e->topFrame = sf.prev;
  return r;
@@ -12947,9 +14087,10 @@ YlXt *YCyl(YlXt *t) {
  }
  sf.frof = YCylfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=5342800; t = ZaF(sizeof(YlXt), ToYlXt, (Ts (*)(void*, Te))YMFu, 0);}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1079084624; t = ZaF(sizeof(YlXt), ToYlXt, (Ts (*)(void*, Te))YMFu, 0);}
  sf.pos=5342801;
  pthread_mutex_init(&t->Vmutex, NULL);
  e->topFrame = sf.prev;
@@ -12966,10 +14107,11 @@ void YHl9(YlXt *t) {
  }
  sf.frof = YHl9fo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=765100;
+  sf.pos=1074506924;
   ZthrowThisNil();
  }
  sf.pos=765101;
@@ -12988,10 +14130,11 @@ void Yvoo(YlXt *t) {
  }
  sf.frof = Yvoofo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=1760500;
+  sf.pos=1075502324;
   ZthrowThisNil();
  }
  sf.pos=1760501;
@@ -13011,15 +14154,16 @@ Ts YMFu(YlXt *t, Te _fr) {
  }
  sf.frof = YMFufo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=8011100;
+  sf.pos=1081752924;
   ZthrowThisNil();
  }
  sf.pos=8011101;
  pthread_mutex_destroy(&t->Vmutex);
- sf.pos=8011102;
+ sf.pos=1081752926;
  r = 1;
  if (r) t->fok |= FOK_OK;
  e->topFrame = sf.prev;
@@ -13042,9 +14186,10 @@ Y0Wo *YXGL(Y0Wo *t) {
  }
  sf.frof = YXGLfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=6882300; t = Za(sizeof(Y0Wo));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1080624124; t = Za(sizeof(Y0Wo));}
  sf.pos=6882301;
  pthread_cond_init(&t->Vcond, NULL);
  e->topFrame = sf.prev;
@@ -13061,10 +14206,11 @@ void YjFj(Y0Wo *t, Tb Aall) {
  }
  sf.frof = YjFjfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=108200;
+  sf.pos=1073850024;
   ZthrowThisNil();
  }
  sf.pos=108201;
@@ -13087,10 +14233,11 @@ void YN6a(Y0Wo *t, YlXt *Alock) {
  }
  sf.frof = YN6afo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=7373400;
+  sf.pos=1081115224;
   ZthrowThisNil();
  }
  sf.pos=7373401;
@@ -13111,9 +14258,10 @@ int JTHREADModule(int round) {
   Tn *e = ZgetEnv();
   Zsf sf;
   sf.prev = e->topFrame;
-  sf.pos = 0;
+  sf.pos = 0x40000000;
   sf.frof = NULL;
   e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
   round_done = round;
  done &= JConfig(round);
   if (round == 0) {
@@ -13138,13 +14286,14 @@ Tr YbZ5(Tl *Athis) {
  }
  sf.frof = YbZ5fo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (Athis == NULL) {
-  sf.pos=9028000;
+  sf.pos=1082769824;
   ZthrowThisNil();
  }
- sf.pos=9028001;
+ sf.pos=1082769825;
  r = *Znao(&t0, YXWx(NULL, Athis), YyHo__Yyfy_imt, 0);
  e->topFrame = sf.prev;
  return r;
@@ -13177,43 +14326,44 @@ Tc *Y9GA(YJgz *Acontext, YfsL *AzutPage) {
  }
  sf.frof = Y9GAfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=3195000;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1076936824;
  Vw = Za(sizeof(YjUM));
- sf.pos=3195001;
+ sf.pos=1076936825;
  VbodyHtml = Yvo6(AzutPage, Acontext);
  sf.pos=3195002;
  if (AzutPage->Vhtml5)
  {
-  sf.pos=3195003;
+  sf.pos=1076936827;
   YJqza(Vw, ((Tc*)&Yf5b));
  }
  else
  {
-  sf.pos=3195004;
+  sf.pos=1076936828;
   YJqza(Vw, ((Tc*)&YzXb));
  }
- sf.pos=3195005;
+ sf.pos=1076936829;
  YJqza(Vw, ((Tc*)&YTMt));
  sf.pos=3195006;
  if (AzutPage->Vhtml5)
  {
-  sf.pos=3195007;
+  sf.pos=1076936831;
   YJqza(Vw, ((Tc*)&Y72I));
  }
  else
  {
-  sf.pos=3195008;
+  sf.pos=1076936832;
   YJqza(Vw, ((Tc*)&YO9V));
  }
- sf.pos=3195009;
+ sf.pos=1076936833;
  YJqza(Vw, ((Tc*)&YuQ3));
- sf.pos=3195010;
+ sf.pos=1076936834;
  YJqza(Vw, AzutPage->Vtitle);
- sf.pos=3195011;
+ sf.pos=1076936835;
  YJqza(Vw, ((Tc*)&Yz2w));
- sf.pos=3195012;
+ sf.pos=1076936836;
  YJqza(Vw, Y4AU(AzutPage));
  sf.pos=3195013;
  {
@@ -13223,12 +14373,13 @@ Tc *Y9GA(YJgz *Acontext, YfsL *AzutPage) {
   Zf1i.valp = (void*)&Vcss;
   Zf1i.i = 0;
   for (; ZforListPtrCont(&Zf1i); ) {
-  sf.pos=3195014;
+  sf.pos=1076936838;
   YJqza(Vw, Vcss);
+  if (e->wantGC) ZthreadGC();
   sf.pos=3195015;
   }
  }
- sf.pos=3195016;
+ sf.pos=1076936840;
  YJqza(Vw, ((Tc*)&YDax));
  sf.pos=3195017;
  {
@@ -13238,29 +14389,64 @@ Tc *Y9GA(YJgz *Acontext, YfsL *AzutPage) {
   Zf11i.valp = (void*)&Vjs;
   Zf11i.i = 0;
   for (; ZforListPtrCont(&Zf11i); ) {
-  sf.pos=3195018;
+  sf.pos=1076936842;
   YJqza(Vw, ((Tc*)&YKo0));
-  sf.pos=3195019;
+  sf.pos=1076936843;
   YJqza(Vw, Vjs);
-  sf.pos=3195020;
+  sf.pos=1076936844;
   YJqza(Vw, ((Tc*)&YqZT));
+  if (e->wantGC) ZthreadGC();
   sf.pos=3195021;
   }
  }
- sf.pos=3195022;
+ sf.pos=1076936846;
  YJqza(Vw, ((Tc*)&Y5_w));
- sf.pos=3195023;
+ sf.pos=1076936847;
  YJqza(Vw, VbodyHtml);
- sf.pos=3195024;
+ sf.pos=1076936848;
  YJqza(Vw, YSZt(Acontext));
- sf.pos=3195025;
+ sf.pos=1076936849;
  YJqza(Vw, ((Tc*)&YDQe));
- sf.pos=3195026;
+ sf.pos=1076936850;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
 }
 /* MainPage done */
+Zfo YHeXfo[2] = {{0,(Tt*)&YyGC__T},{0,0}};
+Ts YHeX(YyGC *t, Te Atype) {
+ Tn *e = ZgetEnv();
+ Zsf sf;
+ Ts r = 0;
+ static int sfF = 0;
+ int rt = 0;
+ if (!sfF) {
+  sfF = 1;
+  YHeXfo[0].off = (void*)&sf - (void*)&t;
+ }
+ sf.frof = YHeXfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {
+  sf.pos=1074988924;
+  ZthrowThisNil();
+ }
+ sf.pos=1074988925;
+ r = 1;
+YobEa:
+ e->topFrame = sf.prev;
+ return r;
+}
+To ToYyGC[] = {
+ {1, 0},
+ {0, (Tt*)&Yhqr__T}, /* active */
+};
+char *StrYyGC[] = {
+ "active",
+};
+Tto YyGC__T = {390, (Tc*)&YG0S, 0, StrYyGC, 0, 0, 0, 0, ToYyGC};
 Zfo YIZdfo[3] = {{0,(Tt*)&YJgz__T},{0,(Tt*)&YtzZ__T},{0,0}};
 YJgz *YIZd(YJgz *t, YtzZ *AhttpContext) {
  Tn *e = ZgetEnv();
@@ -13273,12 +14459,13 @@ YJgz *YIZd(YJgz *t, YtzZ *AhttpContext) {
  }
  sf.frof = YIZdfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=5115500; t = Za(sizeof(YJgz));}
- sf.pos=5115501;
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1078857324; t = Za(sizeof(YJgz));}
+ sf.pos=1078857325;
  t->VhttpContext = AhttpContext;
- sf.pos=5115502;
+ sf.pos=1078857326;
  YIZda(t);
  e->topFrame = sf.prev;
  return t;
@@ -13294,12 +14481,13 @@ YJgz *YIZda(YJgz *t) {
  }
  sf.frof = YIZdafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=3500700; t = Za(sizeof(YJgz));}
- sf.pos=3500701;
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1077242524; t = Za(sizeof(YJgz));}
+ sf.pos=1077242525;
  t->VcssEntries = ZnewList((Tt*)&string__T, 0);
- sf.pos=3500702;
+ sf.pos=1077242526;
  t->VcssNames = YGrg(NULL);
  e->topFrame = sf.prev;
  return t;
@@ -13317,13 +14505,14 @@ Tb YdGR(YJgz *t, Tc *Aname) {
  }
  sf.frof = YdGRfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=9487400;
+  sf.pos=1083229224;
   ZthrowThisNil();
  }
- sf.pos=9487401;
+ sf.pos=1083229225;
  r = YXZk(t->VcssNames, Aname);
  e->topFrame = sf.prev;
  return r;
@@ -13341,18 +14530,55 @@ void Yl3F(YJgz *t, Tc *Aname, Tc *Acss) {
  }
  sf.frof = Yl3Ffo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=6425500;
+  sf.pos=1080167324;
   ZthrowThisNil();
  }
- sf.pos=6425501;
+ sf.pos=1080167325;
  Y432(t->VcssNames, Aname);
- sf.pos=6425502;
+ sf.pos=1080167326;
  ZLap((Tl*)t->VcssEntries, (Tz)(void*)Acss);
  e->topFrame = sf.prev;
  return;
+}
+Zfo Y8Myfo[2] = {{0,(Tt*)&YJgz__T},{0,0}};
+Ts Y8My(YJgz *t, Te AeventType) {
+ Tn *e = ZgetEnv();
+ Zsf sf;
+ Ts r = 0;
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  Y8Myfo[0].off = (void*)&sf - (void*)&t;
+ }
+ sf.frof = Y8Myfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {
+  sf.pos=1076433424;
+  ZthrowThisNil();
+ }
+ sf.pos=2691601;
+ if ((t->VactiveEvents == NULL))
+ {
+  sf.pos=1076433426;
+  t->VactiveEvents = Yh95(NULL);
+ }
+ sf.pos=1076433427;
+ if (!(YyHa(t->VactiveEvents, AeventType)))
+ {
+  sf.pos=1076433428;
+  YGMT(t->VactiveEvents, AeventType);
+ }
+ sf.pos=1076433429;
+ r = 1;
+ e->topFrame = sf.prev;
+ return r;
 }
 Zfo YSZtfo[4] = {{0,(Tt*)&YJgz__T},{0,(Tt*)&YjUM__T},{0,(Tt*)&iobj__T},{0,0}};
 Tc *YSZt(YJgz *t) {
@@ -13371,41 +14597,43 @@ Tc *YSZt(YJgz *t) {
  }
  sf.frof = YSZtfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=3101700;
+  sf.pos=1076843524;
   ZthrowThisNil();
  }
  sf.pos=3101701;
  if ((t->VactiveEvents != NULL))
  {
-  sf.pos=3101702;
+  sf.pos=1076843526;
   Vw = Za(sizeof(YjUM));
-  sf.pos=3101703;
+  sf.pos=1076843527;
   YJqza(Vw, ((Tc*)&YnvA));
   sf.pos=3101704;
   {
    Te Ve;
    Zf2 = YuJb(t->VactiveEvents);
    for (; ((Tb (*)(void*))(Zf2.table[1]))(Zf2.ptr) && (Ve = ((Te (*)(void*))(Zf2.table[2]))(Zf2.ptr), 1); ) {
-   sf.pos=3101705;
+   sf.pos=1076843529;
    YJqza(Vw, ((Tc*)&YFXK));
-   sf.pos=3101706;
+   sf.pos=1076843530;
    YjUM__YHhZb(Vw, Ve);
-   sf.pos=3101707;
+   sf.pos=1076843531;
    YJqza(Vw, ((Tc*)&YF1Q));
+   if (e->wantGC) ZthreadGC();
    sf.pos=3101708;
    }
   }
-  sf.pos=3101709;
+  sf.pos=1076843533;
   YJqza(Vw, ((Tc*)&YEMg));
-  sf.pos=3101710;
+  sf.pos=1076843534;
   r = YbNW(Vw);
   rt = 1;
   goto Yt_x;
  }
- sf.pos=3101711;
+ sf.pos=1076843535;
  r = ((Tc*)&Ya);
 Yt_x:
  e->topFrame = sf.prev;
@@ -13437,16 +14665,17 @@ YfsL *Yq8N(YfsL *t, Tc *Atitle) {
  }
  sf.frof = Yq8Nfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=1179900; t = Za(sizeof(YfsL));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1074921724; t = Za(sizeof(YfsL));}
  sf.pos=1179901;
  t->Vtitle = Atitle;
- sf.pos=1179902;
+ sf.pos=1074921726;
  t->VpathList = ZnewList((Tt*)&string__T, 0);
- sf.pos=1179903;
+ sf.pos=1074921727;
  t->VjsFiles = ZnewList((Tt*)&string__T, 0);
- sf.pos=1179904;
+ sf.pos=1074921728;
  ZLap((Tl*)t->VjsFiles, (Tz)(void*)((Tc*)&YDbi));
  e->topFrame = sf.prev;
  return t;
@@ -13463,10 +14692,11 @@ void Y_Jv(YfsL *t, Tcb *Abody) {
  }
  sf.frof = Y_Jvfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=7540700;
+  sf.pos=1081282524;
   ZthrowThisNil();
  }
  sf.pos=7540701;
@@ -13488,21 +14718,22 @@ Tc *Yvo6(YfsL *t, YJgz *Acontext) {
  }
  sf.frof = Yvo6fo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=8815500;
+  sf.pos=1082557324;
   ZthrowThisNil();
  }
  sf.pos=8815501;
  if ((t->VbodyTemplate != NULL))
  {
-  sf.pos=8815502;
+  sf.pos=1082557326;
   r = ((Tc* (*)(Tcb *, YJgz*))t->VbodyTemplate->cfunc)((Tcb*)t->VbodyTemplate, Acontext);
   rt = 1;
   goto Yph8;
  }
- sf.pos=8815503;
+ sf.pos=1082557327;
  r = ((Tc*)&Ya);
 Yph8:
  e->topFrame = sf.prev;
@@ -13520,13 +14751,14 @@ void YylI(YfsL *t, Tc *Apath) {
  }
  sf.frof = YylIfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=7347200;
+  sf.pos=1081089024;
   ZthrowThisNil();
  }
- sf.pos=7347201;
+ sf.pos=1081089025;
  ZLap((Tl*)t->VpathList, (Tz)(void*)Apath);
  e->topFrame = sf.prev;
  return;
@@ -13543,13 +14775,14 @@ Tc *Y4AU(YfsL *t) {
  }
  sf.frof = Y4AUfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=28700;
+  sf.pos=1073770524;
   ZthrowThisNil();
  }
- sf.pos=28701;
+ sf.pos=1073770525;
  r = (((t->VcssEntries == NULL)) ? (((Tc*)&Ya)) : (ZListJoinVal(t->VcssEntries, ((Tc*)&Yk), 0)));
  e->topFrame = sf.prev;
  return r;
@@ -13601,9 +14834,10 @@ Tc *YNKL(Yq5o *Ael, Tc *Aname) {
  }
  sf.frof = YNKLfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=4584200;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1078326024;
  r = Vvalue;
  e->topFrame = sf.prev;
  return r;
@@ -13622,8 +14856,9 @@ void YS1u(Tc *Aid, Tcb *Atemplate) {
  }
  sf.frof = YS1ufo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  e->topFrame = sf.prev;
  return;
 }
@@ -13642,11 +14877,12 @@ Tc *YZ05(YtzZ *AhttpContext, YfsL *Apage) {
  }
  sf.frof = YZ05fo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=7244700;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1080986524;
  VzutContext = YIZd(NULL, AhttpContext);
- sf.pos=7244701;
+ sf.pos=1080986525;
  r = Y9GA(VzutContext, Apage);
  e->topFrame = sf.prev;
  return r;
@@ -13668,8 +14904,9 @@ Tc *Y9SZ() {
  }
  sf.frof = Y9SZfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  sf.pos=2790800;
  Vr = ((Tc*)&Ya);
  sf.pos=2790801;
@@ -13678,11 +14915,11 @@ Tc *Y9SZ() {
  while (1)
  {
   Ti Vidx;
-  sf.pos=2790803;
+  sf.pos=1076532627;
   Vidx = (Vn % ZstringSize(YwKT));
-  sf.pos=2790804;
+  sf.pos=1076532628;
   Vr =  ZcS(Vr, ZintAsString(ZstringGetChar(YwKT, Vidx)));
-  sf.pos=2790805;
+  sf.pos=1076532629;
   Vn = (Vn / ZstringSize(YwKT));
   sf.pos=2790806;
   if ((Vn == 0))
@@ -13696,9 +14933,9 @@ YNh6:
   if (rt == 2) { rt &= 1; break; }
  sf.pos=2790808;
  }
- sf.pos=2790809;
+ sf.pos=1076532633;
  Vr = ZcS(((Tc*)&Yghc), Vr);
- sf.pos=2790810;
+ sf.pos=1076532634;
  r = Vr;
  e->topFrame = sf.prev;
  return r;
@@ -13751,10 +14988,11 @@ Ts YwHoa(Yw8L *t, Tc *Atext) {
  }
  sf.frof = YwHoafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=9482300;
+  sf.pos=1083224124;
   ZthrowThisNil();
  }
  Vret = 0;
@@ -13762,11 +15000,11 @@ Ts YwHoa(Yw8L *t, Tc *Atext) {
  if ((t->Vfd == NULL))
  {
   Tr ex;
-  sf.pos=9482302;
+  sf.pos=1083224126;
   *Znao(&ex, YXKl__YwtA__YRHR(NULL, ((Tc*)&YQe8)), YXKl__Ytlm_I_imt, 19);
   ZthrowIobject(ex);
  }
- sf.pos=9482303;
+ sf.pos=1083224127;
  {
   Tc *p;
   Ti len = ZstringSizePtr(Atext, &p);
@@ -13775,7 +15013,8 @@ Ts YwHoa(Yw8L *t, Tc *Atext) {
   else
    Vret = 0;
   }
- sf.pos=9482304;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1083224128;
  r = Vret;
  e->topFrame = sf.prev;
  return r;
@@ -13793,10 +15032,11 @@ Ts YrF8a(Yw8L *t) {
  }
  sf.frof = YrF8afo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=1575500;
+  sf.pos=1075317324;
   ZthrowThisNil();
  }
  sf.pos=1575501;
@@ -13806,12 +15046,13 @@ Ts YrF8a(Yw8L *t) {
  {
   sf.pos=1575503;
  if (fflush(t->Vfd) != 0) Vret = 0;
-  sf.pos=1575504;
+  sf.pos=1075317328;
  if (fclose(t->Vfd) != 0) Vret = 0;
-  sf.pos=1575505;
+  if (e->wantGC) ZthreadGC();
+  sf.pos=1075317329;
   t->Vfd = NULL;
  }
- sf.pos=1575506;
+ sf.pos=1075317330;
  r = Vret;
  e->topFrame = sf.prev;
  return r;
@@ -13828,15 +15069,16 @@ Ts YSo_(Yw8L *t, Te _fr) {
  }
  sf.frof = YSo_fo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=4982200;
+  sf.pos=1078724024;
   ZthrowThisNil();
  }
- sf.pos=4982201;
+ sf.pos=1078724025;
  YrF8a(t);
- sf.pos=4982202;
+ sf.pos=1078724026;
  r = 1;
  if (r) t->fok |= FOK_OK;
  e->topFrame = sf.prev;
@@ -13854,13 +15096,14 @@ Ts Yw8L__YHhZb(Yw8L *t, Ti Anumber) {
  }
  sf.frof = Yw8L__YHhZbfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=5981900;
+  sf.pos=1079723724;
   ZthrowThisNil();
  }
- sf.pos=5981901;
+ sf.pos=1079723725;
  r = YwHoa(t, Zint2string(Anumber));
  e->topFrame = sf.prev;
  return r;
@@ -13879,21 +15122,22 @@ Ts Yw8L__YRt7(Yw8L *t, Tc *Atext) {
  }
  sf.frof = Yw8L__YRt7fo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=6618800;
+  sf.pos=1080360624;
   ZthrowThisNil();
  }
- sf.pos=6618801;
+ sf.pos=1080360625;
  if (((YwHoa(t, Atext) == 1) && (YwHoa(t, ((Tc*)&Yk)) == 1)))
  {
-  sf.pos=6618802;
+  sf.pos=1080360626;
   r = 1;
   rt = 1;
   goto Y7Vd;
  }
- sf.pos=6618803;
+ sf.pos=1080360627;
  r = 0;
 Y7Vd:
  e->topFrame = sf.prev;
@@ -13911,13 +15155,14 @@ Ts Yw8L__YRt7g(Yw8L *t) {
  }
  sf.frof = Yw8L__YRt7gfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=8261800;
+  sf.pos=1082003624;
   ZthrowThisNil();
  }
- sf.pos=8261801;
+ sf.pos=1082003625;
  r = YwHoa(t, ((Tc*)&Yk));
  e->topFrame = sf.prev;
  return r;
@@ -13982,8 +15227,9 @@ Ts Yhx8() {
  Ts r = 0;
  sf.frof = NULL;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  sf.pos=3736300;
  Vret = 1;
  sf.pos=3736301;
@@ -14000,7 +15246,7 @@ Ts Yhx8() {
         }
       }
 #endif
- sf.pos=3736302;
+ sf.pos=1077478126;
  r = Vret;
  e->topFrame = sf.prev;
  return r;
@@ -14019,8 +15265,9 @@ Tc *YDJh(Tc *AfileName) {
  }
  sf.frof = YDJhfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  sf.pos=745100;
  Vres = ((Tc*)&Ya);
  sf.pos=745101;
@@ -14029,31 +15276,32 @@ Tc *YDJh(Tc *AfileName) {
   int fd = open(ZgetCstring(AfileName), O_RDONLY, 0);
   Tc *resp;
   if (fd < 0) {
- sf.pos=745102;
+ sf.pos=1074486926;
  YkuV(ZcS(((Tc*)&YroP), AfileName));
  sf.pos=745103;
   }
   len = lseek(fd, 0, SEEK_END);
   if (len < 0) {
    close(fd);
- sf.pos=745104;
+ sf.pos=1074486928;
  YkuV(ZcS(((Tc*)&Y47X), AfileName));
  sf.pos=745105;
   }
   if (lseek(fd, 0, SEEK_SET) < 0) {
    close(fd);
- sf.pos=745106;
+ sf.pos=1074486930;
  YkuV(ZcS(((Tc*)&Y9TS), AfileName));
  sf.pos=745107;
   }
- sf.pos=745108;
+ sf.pos=1074486932;
   resp = ZaNm(len + 1);
   off = 0;
   while (len > 0) {
    rlen = read(fd, (char *)resp + off, len);
    if (rlen <= 0) {
     close(fd);
- sf.pos=745109;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1074486933;
  YkuV(ZcS(((Tc*)&YLjK), AfileName));
  sf.pos=745110;
    }
@@ -14062,13 +15310,14 @@ Tc *YDJh(Tc *AfileName) {
   }
   resp[off] = 0;
   close(fd);
- sf.pos=745111;
+ sf.pos=1074486935;
  Vres = NULL;
- sf.pos=745112;
+ sf.pos=1074486936;
   Vres = ZnewString(resp, (Ti)off);
   free(resp);
  }
- sf.pos=745113;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1074486937;
  r = Vres;
  e->topFrame = sf.prev;
  return r;
@@ -14086,10 +15335,11 @@ Ts Yvcu(Tc *Atext) {
  }
  sf.frof = Yvcufo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  Vret = 0;
- sf.pos=8487000;
+ sf.pos=1082228824;
  {
   Tc *p;
   Ti len = ZstringSizePtr(Atext, &p);
@@ -14098,7 +15348,8 @@ Ts Yvcu(Tc *Atext) {
   else
    Vret = 0;
  }
- sf.pos=8487001;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1082228825;
  r = Vret;
  e->topFrame = sf.prev;
  return r;
@@ -14117,17 +15368,18 @@ Ts Yl0k(Tc *Atext) {
  }
  sf.frof = Yl0kfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  Vret = 0;
- sf.pos=187200;
+ sf.pos=1073929024;
  Vlen = ZbyteStringSize(Atext);
  sf.pos=187201;
  if ((Vlen == 0 || fwrite(ZgetCstring(Atext), (size_t)Vlen, 1, stdout) == 1) && fputc('\n', stdout) >= 0)
   Vret = 1;
  else
   Vret = 0;
- sf.pos=187202;
+ sf.pos=1073929026;
  r = Vret;
  e->topFrame = sf.prev;
  return r;
@@ -14138,9 +15390,10 @@ Ts Yl0kh() {
  Ts r = 0;
  sf.frof = NULL;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=8912300;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1082654124;
  r = Yl0k(((Tc*)&Ya));
  e->topFrame = sf.prev;
  return r;
@@ -14152,15 +15405,16 @@ Ts Ylxt() {
  Ts r = 0;
  sf.frof = NULL;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  Vret = 0;
  sf.pos=4676100;
  if (fflush(stdout) == 0)
   Vret = 1;
  else
   Vret = 0;
- sf.pos=4676101;
+ sf.pos=1078417925;
  r = Vret;
  e->topFrame = sf.prev;
  return r;
@@ -14179,38 +15433,39 @@ Ts YJqza(YjUM *t, Tc *Atext) {
  }
  sf.frof = YJqzafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=8998700;
+  sf.pos=1082740524;
   ZthrowThisNil();
  }
- sf.pos=8998701;
+ sf.pos=1082740525;
  Vlen = ZbyteStringSize(Atext);
  sf.pos=8998702;
  if ((t->Vs == NULL))
  {
-  sf.pos=8998703;
+  sf.pos=1082740527;
   t->Vs = ZnewArray((Tt*)&byte__T, sizeof(Tc), (Vlen + 30));
-  sf.pos=8998704;
+  sf.pos=1082740528;
   Zas(t->Vs, Atext, 0, 0);
   sf.pos=8998705;
   t->VsLen = Vlen;
  }
  else
  {
-  sf.pos=8998706;
+  sf.pos=1082740530;
   if ((((t->VsLen + Vlen) + 1) >= ZArraySize(t->Vs)))
   {
-   sf.pos=8998707;
+   sf.pos=1082740531;
    ZarrayResize(t->Vs, sizeof(Tc), (((ZArraySize(t->Vs) + (ZArraySize(t->Vs) / 8)) + Vlen) + 50)) ;
   }
-  sf.pos=8998708;
+  sf.pos=1082740532;
   Zas(t->Vs, Atext, 0, t->VsLen);
   sf.pos=8998709;
   t->VsLen += Vlen;
  }
- sf.pos=8998710;
+ sf.pos=1082740534;
  r = 1;
  e->topFrame = sf.prev;
  return r;
@@ -14227,13 +15482,14 @@ Ti Yd3R(YjUM *t) {
  }
  sf.frof = Yd3Rfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=9533600;
+  sf.pos=1083275424;
   ZthrowThisNil();
  }
- sf.pos=9533601;
+ sf.pos=1083275425;
  r = t->VsLen;
  e->topFrame = sf.prev;
  return r;
@@ -14252,10 +15508,11 @@ Tc *YbNW(YjUM *t) {
  }
  sf.frof = YbNWfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=6453100;
+  sf.pos=1080194924;
   ZthrowThisNil();
  }
  sf.pos=6453101;
@@ -14266,10 +15523,11 @@ Tc *YbNW(YjUM *t) {
  }
  else
  {
-  sf.pos=6453103;
+  sf.pos=1080194927;
   Vr = ZnewString(t->Vs->ptr, t->VsLen);
+  if (e->wantGC) ZthreadGC();
  }
- sf.pos=6453104;
+ sf.pos=1080194928;
  r = Vr;
  e->topFrame = sf.prev;
  return r;
@@ -14286,13 +15544,14 @@ Ts YjUM__YHhZb(YjUM *t, Ti Anumber) {
  }
  sf.frof = YjUM__YHhZbfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=7200700;
+  sf.pos=1080942524;
   ZthrowThisNil();
  }
- sf.pos=7200701;
+ sf.pos=1080942525;
  r = YJqza(t, Zint2string(Anumber));
  e->topFrame = sf.prev;
  return r;
@@ -14311,21 +15570,22 @@ Ts YjUM__Ydti(YjUM *t, Ti Achar) {
  }
  sf.frof = YjUM__Ydtifo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=4928500;
+  sf.pos=1078670324;
   ZthrowThisNil();
  }
  sf.pos=4928501;
  if (((Achar < 0) || (Achar > 1114111)))
  {
   Tr ex;
-  sf.pos=4928502;
+  sf.pos=1078670326;
   *Znao(&ex, Yw3O__Yalz__YwtA__YRHR(NULL, ZcS(((Tc*)&Yv8w), Zint2string(Achar))), Yw3O__Ytlm_I_imt, 11);
   ZthrowIobject(ex);
  }
- sf.pos=4928503;
+ sf.pos=1078670327;
  r = YJqza(t, ZintAsString(Achar));
  e->topFrame = sf.prev;
  return r;
@@ -14344,21 +15604,22 @@ Ts YjUM__YRt7(YjUM *t, Tc *Atext) {
  }
  sf.frof = YjUM__YRt7fo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=2676000;
+  sf.pos=1076417824;
   ZthrowThisNil();
  }
- sf.pos=2676001;
+ sf.pos=1076417825;
  if (((YJqza(t, Atext) == 1) && (YJqza(t, ((Tc*)&Yk)) == 1)))
  {
-  sf.pos=2676002;
+  sf.pos=1076417826;
   r = 1;
   rt = 1;
   goto Yvkn;
  }
- sf.pos=2676003;
+ sf.pos=1076417827;
  r = 0;
 Yvkn:
  e->topFrame = sf.prev;
@@ -14394,15 +15655,16 @@ Tb YpPE(Tc *Aname) {
  }
  sf.frof = YpPEfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  Vret = 0;
  sf.pos=1483200;
  struct stat st;
  if (stat(ZgetCstring(Aname), &st) == 0) {
   Vret = S_ISDIR(st.st_mode);
  }
- sf.pos=1483201;
+ sf.pos=1075225025;
  r = Vret;
  e->topFrame = sf.prev;
  return r;
@@ -14420,12 +15682,13 @@ Tb Y_3K(Tc *Aname) {
  }
  sf.frof = Y_3Kfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  Vv = 0;
  sf.pos=7387700;
  Vv = access(ZgetCstring(Aname), X_OK);
- sf.pos=7387701;
+ sf.pos=1081129525;
  r = (Vv == 0);
  e->topFrame = sf.prev;
  return r;
@@ -14450,11 +15713,12 @@ Tc *Ycmi(Tc *AexeName) {
  }
  sf.frof = Ycmifo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=6497000;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1080238824;
  Vexe = Yvnf(AexeName, 92, 47);
- sf.pos=6497001;
+ sf.pos=1080238825;
  if (((ZstringStartsWith(Vexe, ((Tc*)&YV), 0) || ZstringStartsWith(Vexe, ((Tc*)&YFka), 0)) || ZstringStartsWith(Vexe, ((Tc*)&Y0y2), 0)))
  {
   sf.pos=6497002;
@@ -14462,30 +15726,30 @@ Tc *Ycmi(Tc *AexeName) {
  }
  else
  {
-  sf.pos=6497003;
+  sf.pos=1080238827;
   Vpath = Yhy5(((Tc*)&Yykt));
   sf.pos=6497004;
   if ((Vpath != NULL))
   {
    sf.pos=6497005;
 #if defined(__MINGW32__) || defined(_MSC_VER)
-   sf.pos=6497006;
+   sf.pos=1080238830;
    Vdirectories = ZstringSplit(Vpath, ((Tc*)&Y6), 0);
    sf.pos=6497007;
 #else
-   sf.pos=6497008;
+   sf.pos=1080238832;
    Vdirectories = ZstringSplit(Vpath, ((Tc*)&Y5), 0);
    sf.pos=6497009;
 #endif
   }
-  sf.pos=6497010;
+  sf.pos=1080238834;
   Vfname = YDop(AexeName, Vdirectories);
   sf.pos=6497011;
 #if defined(__MINGW32__) || defined(_MSC_VER)
-  sf.pos=6497012;
+  sf.pos=1080238836;
   if (((Vfname == NULL) && !(ZstringEndsWith(ZstringToLower(AexeName), ((Tc*)&YpPR), 0))))
   {
-   sf.pos=6497013;
+   sf.pos=1080238837;
    Vfname = YDop(ZcS(AexeName, ((Tc*)&YpPR)), Vdirectories);
   }
   sf.pos=6497014;
@@ -14497,10 +15761,10 @@ Tc *Ycmi(Tc *AexeName) {
    Vfname = Vexe;
    sf.pos=6497017;
 #if defined(__MINGW32__) || defined(_MSC_VER)
-   sf.pos=6497018;
+   sf.pos=1080238842;
    if ((!(Y_3K(Vfname)) && Y_3K(ZcS(Vfname, ((Tc*)&YpPR)))))
    {
-    sf.pos=6497019;
+    sf.pos=1080238843;
     Vfname =  ZcS(Vfname, ((Tc*)&YpPR));
    }
    sf.pos=6497020;
@@ -14508,11 +15772,11 @@ Tc *Ycmi(Tc *AexeName) {
   }
   else
   {
-   sf.pos=6497021;
+   sf.pos=1080238845;
    Vfname = Yvnf(Vfname, 92, 47);
   }
  }
- sf.pos=6497022;
+ sf.pos=1080238846;
  r = YPjH(Vfname);
  e->topFrame = sf.prev;
  return r;
@@ -14537,8 +15801,9 @@ Tc *YDop(Tc *AexeName, Tl *Adirs) {
  }
  sf.frof = YDopfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  sf.pos=8617600;
  {
   Tfl Zf1i;
@@ -14547,22 +15812,23 @@ Tc *YDop(Tc *AexeName, Tl *Adirs) {
   Zf1i.valp = (void*)&Vdir;
   Zf1i.i = 0;
   for (; ZforListPtrCont(&Zf1i); ) {
-  sf.pos=8617601;
+  sf.pos=1082359425;
   Vfname = Yq8a(Vdir, AexeName);
-  sf.pos=8617602;
+  sf.pos=1082359426;
   if (Y_3K(Vfname))
   {
-   sf.pos=8617603;
+   sf.pos=1082359427;
    r = Vfname;
    rt = 1;
    goto Ycsu;
   }
 Ycsu:
   if (rt) goto YsLr;
+  if (e->wantGC) ZthreadGC();
   sf.pos=8617604;
   }
  }
- sf.pos=8617605;
+ sf.pos=1082359429;
  r = NULL;
 YsLr:
  e->topFrame = sf.prev;
@@ -14582,35 +15848,36 @@ Tc *Yq8a(Tc *Afirst, Tc *Asecond) {
  }
  sf.frof = Yq8afo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=6830400;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1080572224;
  if (ZstringEndsWith(Afirst, ((Tc*)&YV), 0))
  {
-  sf.pos=6830401;
+  sf.pos=1080572225;
   if (ZstringStartsWith(Asecond, ((Tc*)&YV), 0))
   {
-   sf.pos=6830402;
+   sf.pos=1080572226;
    r = ZcS(Afirst, ZstringSlice(Asecond, 1, -1, 0));
    rt = 1;
    goto YV1Y;
   }
-  sf.pos=6830403;
+  sf.pos=1080572227;
   r = ZcS(Afirst, Asecond);
 YV1Y:
   ;
   rt = 1;
   goto YSGC;
  }
- sf.pos=6830404;
+ sf.pos=1080572228;
  if (((ZbyteStringSize(Afirst) == 0) || ZstringStartsWith(Asecond, ((Tc*)&YV), 0)))
  {
-  sf.pos=6830405;
+  sf.pos=1080572229;
   r = ZcS(Afirst, Asecond);
   rt = 1;
   goto YSGC;
  }
- sf.pos=6830406;
+ sf.pos=1080572230;
  r = ZcS3(Afirst, ((Tc*)&YV), Asecond);
 YSGC:
  e->topFrame = sf.prev;
@@ -14639,8 +15906,9 @@ Tc *YPjH(Tc *Afname) {
  }
  sf.frof = YPjHfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  sf.pos=4533100;
 #if defined(__MINGW32__) || defined(_MSC_VER)
  sf.pos=4533101;
@@ -14649,18 +15917,18 @@ Tc *YPjH(Tc *Afname) {
 #else
  sf.pos=4533103;
  Vlimit = 100;
- sf.pos=4533104;
+ sf.pos=1078274928;
  VisRelative = ((ZstringGetChar(Afname, 0) == 46) && ((Yhu2(ZstringGetChar(Afname, 1)) || (((ZstringGetChar(Afname, 1) == 46) && Yhu2(ZstringGetChar(Afname, 2)))))));
- sf.pos=4533105;
+ sf.pos=1078274929;
  VhasTrailingSep = ZstringEndsWith(Afname, ((Tc*)&YV), 0);
- sf.pos=4533106;
+ sf.pos=1078274930;
  Vi = Y26N(Afname, YEpA(Afname));
  sf.pos=4533107;
  if ((Vi > 1))
  {
-  sf.pos=4533108;
+  sf.pos=1078274932;
   Vresult = ZstringSlice(Afname, 0, (Vi - 2), 0);
-  sf.pos=4533109;
+  sf.pos=1078274933;
   Vremain = ZstringSlice(Afname, (Vi - 1), -1, 0);
  }
  else
@@ -14682,15 +15950,16 @@ Tc *YPjH(Tc *Afname) {
     len = readlink(ZgetCstring(Vresult), (char *)buf, PATH_MAX);
     if (len <= 0) break;  /* can't read, use as-is */
     buf[len] = 0;
-   sf.pos=4533114;
+   sf.pos=1078274938;
    Vlink = NULL;
-   sf.pos=4533115;
+   sf.pos=1078274939;
     Vlink = Zstr(buf);
    }
+   if (e->wantGC) ZthreadGC();
    sf.pos=4533116;
    if (((Vlimit)-- == 0))
    {
-    sf.pos=4533117;
+    sf.pos=1078274941;
     r = Afname;
     rt = 1;
     goto Yu7Z;
@@ -14698,10 +15967,10 @@ Tc *YPjH(Tc *Afname) {
    sf.pos=4533118;
    if (((Vremain == NULL) && VhasTrailingSep))
    {
-    sf.pos=4533119;
+    sf.pos=1078274943;
     Vlink =  ZcS(Vlink, ((Tc*)&YV));
    }
-   sf.pos=4533120;
+   sf.pos=1078274944;
    Vi = Y26N(Vlink, YEpA(Vlink));
    sf.pos=4533121;
    if ((Vi > 1))
@@ -14709,36 +15978,36 @@ Tc *YPjH(Tc *Afname) {
     sf.pos=4533122;
     if ((Vremain == NULL))
     {
-     sf.pos=4533123;
+     sf.pos=1078274947;
      Vremain = ZstringSlice(Vlink, (Vi - 1), -1, 0);
     }
     else
     {
-     sf.pos=4533124;
+     sf.pos=1078274948;
      Vremain = ZcS(ZstringSlice(Vlink, (Vi - 1), -1, 0), Vremain);
     }
-    sf.pos=4533125;
+    sf.pos=1078274949;
     Vlink = ZstringSlice(Vlink, 0, (Vi - 2), 0);
    }
-   sf.pos=4533126;
+   sf.pos=1078274950;
    Vt = Yr30(Vresult);
-   sf.pos=4533127;
+   sf.pos=1078274951;
    if (((Vt > 0) && (Vt == ZstringSize(Vresult))))
    {
-    sf.pos=4533128;
+    sf.pos=1078274952;
     Vresult = ZstringSlice(Vresult, 0, -2, 0);
-    sf.pos=4533129;
+    sf.pos=1078274953;
     Vt = Yr30(Vresult);
    }
-   sf.pos=4533130;
+   sf.pos=1078274954;
    if (((Vt > 0) && (YEpA(Vlink) == 0)))
    {
-    sf.pos=4533131;
+    sf.pos=1078274955;
     Vresult = ZcS(ZstringSlice(Vresult, 0, (Vt - 1), 0), Vlink);
    }
    else
    {
-    sf.pos=4533132;
+    sf.pos=1078274956;
     Vresult = ZcS(Vlink, ((Tc*)&Ya));
    }
 Yu7Z:
@@ -14751,21 +16020,21 @@ Yu7Z:
    rt = 2;
    goto YqPr;
   }
-  sf.pos=4533135;
+  sf.pos=1078274959;
   Vi = Y26N(Vremain, 1);
   sf.pos=4533136;
   if ((Vi > 1))
   {
-   sf.pos=4533137;
+   sf.pos=1078274961;
    Vresult =  ZcS(Vresult, ZstringSlice(Vremain, 0, (Vi - 2), 0));
-   sf.pos=4533138;
+   sf.pos=1078274962;
    Vremain = ZstringSlice(Vremain, (Vi - 1), -1, 0);
   }
   else
   {
-   sf.pos=4533139;
+   sf.pos=1078274963;
    Vresult =  ZcS(Vresult, Vremain);
-   sf.pos=4533140;
+   sf.pos=1078274964;
    Vremain = NULL;
   }
 YqPr:
@@ -14773,32 +16042,32 @@ YqPr:
   if (rt) goto YQMx;
  sf.pos=4533141;
  }
- sf.pos=4533142;
+ sf.pos=1078274966;
  if (Yhu2(ZstringGetChar(Vresult, 0)))
  {
-  sf.pos=4533143;
+  sf.pos=1078274967;
   if (((VisRelative && (ZstringSize(Vresult) > 0)) && !((((ZstringGetChar(Vresult, 0) == 46) && ((((ZstringSize(Vresult) == 1) || Yhu2(ZstringGetChar(Vresult, 1))) || (((ZstringGetChar(Vresult, 1) == 46) && (((ZstringSize(Vresult) == 2) || Yhu2(ZstringGetChar(Vresult, 2)))))))))))))
   {
-   sf.pos=4533144;
+   sf.pos=1078274968;
    Vresult = ZcS(((Tc*)&YFka), Vresult);
   }
   else {
-  sf.pos=4533145;
+  sf.pos=1078274969;
  if (!(VisRelative))
   {
    sf.pos=4533146;
    Vi = 0;
-   sf.pos=4533147;
+   sf.pos=1078274971;
    while (((ZstringGetChar(Vresult, Vi) == 46) && Yhu2(ZstringGetChar(Vresult, (Vi + 1)))))
    {
     sf.pos=4533148;
     Vi += 2;
-   sf.pos=4533149;
+   sf.pos=1078274973;
    }
    sf.pos=4533150;
    if ((Vi > 0))
    {
-    sf.pos=4533151;
+    sf.pos=1078274975;
     Vresult = ZstringSlice(Vresult, Vi, -1, 0);
    }
   }
@@ -14808,19 +16077,19 @@ YqPr:
  if (!(VhasTrailingSep))
  {
   Ti Vm;
-  sf.pos=4533153;
+  sf.pos=1078274977;
   Vm = YEpA(Vresult);
-  sf.pos=4533154;
+  sf.pos=1078274978;
   while ((ZstringEndsWith(Vresult, ((Tc*)&YV), 0) && (ZstringSize(Vresult) > Vm)))
   {
-   sf.pos=4533155;
+   sf.pos=1078274979;
    Vresult = ZstringSlice(Vresult, 0, -2, 0);
-  sf.pos=4533156;
+  sf.pos=1078274980;
   }
  }
  sf.pos=4533157;
 #endif
- sf.pos=4533158;
+ sf.pos=1078274982;
  r = Vresult;
 YQMx:
  e->topFrame = sf.prev;
@@ -14841,13 +16110,14 @@ Ti Yr30(Tc *Afname) {
  }
  sf.frof = Yr30fo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=6221300;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1079963124;
  Vi = ZstringFindLastChar(Afname, 47, 0);
  sf.pos=6221301;
 #if defined(__MINGW32__) || defined(_MSC_VER)
- sf.pos=6221302;
+ sf.pos=1079963126;
  Vj = ZstringFindLastChar(Afname, 92, 0);
  sf.pos=6221303;
  if ((Vj > Vi))
@@ -14860,12 +16130,12 @@ Ti Yr30(Tc *Afname) {
  sf.pos=6221306;
  if ((Vi < 0))
  {
-  sf.pos=6221307;
+  sf.pos=1079963131;
   r = 0;
   rt = 1;
   goto YnSW;
  }
- sf.pos=6221308;
+ sf.pos=1079963132;
  r = (Vi + 1);
 YnSW:
  e->topFrame = sf.prev;
@@ -14884,12 +16154,13 @@ Ti YEpA(Tc *Afname) {
  }
  sf.frof = YEpAfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  Vi = 0;
  sf.pos=1101700;
 #if defined(__MINGW32__) || defined(_MSC_VER)
- sf.pos=1101701;
+ sf.pos=1074843525;
  if ((isalpha(ZstringGetChar(Afname, 0)) && (ZstringGetChar(Afname, 1) == 58)))
  {
   sf.pos=1101702;
@@ -14897,14 +16168,14 @@ Ti YEpA(Tc *Afname) {
  }
  sf.pos=1101703;
 #endif
- sf.pos=1101704;
+ sf.pos=1074843528;
  while (((Vi < ZstringSize(Afname)) && Yhu2(ZstringGetChar(Afname, Vi))))
  {
   sf.pos=1101705;
   ++(Vi);
- sf.pos=1101706;
+ sf.pos=1074843530;
  }
- sf.pos=1101707;
+ sf.pos=1074843531;
  r = Vi;
  e->topFrame = sf.prev;
  return r;
@@ -14915,9 +16186,10 @@ Tb Yhu2(Ti Ac) {
  Tb r = 0;
  sf.frof = NULL;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=7913600;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1081655424;
  r = (Ac == 47);
  e->topFrame = sf.prev;
  return r;
@@ -14935,28 +16207,30 @@ Ti Y26N(Tc *Afname, Ti Aidx) {
  }
  sf.frof = Y26Nfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=3627700;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1077369524;
  {
   Ti Vi;
   Tfr Zf1;
   ZforRangeNew(Aidx, (ZstringSize(Afname) - 1), 0, 1, &Zf1);
   for (ZforRangeGetInt(&Zf1, &Vi); ZforRangeContInt(&Zf1); ZforRangeNextInt(&Zf1, &Vi)) {
-  sf.pos=3627701;
+  sf.pos=1077369525;
   if (Yhu2(ZstringGetChar(Afname, Vi)))
   {
-   sf.pos=3627702;
+   sf.pos=1077369526;
    r = (Vi + 1);
    rt = 1;
    goto Ydy4;
   }
 Ydy4:
   if (rt) goto Y3wQ;
-  sf.pos=3627703;
+  if (e->wantGC) ZthreadGC();
+  sf.pos=1077369527;
   }
  }
- sf.pos=3627704;
+ sf.pos=1077369528;
  r = -1;
 Y3wQ:
  e->topFrame = sf.prev;
@@ -14969,16 +16243,17 @@ int JIOModule(int round) {
   Tn *e = ZgetEnv();
   Zsf sf;
   sf.prev = e->topFrame;
-  sf.pos = 0;
+  sf.pos = 0x40000000;
   sf.frof = NULL;
   e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
   round_done = round;
   if (round == 0) {
-   sf.pos=745200;
+   sf.pos=1074487024;
    Y59X = Yd89();
-   sf.pos=745201;
+   sf.pos=1074487025;
    Yb0q = Yvyt();
-   sf.pos=745202;
+   sf.pos=1074487026;
    YeNQ = YsM3();
   }
   e->topFrame = sf.prev;
@@ -14987,6 +16262,44 @@ int JIOModule(int round) {
 }
 /* IOModule done */
 /* including SETModule bodies */
+Zfo Ypaufo[2] = {{0,(Tt*)&Yhqr__T},{0,0}};
+Yhqr *Ypau(Yhqr *t) {
+ Tn *e = ZgetEnv();
+ Zsf sf;
+ static int sfF = 0;
+ if (t == NULL) t = Za(sizeof(Yhqr));
+ if (!sfF) {
+  sfF = 1;
+  Ypaufo[0].off = (void*)&sf - (void*)&t;
+ }
+ sf.frof = Ypaufo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1082643024;
+ t->Vdict = ZnewDict((Tt*)&MZUTModule__EEventType__T, (Tt*)&bool__T, 0);
+ e->topFrame = sf.prev;
+ return t;
+}
+Zfo Yh95fo[2] = {{0,(Tt*)&Yhqr__T},{0,0}};
+Yhqr *Yh95(Yhqr *t) {
+ Tn *e = ZgetEnv();
+ Zsf sf;
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  Yh95fo[0].off = (void*)&sf - (void*)&t;
+ }
+ sf.frof = Yh95fo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1075879624; t = Ypau(NULL);}
+ e->topFrame = sf.prev;
+ return t;
+}
 Zfo Yehhfo[2] = {{0,(Tt*)&Yhqr__T},{0,0}};
 Tc *Yehh(Yhqr *t) {
  Tn *e = ZgetEnv();
@@ -14999,13 +16312,14 @@ Tc *Yehh(Yhqr *t) {
  }
  sf.frof = Yehhfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=7419800;
+  sf.pos=1081161624;
   ZthrowThisNil();
  }
- sf.pos=7419801;
+ sf.pos=1081161625;
  r = ZListToString(ZDictKeys(t->Vdict, 0), 1);
  e->topFrame = sf.prev;
  return r;
@@ -15022,14 +16336,74 @@ Tr YuJb(Yhqr *t) {
  }
  sf.frof = YuJbfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=9811400;
+  sf.pos=1083553224;
   ZthrowThisNil();
  }
- sf.pos=9811401;
+ sf.pos=1083553225;
  r = YbZ5(ZDictKeys(t->Vdict, 0));
+ e->topFrame = sf.prev;
+ return r;
+}
+Zfo YyHafo[2] = {{0,(Tt*)&Yhqr__T},{0,0}};
+Tb YyHa(Yhqr *t, Te Akey) {
+ Tn *e = ZgetEnv();
+ Zsf sf;
+ Tb r = 0;
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  YyHafo[0].off = (void*)&sf - (void*)&t;
+ }
+ sf.frof = YyHafo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {
+  sf.pos=1076327824;
+  ZthrowThisNil();
+ }
+ sf.pos=1076327825;
+ r = ZDictHas(t->Vdict, (Tz)(Ti)Akey);
+ e->topFrame = sf.prev;
+ return r;
+}
+Zfo YGMTfo[5] = {{0,(Tt*)&Yhqr__T},{0,(Tt*)&YkxB__T},{0,(Tt*)&string__T},{0,(Tt*)&iobj__T},{0,0}};
+Yhqr *YGMT(Yhqr *t, Te Akey) {
+ Tn *e = ZgetEnv();
+ Zsf sf;
+ Yhqr *r = 0;
+ YkxB *t0 = 0;
+ Tc *t1 = NULL;
+ Tr t2 = {NULL};
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  YGMTfo[0].off = (void*)&sf - (void*)&t;
+  YGMTfo[1].off = (void*)&sf - (void*)&t0;
+  YGMTfo[2].off = (void*)&sf - (void*)&t1;
+  YGMTfo[3].off = (void*)&sf - (void*)&t2;
+ }
+ sf.frof = YGMTfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {
+   ZthrowThisNil();
+ }
+ if (ZDictHas(t->Vdict, (Tz)(Ti)Akey))
+ {
+  Tr ex;
+  *Znao(&ex, YX0i__Yalz__YwtA__YRHRa(NULL, (t0 = MZ__callerPos()), (t1 = ZcS(((Tc*)&YLLX), Zenum2string(MZUTModule__EEventType, Akey)))), YX0i__Ytlm_I_imt, 14);
+  ZthrowIobject(ex);
+ }
+ ZDictAdd(0, t->Vdict, (Tz)(Ti)Akey, (Tz)(Ti)1);
+ r = t;
  e->topFrame = sf.prev;
  return r;
 }
@@ -15053,9 +16427,10 @@ Ygqr *YuFZ(Ygqr *t) {
  }
  sf.frof = YuFZfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=9971300;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1083713124;
  t->Vdict = ZnewDict((Tt*)&string__T, (Tt*)&bool__T, 0);
  e->topFrame = sf.prev;
  return t;
@@ -15071,9 +16446,10 @@ Ygqr *YGrg(Ygqr *t) {
  }
  sf.frof = YGrgfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=7197900; t = YuFZ(NULL);}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1080939724; t = YuFZ(NULL);}
  e->topFrame = sf.prev;
  return t;
 }
@@ -15089,13 +16465,14 @@ Tc *Yd2r(Ygqr *t) {
  }
  sf.frof = Yd2rfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=9761900;
+  sf.pos=1083503724;
   ZthrowThisNil();
  }
- sf.pos=9761901;
+ sf.pos=1083503725;
  r = ZListToString(ZDictKeys(t->Vdict, 0), 1);
  e->topFrame = sf.prev;
  return r;
@@ -15113,22 +16490,40 @@ Tb YXZk(Ygqr *t, Tc *Akey) {
  }
  sf.frof = YXZkfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=7646100;
+  sf.pos=1081387924;
   ZthrowThisNil();
  }
- sf.pos=7646101;
+ sf.pos=1081387925;
  r = ZDictHas(t->Vdict, (Tz)(void*)Akey);
  e->topFrame = sf.prev;
  return r;
 }
+Zfo Y432fo[6] = {{0,(Tt*)&Ygqr__T},{0,(Tt*)&string__T},{0,(Tt*)&YkxB__T},{0,(Tt*)&string__T},{0,(Tt*)&iobj__T},{0,0}};
 Ygqr *Y432(Ygqr *t, Tc *Akey) {
+ Tn *e = ZgetEnv();
+ Zsf sf;
  Ygqr *r = 0;
  YkxB *t0 = 0;
  Tc *t1 = NULL;
  Tr t2 = {NULL};
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  Y432fo[0].off = (void*)&sf - (void*)&t;
+  Y432fo[1].off = (void*)&sf - (void*)&Akey;
+  Y432fo[2].off = (void*)&sf - (void*)&t0;
+  Y432fo[3].off = (void*)&sf - (void*)&t1;
+  Y432fo[4].off = (void*)&sf - (void*)&t2;
+ }
+ sf.frof = Y432fo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
    ZthrowThisNil();
  }
@@ -15140,6 +16535,7 @@ Ygqr *Y432(Ygqr *t, Tc *Akey) {
  }
  ZDictAdd(0, t->Vdict, (Tz)(void*)Akey, (Tz)(Ti)1);
  r = t;
+ e->topFrame = sf.prev;
  return r;
 }
 To ToYgqr[] = {
@@ -15164,9 +16560,10 @@ YyHo *YXWx(YyHo *t, Tl *Aitems) {
  }
  sf.frof = YXWxfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=3447700; t = YyHoa(NULL);}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1077189524; t = YyHoa(NULL);}
  sf.pos=3447701;
  t->Vitems = Aitems;
  e->topFrame = sf.prev;
@@ -15184,21 +16581,36 @@ Tb Yd_d(YyHo *t) {
  }
  sf.frof = Yd_dfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=8360600;
+  sf.pos=1082102424;
   ZthrowThisNil();
  }
- sf.pos=8360601;
+ sf.pos=1082102425;
  r = (t->Vpos < ZListSize(t->Vitems));
  e->topFrame = sf.prev;
  return r;
 }
+Zfo YUEIfo[3] = {{0,(Tt*)&YyHo__T},{0,(Tt*)&iobj__T},{0,0}};
 Te YUEI(YyHo *t) {
  Te Vitem;
+ Tn *e = ZgetEnv();
+ Zsf sf;
  Te r = 0;
  Tr t0 = {NULL};
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  YUEIfo[0].off = (void*)&sf - (void*)&t;
+  YUEIfo[1].off = (void*)&sf - (void*)&t0;
+ }
+ sf.frof = YUEIfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
    ZthrowThisNil();
  }
@@ -15212,6 +16624,7 @@ Te YUEI(YyHo *t) {
  t->VeditPos = t->Vpos;
  ++(t->Vpos);
  r = Vitem;
+ e->topFrame = sf.prev;
  return r;
 }
 Zfo YyHoafo[2] = {{0,(Tt*)&YyHo__T},{0,0}};
@@ -15226,8 +16639,9 @@ YyHo *YyHoa(YyHo *t) {
  }
  sf.frof = YyHoafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  sf.pos=7535100;
  t->VeditPos = -1;
  sf.pos=7535101;
@@ -15268,9 +16682,10 @@ Ts Ytu_() {
  Ts r = 0;
  sf.frof = NULL;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=6650100;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1080391924;
  r = (((Y6fX == NULL)) ? (0) : (1));
  e->topFrame = sf.prev;
  return r;
@@ -15281,24 +16696,52 @@ To ToYnU5[] = {
 char *StrYnU5[] = {
 };
 Tto YnU5__T = {390, (Tc*)&Yr32, 0, StrYnU5, 0, 0, 0, 0, ToYnU5};
+Zfo YY8ifo[2] = {{0,(Tt*)&iobj__T},{0,0}};
 void YY8i() {
+ Tn *e = ZgetEnv();
+ Zsf sf;
  Tr t0 = {NULL};
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  YY8ifo[0].off = (void*)&sf - (void*)&t0;
+ }
+ sf.frof = YY8ifo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if ((Y6fX == NULL))
  {
   Tr ex;
   *Znao(&ex, YVNj__YwtA__YRHRa(NULL, MZ__callerPos(), ((Tc*)&YeBP)), YVNj__Ytlm_I_imt, 7);
   ZthrowIobject(ex);
  }
+ e->topFrame = sf.prev;
  return;
 }
+Zfo YS39fo[2] = {{0,(Tt*)&iobj__T},{0,0}};
 void YS39() {
+ Tn *e = ZgetEnv();
+ Zsf sf;
  Tr t0 = {NULL};
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  YS39fo[0].off = (void*)&sf - (void*)&t0;
+ }
+ sf.frof = YS39fo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if ((Y6fX != NULL))
  {
   Tr ex;
   *Znao(&ex, YVNj__YwtA__YRHRa(NULL, MZ__callerPos(), ((Tc*)&YY2Q)), YVNj__Ytlm_I_imt, 7);
   ZthrowIobject(ex);
  }
+ e->topFrame = sf.prev;
  return;
 }
 void YQtK() {
@@ -15306,9 +16749,10 @@ void YQtK() {
  Zsf sf;
  sf.frof = NULL;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=7716400;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1081458224;
  Y2R7 = Ycmi(YzvW);
  e->topFrame = sf.prev;
  return;
@@ -15321,19 +16765,20 @@ Tc *YzHL() {
  int rt = 0;
  sf.frof = NULL;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=3261800;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1077003624;
  VtailIndex = Yr30(Y2R7);
  sf.pos=3261801;
  if ((VtailIndex <= 0))
  {
-  sf.pos=3261802;
+  sf.pos=1077003626;
   r = ((Tc*)&YU);
   rt = 1;
   goto Yt70;
  }
- sf.pos=3261803;
+ sf.pos=1077003627;
  r = ZstringSlice(Y2R7, 0, (VtailIndex - 2), 0);
 Yt70:
  e->topFrame = sf.prev;
@@ -15380,8 +16825,9 @@ void YZH8() {
  }
  sf.frof = YZH8fo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  sf.pos=8253300;
  if ((Y6fX == NULL))
  {
@@ -15390,20 +16836,20 @@ void YZH8() {
   sf.pos=8253301;
   if ((Y7be == NULL))
   {
-   sf.pos=8253302;
+   sf.pos=1081995126;
    Y7be = ZnewDict((Tt*)&string__T, (Tt*)&iobj__T, 0);
-   sf.pos=8253303;
+   sf.pos=1081995127;
    YBQy = ZnewDict((Tt*)&string__T, (Tt*)&iobj__T, 0);
   }
-  sf.pos=8253304;
+  sf.pos=1081995128;
   if ((YUBd && (((ZDictSize(Y7be) > 0) || (ZDictSize(YBQy) > 0)))))
   {
    Tr ex;
-   sf.pos=8253305;
+   sf.pos=1081995129;
    *Znao(&ex, YVNj__YwtA__YRHR(NULL, ((Tc*)&Y7T_)), YVNj__Ytlm_I_imt, 7);
    ZthrowIobject(ex);
   }
-  sf.pos=8253306;
+  sf.pos=1081995130;
   {
    Tfl Zf2i;
    Zf2 = ZDictKeys(Y7be, 0);
@@ -15412,12 +16858,13 @@ void YZH8() {
    Zf2i.i = 0;
    for (; ZforListPtrCont(&Zf2i); ) {
    Tr YXyJ = {NULL};
-   sf.pos=8253307;
+   sf.pos=1081995131;
    (YXyJ = ZDictGetIobj(Y7be, (Tz)(void*)Vk), ((void (*)(void*))(YXyJ.table[17]))(YXyJ.ptr));
-   sf.pos=8253308;
+   if (e->wantGC) ZthreadGC();
+   sf.pos=1081995132;
    }
   }
-  sf.pos=8253309;
+  sf.pos=1081995133;
   {
    Tfl Zf21i;
    Zf21 = ZDictKeys(YBQy, 0);
@@ -15426,17 +16873,18 @@ void YZH8() {
    Zf21i.i = 0;
    for (; ZforListPtrCont(&Zf21i); ) {
    Tr YWyJ = {NULL};
-   sf.pos=8253310;
+   sf.pos=1081995134;
    (YWyJ = ZDictGetIobj(YBQy, (Tz)(void*)Vk1), ((void (*)(void*))(YWyJ.table[17]))(YWyJ.ptr));
-   sf.pos=8253311;
+   if (e->wantGC) ZthreadGC();
+   sf.pos=1081995135;
    }
   }
-  sf.pos=8253312;
+  sf.pos=1081995136;
   Y6fX = ZnewList((Tt*)&string__T, 0);
   sf.pos=8253313;
   VdoFlags = !(YUBd);
   Vskip = 0;
-  sf.pos=8253314;
+  sf.pos=1081995138;
   {
    Ti Vi;
    Tfr Zf2;
@@ -15450,12 +16898,12 @@ void YZH8() {
     rt = 4;
     if (rt) goto YgsM;
    }
-   sf.pos=8253317;
+   sf.pos=1081995141;
    Varg = ((Tc *)ZListGetPtr(Y1p3, Vi));
-   sf.pos=8253318;
+   sf.pos=1081995142;
    if (((!(VdoFlags) || (ZstringGetChar(Varg, 0) != 45)) || (ZstringCmp(Varg, ((Tc*)&YT)) == 0)))
    {
-    sf.pos=8253319;
+    sf.pos=1081995143;
     ZLap((Tl*)Y6fX, (Tz)(void*)Varg);
     sf.pos=8253320;
     if (YQpY)
@@ -15476,34 +16924,34 @@ void YZH8() {
     {
      Vflag.ptr = NULL;
      Vvalue = NULL;
-     sf.pos=8253324;
+     sf.pos=1081995148;
      if ((ZstringCmp(ZstringSlice(Varg, 0, 1, 0), ((Tc*)&Y1ia)) == 0))
      {
       Ti Vidx;
-      sf.pos=8253325;
+      sf.pos=1081995149;
       Vflagname = ZstringSlice(Varg, 2, -1, 0);
       sf.pos=8253326;
       if ((!(YhUP) && ((((ZstringCmp(Vflagname, ((Tc*)&YqzQ)) == 0) || (ZstringCmp(Vflagname, ((Tc*)&Y3vi)) == 0)) || (ZstringCmp(Vflagname, ((Tc*)&Yll7)) == 0)))))
       {
-       sf.pos=8253327;
+       sf.pos=1081995151;
        Yfj5((ZstringCmp(Vflagname, ((Tc*)&YqzQ)) != 0));
       }
-      sf.pos=8253328;
+      sf.pos=1081995152;
       Vidx = ZstringFindChar(Vflagname, 61, 0);
       sf.pos=8253329;
       if ((Vidx > 0))
       {
-       sf.pos=8253330;
+       sf.pos=1081995154;
        Vvalue = ZstringSlice(Vflagname, (Vidx + 1), -1, 0);
-       sf.pos=8253331;
+       sf.pos=1081995155;
        Vflagname = ZstringSlice(Vflagname, 0, (Vidx - 1), 0);
       }
-      sf.pos=8253332;
+      sf.pos=1081995156;
       Vflag = ZDictGetIobjDef(YBQy, (Tz)(void*)Vflagname, trZero);
-      sf.pos=8253333;
+      sf.pos=1081995157;
       if (((((Vflag).ptr) == NULL) && (ZstringCmp(ZstringSlice(Vflagname, 0, 1, 0), ((Tc*)&YhZb)) == 0)))
       {
-       sf.pos=8253334;
+       sf.pos=1081995158;
        Vflag = ZDictGetIobjDef(YBQy, (Tz)(void*)ZstringSlice(Vflagname, 2, -1, 0), trZero);
        sf.pos=8253335;
        if ((((Vflag).ptr) != NULL))
@@ -15511,14 +16959,14 @@ void YZH8() {
         sf.pos=8253336;
         if ((Vflag).type == 0)
         {
-         sf.pos=8253337;
+         sf.pos=1081995161;
          Vflagname = ZstringSlice(Vflagname, 2, -1, 0);
          sf.pos=8253338;
          Vvalue = ((Tc*)&YhZb);
         }
         else
         {
-         sf.pos=8253339;
+         sf.pos=1081995163;
          Vflag = trZero;
         }
        }
@@ -15527,24 +16975,24 @@ void YZH8() {
      else
      {
       Ti Vidx;
-      sf.pos=8253340;
+      sf.pos=1081995164;
       Vflagname1 = ZstringSlice(Varg, 1, -1, 0);
-      sf.pos=8253341;
+      sf.pos=1081995165;
       Vidx = ZstringFindChar(Vflagname1, 61, 0);
       sf.pos=8253342;
       if ((Vidx > 0))
       {
-       sf.pos=8253343;
+       sf.pos=1081995167;
        Vvalue = ZstringSlice(Vflagname1, (Vidx + 1), -1, 0);
-       sf.pos=8253344;
+       sf.pos=1081995168;
        Vflagname1 = ZstringSlice(Vflagname1, 0, (Vidx - 1), 0);
       }
       else
       {
-       sf.pos=8253345;
+       sf.pos=1081995169;
        while ((ZstringSize(Vflagname1) > 1))
        {
-        sf.pos=8253346;
+        sf.pos=1081995170;
         Vflag = ZDictGetIobjDef(Y7be, (Tz)(void*)ZstringSlice(Vflagname1, 0, 0, 0), trZero);
         sf.pos=8253347;
         if ((((Vflag).ptr) == NULL))
@@ -15559,13 +17007,13 @@ void YZH8() {
          {
           sf.pos=8253349;
           ++((*(Ti*)(Vflag.ptr + (size_t)Vflag.table[5])));
-          sf.pos=8253351;
+          sf.pos=1081995175;
           Vbflag = ((Y86c *)Znio(0, 8253350, (Vflag)));
           sf.pos=8253352;
           Vbflag->Vcurrent = !(Vbflag->Vdefault);
-          sf.pos=8253353;
+          sf.pos=1081995177;
           Vflagname1 = ZstringSlice(Vflagname1, 1, -1, 0);
-          sf.pos=8253354;
+          sf.pos=1081995178;
           Vflag = trZero;
          }
          else {
@@ -15579,9 +17027,9 @@ void YZH8() {
          sf.pos=8253356;
  if ((!(Y_kI) && !((*(Tb*)(Vflag.ptr + (size_t)Vflag.table[7])))))
          {
-          sf.pos=8253357;
+          sf.pos=1081995181;
           Vvalue = ZstringSlice(Vflagname1, 1, -1, 0);
-          sf.pos=8253358;
+          sf.pos=1081995182;
           Vflagname1 = ZstringSlice(Vflagname1, 0, 0, 0);
          }
          }}
@@ -15590,20 +17038,20 @@ YuBh:
         }
 Yy70:
         if (rt == 2) { rt &= 1; break; }
-       sf.pos=8253359;
+       sf.pos=1081995183;
        }
       }
-      sf.pos=8253360;
+      sf.pos=1081995184;
       if ((ZstringSize(Vflagname1) != 1))
       {
-       sf.pos=8253361;
+       sf.pos=1081995185;
        YSUO(ZcS(((Tc*)&YcW8), Varg));
       }
       else {
-      sf.pos=8253362;
+      sf.pos=1081995186;
  if ((((Vflag).ptr) == NULL))
       {
-       sf.pos=8253363;
+       sf.pos=1081995187;
        Vflag = ZDictGetIobjDef(Y7be, (Tz)(void*)Vflagname1, trZero);
       }
       }
@@ -15614,7 +17062,7 @@ Yy70:
       sf.pos=8253365;
       if (!(YUBd))
       {
-       sf.pos=8253366;
+       sf.pos=1081995190;
        YSUO(ZcS(((Tc*)&Y2hB), Varg));
       }
      }
@@ -15623,7 +17071,7 @@ Yy70:
       sf.pos=8253367;
       if ((((*(Ti*)(Vflag.ptr + (size_t)Vflag.table[5])) > 0) && !((*(Tb*)(Vflag.ptr + (size_t)Vflag.table[6])))))
       {
-       sf.pos=8253368;
+       sf.pos=1081995192;
        YSUO(ZcS(((Tc*)&YcLH), Varg));
       }
       sf.pos=8253369;
@@ -15631,7 +17079,7 @@ Yy70:
       sf.pos=8253370;
       if ((Vflag).type == 0)
       {
-       sf.pos=8253372;
+       sf.pos=1081995196;
        Vbflag1 = ((Y86c *)Znio(0, 8253371, (Vflag)));
        sf.pos=8253373;
        if ((Vvalue != NULL))
@@ -15651,7 +17099,7 @@ Yy70:
         }
         else
         {
-         sf.pos=8253378;
+         sf.pos=1081995202;
          YSUO(ZcS(((Tc*)&YHSJ), Varg));
         }
         }
@@ -15669,22 +17117,23 @@ Yy70:
        sf.pos=8253381;
        if ((Vvalue != NULL))
        {
-        sf.pos=8253382;
+        sf.pos=1081995206;
         YSUO(ZcS(((Tc*)&Y6QK), Varg));
        }
-       sf.pos=8253384;
+       sf.pos=1081995208;
        Vsflag = ((Y_SI *)Znio(3, 8253383, (Vflag)));
-       sf.pos=8253385;
+       sf.pos=1081995209;
        Vsflag->Vcurrent = ZnewList((Tt*)&string__T, 0);
-       sf.pos=8253386;
+       sf.pos=1081995210;
        {
         Ti Vj;
         Tfr Zf7;
         ZforRangeNew((Vi + 1), (ZListSize(Y1p3) - 1), 0, 1, &Zf7);
         for (ZforRangeGetInt(&Zf7, &Vj); ZforRangeContInt(&Zf7); ZforRangeNextInt(&Zf7, &Vj)) {
-        sf.pos=8253387;
+        sf.pos=1081995211;
         ZLap((Tl*)Vsflag->Vcurrent, (Tz)(void*)((Tc *)ZListGetPtr(Y1p3, Vj)));
-        sf.pos=8253388;
+        if (e->wantGC) ZthreadGC();
+        sf.pos=1081995212;
         }
        }
        rt = 2;
@@ -15697,36 +17146,36 @@ Yy70:
        {
         sf.pos=8253390;
         Vskip = 1;
-        sf.pos=8253391;
+        sf.pos=1081995215;
         if ((Vi == (ZListSize(Y1p3) - 1)))
         {
-         sf.pos=8253392;
+         sf.pos=1081995216;
          YSUO(ZcS(((Tc*)&Y_ju), Varg));
         }
-        sf.pos=8253393;
+        sf.pos=1081995217;
         Vvalue = ((Tc *)ZListGetPtr(Y1p3, (Vi + 1)));
        }
        sf.pos=8253394;
        if ((Vflag).type == 1)
        {
-        sf.pos=8253396;
+        sf.pos=1081995220;
         Viflag = ((YJQu *)Znio(1, 8253395, (Vflag)));
         sf.pos=8253397;
         if ((Vvalue == NULL))
         {
          sf.pos=8253398;
          Viflag->Vcurrent = Viflag->Vdefault;
-         sf.pos=8253399;
+         sf.pos=1081995223;
          ZLap((Tl*)Viflag->VtheValueList, (Tz)(Ti)Viflag->Vdefault);
         }
         else
         {
          Ti VintVal;
-         sf.pos=8253400;
+         sf.pos=1081995224;
          VintVal = ZstringToInt(Vvalue, 1, 0);
          sf.pos=8253401;
          Viflag->Vcurrent = VintVal;
-         sf.pos=8253402;
+         sf.pos=1081995226;
          ZLap((Tl*)Viflag->VtheValueList, (Tz)(Ti)VintVal);
         }
        }
@@ -15734,28 +17183,28 @@ Yy70:
        sf.pos=8253403;
  if ((Vflag).type == 2)
        {
-        sf.pos=8253405;
+        sf.pos=1081995229;
         Vsflag1 = ((YzqH *)Znio(2, 8253404, (Vflag)));
         sf.pos=8253406;
         if ((Vvalue == NULL))
         {
          sf.pos=8253407;
          Vsflag1->Vcurrent = Vsflag1->Vdefault;
-         sf.pos=8253408;
+         sf.pos=1081995232;
          ZLap((Tl*)Vsflag1->VtheValueList, (Tz)(void*)Vsflag1->Vdefault);
         }
         else
         {
          sf.pos=8253409;
          Vsflag1->Vcurrent = Vvalue;
-         sf.pos=8253410;
+         sf.pos=1081995234;
          ZLap((Tl*)Vsflag1->VtheValueList, (Tz)(void*)Vvalue);
         }
        }
        else
        {
         Tr ex;
-        sf.pos=8253411;
+        sf.pos=1081995235;
         *Znao(&ex, YrHq__YwtA__YRHR(NULL, ((Tc*)&YjTs)), YrHq__Ytlm_I_imt, 26);
         ZthrowIobject(ex);
        }
@@ -15774,7 +17223,8 @@ YOd6:
 YgsM:
    if (rt == 2) { rt &= 1; break; }
    if (rt == 4) { rt &= 1; continue; }
-   sf.pos=8253412;
+   if (e->wantGC) ZthreadGC();
+   sf.pos=1081995236;
    }
   }
  }
@@ -15792,24 +17242,25 @@ void YSUO(Tc *Amsg) {
  }
  sf.frof = YSUOfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=8529500;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1082271324;
  ((Ts (*)(void*, Tc*))(YeNQ.table[11]))(YeNQ.ptr, Amsg);
  sf.pos=8529501;
  if ((Yun4 != NULL))
  {
-  sf.pos=8529502;
+  sf.pos=1082271326;
   Yl0k(YAMW(Yun4));
  }
  sf.pos=8529503;
  if (!(YhUP))
  {
-  sf.pos=8529504;
+  sf.pos=1082271328;
   ((Ts (*)(void*, Tc*))(YeNQ.table[11]))(YeNQ.ptr, ZcS3(((Tc*)&YkFE), YzvW, ((Tc*)&Y15F)));
  }
- sf.pos=8529505;
- Zexit(Ypp_a(NULL, ((Tc*)&Yzoka), 456, 5), 1);
+ sf.pos=1082271329;
+ Zexit(Ypp_a(NULL, ((Tc*)&YrhZa), 456, 5), 1);
  e->topFrame = sf.prev;
  return;
 }
@@ -15847,19 +17298,20 @@ void Yfj5(Tb Averbose) {
  }
  sf.frof = Yfj5fo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  sf.pos=2956000;
  if ((Yun4 != NULL))
  {
-  sf.pos=2956001;
+  sf.pos=1076697825;
   Yl0k(YAMW(Yun4));
  }
- sf.pos=2956002;
+ sf.pos=1076697826;
  Yl0k(((Tc*)&YaBy));
  sf.pos=2956003;
  VallFlags = Y7be;
- sf.pos=2956004;
+ sf.pos=1076697828;
  {
   Tfl Zf11i;
   Zf11 = ZDictKeys(YBQy, 0);
@@ -15867,19 +17319,20 @@ void Yfj5(Tb Averbose) {
   Zf11i.valp = (void*)&Vkey1;
   Zf11i.i = 0;
   for (; ZforListPtrCont(&Zf11i); ) {
-  sf.pos=2956005;
+  sf.pos=1076697829;
   Vflag = ZDictGetIobj(YBQy, (Tz)(void*)Vkey1);
   sf.pos=2956006;
   if (((*(Tc**)(Vflag.ptr + (size_t)Vflag.table[1])) == NULL))
   {
-   sf.pos=2956007;
+   sf.pos=1076697831;
    *ZDictGetIobjP(VallFlags, (Tz)(void*)(*(Tc**)(Vflag.ptr + (size_t)Vflag.table[2]))) = Vflag;
   }
-  sf.pos=2956008;
+  if (e->wantGC) ZthreadGC();
+  sf.pos=1076697832;
   }
  }
  VmaxLeadLen = 0;
- sf.pos=2956009;
+ sf.pos=1076697833;
  {
   Ti Vdisplay;
   Tfl Zf1i;
@@ -15891,12 +17344,12 @@ void Yfj5(Tb Averbose) {
   sf.pos=2956010;
   if (Vdisplay)
   {
-   sf.pos=2956011;
+   sf.pos=1076697835;
    YTlu(((Tc*)&YwXF), VmaxLeadLen);
-   sf.pos=2956012;
+   sf.pos=1076697836;
    Yl0k(((Tc*)&YEcf));
   }
-  sf.pos=2956013;
+  sf.pos=1076697837;
   {
    Tfl Zf2i;
    Zf2 = ZstringListSort(ZDictKeys(VallFlags, 0), 1);
@@ -15905,7 +17358,7 @@ void Yfj5(Tb Averbose) {
    Zf2i.i = 0;
    for (; ZforListPtrCont(&Zf2i); ) {
    Tb Vopt;
-   sf.pos=2956014;
+   sf.pos=1076697838;
    Vflag1 = ZDictGetIobj(VallFlags, (Tz)(void*)Vkey);
    sf.pos=2956015;
    VargText = ((Tc*)&Ya);
@@ -15957,7 +17410,7 @@ void Yfj5(Tb Averbose) {
     }
     else
     {
-     sf.pos=2956029;
+     sf.pos=1076697853;
      VargText = ZcS((*(Tc**)(Vflag1.ptr + (size_t)Vflag1.table[4])), ((Tc*)&YulU));
     }
     sf.pos=2956030;
@@ -15970,12 +17423,12 @@ void Yfj5(Tb Averbose) {
     sf.pos=2956032;
     if (Vopt)
     {
-     sf.pos=2956033;
+     sf.pos=1076697857;
      VargText = ZcS3(((Tc*)&YVZ), VargText, ((Tc*)&YEa));
     }
     else
     {
-     sf.pos=2956034;
+     sf.pos=1076697858;
      VargText = ZcS3(((Tc*)&Yq_), VargText, ((Tc*)&Y9a));
     }
    }
@@ -15984,7 +17437,7 @@ void Yfj5(Tb Averbose) {
    sf.pos=2956036;
    if (((*(Tc**)(Vflag1.ptr + (size_t)Vflag1.table[1])) != NULL))
    {
-    sf.pos=2956037;
+    sf.pos=1076697861;
     Vlead = ZcS5(((Tc*)&YT), (*(Tc**)(Vflag1.ptr + (size_t)Vflag1.table[1])), VargText, ((Tc*)&YG), (Tc*)1);
    }
    sf.pos=2956038;
@@ -15999,22 +17452,22 @@ void Yfj5(Tb Averbose) {
       sf.pos=2956041;
       if ((*(Tb*)(Vflag1.ptr + (size_t)Vflag1.table[6])))
       {
-       sf.pos=2956042;
+       sf.pos=1076697866;
        Vlead =  ZcS(Vlead, ((Tc*)&Y_y2));
       }
-      sf.pos=2956043;
+      sf.pos=1076697867;
       Yl0k(Vlead);
      }
      sf.pos=2956044;
      Vlead = ((Tc*)&Ya);
     }
-    sf.pos=2956045;
+    sf.pos=1076697869;
     Vlead =  ZcS(Vlead, ZcS5(((Tc*)&Y1ia), (*(Tc**)(Vflag1.ptr + (size_t)Vflag1.table[2])), VargText, ((Tc*)&YG), (Tc*)1));
    }
    sf.pos=2956046;
    if ((*(Tb*)(Vflag1.ptr + (size_t)Vflag1.table[6])))
    {
-    sf.pos=2956047;
+    sf.pos=1076697871;
     Vlead =  ZcS(Vlead, ((Tc*)&Y2yA));
    }
    sf.pos=2956048;
@@ -16023,31 +17476,31 @@ void Yfj5(Tb Averbose) {
     sf.pos=2956049;
     if (((*(Tc**)(Vflag1.ptr + (size_t)Vflag1.table[3])) != NULL))
     {
-     sf.pos=2956050;
+     sf.pos=1076697874;
      YTlu(Vlead, VmaxLeadLen);
-     sf.pos=2956051;
+     sf.pos=1076697875;
      Yl0k((*(Tc**)(Vflag1.ptr + (size_t)Vflag1.table[3])));
     }
     else
     {
-     sf.pos=2956052;
+     sf.pos=1076697876;
      Yl0k(Vlead);
     }
     sf.pos=2956053;
     if (Averbose)
     {
-     sf.pos=2956054;
+     sf.pos=1076697878;
      YTlu(((Tc*)&Ya), VmaxLeadLen);
-     sf.pos=2956055;
+     sf.pos=1076697879;
      Yl0k(ZcS(((Tc*)&Ym4c), YpI_((*(YkxB**)(Vflag1.ptr + (size_t)Vflag1.table[9])))));
     }
    }
    else
    {
-    sf.pos=2956056;
+    sf.pos=1076697880;
     if ((VmaxLeadLen < ZstringSize(Vlead)))
     {
-     sf.pos=2956057;
+     sf.pos=1076697881;
      VmaxLeadLen = ZstringSize(Vlead);
     }
     sf.pos=2956058;
@@ -16063,14 +17516,16 @@ YAEw:
    }
 Yfan:
    if (rt == 2) { rt &= 1; break; }
-   sf.pos=2956060;
+   if (e->wantGC) ZthreadGC();
+   sf.pos=1076697884;
    }
   }
-  sf.pos=2956061;
+  if (e->wantGC) ZthreadGC();
+  sf.pos=1076697885;
   }
  }
- sf.pos=2956062;
- Zexit(Ypp_a(NULL, ((Tc*)&Yzoka), 564, 5), YMLU);
+ sf.pos=1076697886;
+ Zexit(Ypp_a(NULL, ((Tc*)&YrhZa), 564, 5), YMLU);
  e->topFrame = sf.prev;
  return;
 }
@@ -16085,19 +17540,21 @@ void YTlu(Tc *Alead, Ti AmaxLeadLen) {
  }
  sf.frof = YTlufo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=8179800;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1081921624;
  Yvcu(Alead);
- sf.pos=8179801;
+ sf.pos=1081921625;
  {
   Ti Vi;
   Tfr Zf1;
   ZforRangeNew(ZstringSize(Alead), AmaxLeadLen, 0, 1, &Zf1);
   for (ZforRangeGetInt(&Zf1, &Vi); ZforRangeContInt(&Zf1); ZforRangeNextInt(&Zf1, &Vi)) {
-  sf.pos=8179802;
+  sf.pos=1081921626;
   Yvcu(((Tc*)&YG));
-  sf.pos=8179803;
+  if (e->wantGC) ZthreadGC();
+  sf.pos=1081921627;
   }
  }
  e->topFrame = sf.prev;
@@ -16121,23 +17578,24 @@ Tc *YAMW(YuMQ *t) {
  }
  sf.frof = YAMWfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=4300000;
+  sf.pos=1078041824;
   ZthrowThisNil();
  }
- sf.pos=4300001;
+ sf.pos=1078041825;
  Vidx = ZstringFind(t->Vtext, ((Tc*)&YMtG), 0);
  sf.pos=4300002;
  if ((Vidx < 0))
  {
-  sf.pos=4300003;
+  sf.pos=1078041827;
   r = t->Vtext;
   rt = 1;
   goto YZtK;
  }
- sf.pos=4300004;
+ sf.pos=1078041828;
  r = ZcS3(ZstringSlice(t->Vtext, 0, (Vidx - 1), 0), YzvW, (t0 = ZstringSlice(t->Vtext, (Vidx + 3), -1, 0)));
 YZtK:
  e->topFrame = sf.prev;
@@ -16165,10 +17623,11 @@ Y86c *YttT(Y86c *t, Tc *AshortName, Tc *AlongName, Tb Adefault, Tc *Adoc) {
  }
  sf.frof = YttTfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=327300; t = Za(sizeof(Y86c));}
- sf.pos=327301;
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1074069124; t = Za(sizeof(Y86c));}
+ sf.pos=1074069125;
  Y86c__YcLu(t, AshortName, AlongName, Adoc, MZ__callerPos());
  sf.pos=327302;
  t->Vcurrent = Adefault;
@@ -16190,10 +17649,11 @@ void YEqoa(Y86c *t) {
  }
  sf.frof = YEqoafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=3891100;
+  sf.pos=1077632924;
   ZthrowThisNil();
  }
  sf.pos=3891101;
@@ -16201,13 +17661,27 @@ void YEqoa(Y86c *t) {
  e->topFrame = sf.prev;
  return;
 }
+Zfo YHoRfo[2] = {{0,(Tt*)&Y86c__T},{0,0}};
 Tb YHoR(Y86c *t) {
+ Tn *e = ZgetEnv();
+ Zsf sf;
  Tb r = 0;
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  YHoRfo[0].off = (void*)&sf - (void*)&t;
+ }
+ sf.frof = YHoRfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
    ZthrowThisNil();
  }
  YY8i();
  r = t->Vcurrent;
+ e->topFrame = sf.prev;
  return r;
 }
 Zfo Y86c__YcLufo[7] = {{0,(Tt*)&Y86c__T},{0,(Tt*)&string__T},{0,(Tt*)&string__T},{0,(Tt*)&YkxB__T},{0,(Tt*)&string__T},{0,(Tt*)&iobj__T},{0,0}};
@@ -16227,14 +17701,15 @@ Y86c *Y86c__YcLu(Y86c *t, Tc *AshortName, Tc *AlongName, Tc *Adoc, YkxB *Apos) {
  }
  sf.frof = Y86c__YcLufo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=7664400; t = Za(sizeof(Y86c));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1081406224; t = Za(sizeof(Y86c));}
  sf.pos=7664401;
  if ((Y6fX != NULL))
  {
   Tr ex;
-  sf.pos=7664402;
+  sf.pos=1081406226;
   *Znao(&ex, YVNj__YwtA__YRHR(NULL, ((Tc*)&Yc_h)), YVNj__Ytlm_I_imt, 7);
   ZthrowIobject(ex);
  }
@@ -16242,7 +17717,7 @@ Y86c *Y86c__YcLu(Y86c *t, Tc *AshortName, Tc *AlongName, Tc *Adoc, YkxB *Apos) {
  if (((((AshortName == NULL) || (ZbyteStringSize(AshortName) == 0))) && (((AlongName == NULL) || (ZbyteStringSize(AlongName) == 0)))))
  {
   Tr ex;
-  sf.pos=7664404;
+  sf.pos=1081406228;
   *Znao(&ex, YVNj__YwtA__YRHR(NULL, ((Tc*)&Y6pY)), YVNj__Ytlm_I_imt, 7);
   ZthrowIobject(ex);
  }
@@ -16263,44 +17738,44 @@ Y86c *Y86c__YcLu(Y86c *t, Tc *AshortName, Tc *AlongName, Tc *Adoc, YkxB *Apos) {
  sf.pos=7664410;
  if ((Y7be == NULL))
  {
-  sf.pos=7664411;
+  sf.pos=1081406235;
   Y7be = ZnewDict((Tt*)&string__T, (Tt*)&iobj__T, 0);
-  sf.pos=7664412;
+  sf.pos=1081406236;
   YBQy = ZnewDict((Tt*)&string__T, (Tt*)&iobj__T, 0);
  }
  sf.pos=7664413;
  if (((AlongName != NULL) && (ZbyteStringSize(AlongName) != 0)))
  {
-  sf.pos=7664414;
+  sf.pos=1081406238;
   if (ZDictHas(YBQy, (Tz)(void*)AlongName))
   {
-   sf.pos=7664415;
+   sf.pos=1081406239;
    Y86c__YofP(t, AlongName, ZDictGetIobj(YBQy, (Tz)(void*)AlongName), Apos);
   }
-  sf.pos=7664416;
+  sf.pos=1081406240;
   ZDictAddTzIobj(0, YBQy, (Tz)(void*)AlongName, *Znao(&t0, t, Y86c__YuQR_I_imt, 0));
  }
  sf.pos=7664417;
  if (((AshortName != NULL) && (ZbyteStringSize(AshortName) != 0)))
  {
-  sf.pos=7664418;
+  sf.pos=1081406242;
   if ((ZstringSize(AshortName) > 1))
   {
    Tr ex;
-   sf.pos=7664419;
+   sf.pos=1081406243;
    *Znao(&ex, YVNj__YwtA__YRHR(NULL, ((Tc*)&Y9CP)), YVNj__Ytlm_I_imt, 7);
    ZthrowIobject(ex);
   }
-  sf.pos=7664420;
+  sf.pos=1081406244;
   if (ZDictHas(Y7be, (Tz)(void*)AshortName))
   {
-   sf.pos=7664421;
+   sf.pos=1081406245;
    Y86c__YofP(t, AshortName, ZDictGetIobj(Y7be, (Tz)(void*)AshortName), Apos);
   }
-  sf.pos=7664422;
+  sf.pos=1081406246;
   ZDictAddTzIobj(0, Y7be, (Tz)(void*)AshortName, *Znao(&t0, t, Y86c__YuQR_I_imt, 0));
  }
- sf.pos=7664423;
+ sf.pos=1081406247;
  t->Vpos = Apos;
  e->topFrame = sf.prev;
  return t;
@@ -16328,17 +17803,18 @@ void Y86c__YofP(Y86c *t, Tc *Aname, Tr Aflag, YkxB *Apos) {
  }
  sf.frof = Y86c__YofPfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=7569700;
+  sf.pos=1081311524;
   ZthrowThisNil();
  }
- sf.pos=7569701;
+ sf.pos=1081311525;
  VonePos = ((p1 = ((Y_CE = (*(YkxB**)(Aflag.ptr + (size_t)Aflag.table[9])), Y_CE == NULL ? NULL : YpI_(Y_CE)))) == NULL ? (((Tc*)&YbbH)) : p1);
- sf.pos=7569702;
+ sf.pos=1081311526;
  Ve = YVNj__YwtA__YRHRa(NULL, Apos, ZcS5(((Tc*)&YtzG), Aname, ((Tc*)&YDyy), VonePos, (Tc*)1));
- sf.pos=7569703;
+ sf.pos=1081311527;
  *Znao(&ex, Ve, YVNj__Ytlm_I_imt, 7);
  ZthrowIobject(ex);
 }
@@ -16405,16 +17881,17 @@ YJQu *Y4qx(YJQu *t, Tc *AshortName, Tc *AlongName, Ti Adefault, Tc *Adoc) {
  }
  sf.frof = Y4qxfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=2966000; t = Za(sizeof(YJQu));}
- sf.pos=2966001;
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1076707824; t = Za(sizeof(YJQu));}
+ sf.pos=1076707825;
  YJQu__YcLu(t, AshortName, AlongName, Adoc, MZ__callerPos());
  sf.pos=2966002;
  t->Vcurrent = Adefault;
  sf.pos=2966003;
  t->Vdefault = Adefault;
- sf.pos=2966004;
+ sf.pos=1076707828;
  t->VtheValueList = ZnewList((Tt*)&int__T, 0);
  e->topFrame = sf.prev;
  return t;
@@ -16430,10 +17907,11 @@ void Y49ga(YJQu *t) {
  }
  sf.frof = Y49gafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=1635000;
+  sf.pos=1075376824;
   ZthrowThisNil();
  }
  sf.pos=1635001;
@@ -16441,13 +17919,27 @@ void Y49ga(YJQu *t) {
  e->topFrame = sf.prev;
  return;
 }
+Zfo YRvzfo[2] = {{0,(Tt*)&YJQu__T},{0,0}};
 Ti YRvz(YJQu *t) {
+ Tn *e = ZgetEnv();
+ Zsf sf;
  Ti r = 0;
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  YRvzfo[0].off = (void*)&sf - (void*)&t;
+ }
+ sf.frof = YRvzfo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
    ZthrowThisNil();
  }
  YY8i();
  r = t->Vcurrent;
+ e->topFrame = sf.prev;
  return r;
 }
 Zfo Yl8rfo[2] = {{0,(Tt*)&YJQu__T},{0,0}};
@@ -16462,13 +17954,14 @@ Ti Yl8r(YJQu *t) {
  }
  sf.frof = Yl8rfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=8767100;
+  sf.pos=1082508924;
   ZthrowThisNil();
  }
- sf.pos=8767101;
+ sf.pos=1082508925;
  r = YRvz(t);
  e->topFrame = sf.prev;
  return r;
@@ -16490,14 +17983,15 @@ YJQu *YJQu__YcLu(YJQu *t, Tc *AshortName, Tc *AlongName, Tc *Adoc, YkxB *Apos) {
  }
  sf.frof = YJQu__YcLufo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=3107900; t = Za(sizeof(YJQu));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1076849724; t = Za(sizeof(YJQu));}
  sf.pos=3107901;
  if ((Y6fX != NULL))
  {
   Tr ex;
-  sf.pos=3107902;
+  sf.pos=1076849726;
   *Znao(&ex, YVNj__YwtA__YRHR(NULL, ((Tc*)&Yc_h)), YVNj__Ytlm_I_imt, 7);
   ZthrowIobject(ex);
  }
@@ -16505,7 +17999,7 @@ YJQu *YJQu__YcLu(YJQu *t, Tc *AshortName, Tc *AlongName, Tc *Adoc, YkxB *Apos) {
  if (((((AshortName == NULL) || (ZbyteStringSize(AshortName) == 0))) && (((AlongName == NULL) || (ZbyteStringSize(AlongName) == 0)))))
  {
   Tr ex;
-  sf.pos=3107904;
+  sf.pos=1076849728;
   *Znao(&ex, YVNj__YwtA__YRHR(NULL, ((Tc*)&Y6pY)), YVNj__Ytlm_I_imt, 7);
   ZthrowIobject(ex);
  }
@@ -16526,44 +18020,44 @@ YJQu *YJQu__YcLu(YJQu *t, Tc *AshortName, Tc *AlongName, Tc *Adoc, YkxB *Apos) {
  sf.pos=3107910;
  if ((Y7be == NULL))
  {
-  sf.pos=3107911;
+  sf.pos=1076849735;
   Y7be = ZnewDict((Tt*)&string__T, (Tt*)&iobj__T, 0);
-  sf.pos=3107912;
+  sf.pos=1076849736;
   YBQy = ZnewDict((Tt*)&string__T, (Tt*)&iobj__T, 0);
  }
  sf.pos=3107913;
  if (((AlongName != NULL) && (ZbyteStringSize(AlongName) != 0)))
  {
-  sf.pos=3107914;
+  sf.pos=1076849738;
   if (ZDictHas(YBQy, (Tz)(void*)AlongName))
   {
-   sf.pos=3107915;
+   sf.pos=1076849739;
    YJQu__YofP(t, AlongName, ZDictGetIobj(YBQy, (Tz)(void*)AlongName), Apos);
   }
-  sf.pos=3107916;
+  sf.pos=1076849740;
   ZDictAddTzIobj(0, YBQy, (Tz)(void*)AlongName, *Znao(&t0, t, YJQu__YuQR_I_imt, 1));
  }
  sf.pos=3107917;
  if (((AshortName != NULL) && (ZbyteStringSize(AshortName) != 0)))
  {
-  sf.pos=3107918;
+  sf.pos=1076849742;
   if ((ZstringSize(AshortName) > 1))
   {
    Tr ex;
-   sf.pos=3107919;
+   sf.pos=1076849743;
    *Znao(&ex, YVNj__YwtA__YRHR(NULL, ((Tc*)&Y9CP)), YVNj__Ytlm_I_imt, 7);
    ZthrowIobject(ex);
   }
-  sf.pos=3107920;
+  sf.pos=1076849744;
   if (ZDictHas(Y7be, (Tz)(void*)AshortName))
   {
-   sf.pos=3107921;
+   sf.pos=1076849745;
    YJQu__YofP(t, AshortName, ZDictGetIobj(Y7be, (Tz)(void*)AshortName), Apos);
   }
-  sf.pos=3107922;
+  sf.pos=1076849746;
   ZDictAddTzIobj(0, Y7be, (Tz)(void*)AshortName, *Znao(&t0, t, YJQu__YuQR_I_imt, 1));
  }
- sf.pos=3107923;
+ sf.pos=1076849747;
  t->Vpos = Apos;
  e->topFrame = sf.prev;
  return t;
@@ -16591,17 +18085,18 @@ void YJQu__YofP(YJQu *t, Tc *Aname, Tr Aflag, YkxB *Apos) {
  }
  sf.frof = YJQu__YofPfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=132000;
+  sf.pos=1073873824;
   ZthrowThisNil();
  }
- sf.pos=132001;
+ sf.pos=1073873825;
  VonePos = ((p2 = ((Y8_j = (*(YkxB**)(Aflag.ptr + (size_t)Aflag.table[9])), Y8_j == NULL ? NULL : YpI_(Y8_j)))) == NULL ? (((Tc*)&YbbH)) : p2);
- sf.pos=132002;
+ sf.pos=1073873826;
  Ve = YVNj__YwtA__YRHRa(NULL, Apos, ZcS5(((Tc*)&YtzG), Aname, ((Tc*)&YDyy), VonePos, (Tc*)1));
- sf.pos=132003;
+ sf.pos=1073873827;
  *Znao(&ex, Ve, YVNj__Ytlm_I_imt, 7);
  ZthrowIobject(ex);
 }
@@ -16671,16 +18166,17 @@ YzqH *YBtk(YzqH *t, Tc *AshortName, Tc *AlongName, Tc *Adefault, Tc *Adoc) {
  }
  sf.frof = YBtkfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=8063600; t = Za(sizeof(YzqH));}
- sf.pos=8063601;
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1081805424; t = Za(sizeof(YzqH));}
+ sf.pos=1081805425;
  YzqH__YcLu(t, AshortName, AlongName, Adoc, MZ__callerPos());
  sf.pos=8063602;
  t->Vcurrent = Adefault;
  sf.pos=8063603;
  t->Vdefault = Adefault;
- sf.pos=8063604;
+ sf.pos=1081805428;
  t->VtheValueList = ZnewList((Tt*)&string__T, 0);
  e->topFrame = sf.prev;
  return t;
@@ -16696,10 +18192,11 @@ void YJaza(YzqH *t) {
  }
  sf.frof = YJazafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=8620600;
+  sf.pos=1082362424;
   ZthrowThisNil();
  }
  sf.pos=8620601;
@@ -16724,14 +18221,15 @@ YzqH *YzqH__YcLu(YzqH *t, Tc *AshortName, Tc *AlongName, Tc *Adoc, YkxB *Apos) {
  }
  sf.frof = YzqH__YcLufo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- if (t == NULL) {sf.pos=483900; t = Za(sizeof(YzqH));}
+ if (e->wantGC) ZthreadGC();
+ if (t == NULL) {sf.pos=1074225724; t = Za(sizeof(YzqH));}
  sf.pos=483901;
  if ((Y6fX != NULL))
  {
   Tr ex;
-  sf.pos=483902;
+  sf.pos=1074225726;
   *Znao(&ex, YVNj__YwtA__YRHR(NULL, ((Tc*)&Yc_h)), YVNj__Ytlm_I_imt, 7);
   ZthrowIobject(ex);
  }
@@ -16739,7 +18237,7 @@ YzqH *YzqH__YcLu(YzqH *t, Tc *AshortName, Tc *AlongName, Tc *Adoc, YkxB *Apos) {
  if (((((AshortName == NULL) || (ZbyteStringSize(AshortName) == 0))) && (((AlongName == NULL) || (ZbyteStringSize(AlongName) == 0)))))
  {
   Tr ex;
-  sf.pos=483904;
+  sf.pos=1074225728;
   *Znao(&ex, YVNj__YwtA__YRHR(NULL, ((Tc*)&Y6pY)), YVNj__Ytlm_I_imt, 7);
   ZthrowIobject(ex);
  }
@@ -16760,44 +18258,44 @@ YzqH *YzqH__YcLu(YzqH *t, Tc *AshortName, Tc *AlongName, Tc *Adoc, YkxB *Apos) {
  sf.pos=483910;
  if ((Y7be == NULL))
  {
-  sf.pos=483911;
+  sf.pos=1074225735;
   Y7be = ZnewDict((Tt*)&string__T, (Tt*)&iobj__T, 0);
-  sf.pos=483912;
+  sf.pos=1074225736;
   YBQy = ZnewDict((Tt*)&string__T, (Tt*)&iobj__T, 0);
  }
  sf.pos=483913;
  if (((AlongName != NULL) && (ZbyteStringSize(AlongName) != 0)))
  {
-  sf.pos=483914;
+  sf.pos=1074225738;
   if (ZDictHas(YBQy, (Tz)(void*)AlongName))
   {
-   sf.pos=483915;
+   sf.pos=1074225739;
    YzqH__YofP(t, AlongName, ZDictGetIobj(YBQy, (Tz)(void*)AlongName), Apos);
   }
-  sf.pos=483916;
+  sf.pos=1074225740;
   ZDictAddTzIobj(0, YBQy, (Tz)(void*)AlongName, *Znao(&t0, t, YzqH__YuQR_I_imt, 2));
  }
  sf.pos=483917;
  if (((AshortName != NULL) && (ZbyteStringSize(AshortName) != 0)))
  {
-  sf.pos=483918;
+  sf.pos=1074225742;
   if ((ZstringSize(AshortName) > 1))
   {
    Tr ex;
-   sf.pos=483919;
+   sf.pos=1074225743;
    *Znao(&ex, YVNj__YwtA__YRHR(NULL, ((Tc*)&Y9CP)), YVNj__Ytlm_I_imt, 7);
    ZthrowIobject(ex);
   }
-  sf.pos=483920;
+  sf.pos=1074225744;
   if (ZDictHas(Y7be, (Tz)(void*)AshortName))
   {
-   sf.pos=483921;
+   sf.pos=1074225745;
    YzqH__YofP(t, AshortName, ZDictGetIobj(Y7be, (Tz)(void*)AshortName), Apos);
   }
-  sf.pos=483922;
+  sf.pos=1074225746;
   ZDictAddTzIobj(0, Y7be, (Tz)(void*)AshortName, *Znao(&t0, t, YzqH__YuQR_I_imt, 2));
  }
- sf.pos=483923;
+ sf.pos=1074225747;
  t->Vpos = Apos;
  e->topFrame = sf.prev;
  return t;
@@ -16825,29 +18323,46 @@ void YzqH__YofP(YzqH *t, Tc *Aname, Tr Aflag, YkxB *Apos) {
  }
  sf.frof = YzqH__YofPfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=5264800;
+  sf.pos=1079006624;
   ZthrowThisNil();
  }
- sf.pos=5264801;
+ sf.pos=1079006625;
  VonePos = ((p3 = ((YVCw = (*(YkxB**)(Aflag.ptr + (size_t)Aflag.table[9])), YVCw == NULL ? NULL : YpI_(YVCw)))) == NULL ? (((Tc*)&YbbH)) : p3);
- sf.pos=5264802;
+ sf.pos=1079006626;
  Ve = YVNj__YwtA__YRHRa(NULL, Apos, ZcS5(((Tc*)&YtzG), Aname, ((Tc*)&YDyy), VonePos, (Tc*)1));
- sf.pos=5264803;
+ sf.pos=1079006627;
  *Znao(&ex, Ve, YVNj__Ytlm_I_imt, 7);
  ZthrowIobject(ex);
 }
+Zfo YzqH__Y836fo[4] = {{0,(Tt*)&YzqH__T},{0,(Tt*)&string__T},{0,(Tt*)&iobj__T},{0,0}};
 Tr YzqH__Y836(YzqH *t, Tc *AargName) {
+ Tn *e = ZgetEnv();
+ Zsf sf;
  Tr r = {NULL};
  Tr t0 = {NULL};
+ static int sfF = 0;
+ if (!sfF) {
+  sfF = 1;
+  YzqH__Y836fo[0].off = (void*)&sf - (void*)&t;
+  YzqH__Y836fo[1].off = (void*)&sf - (void*)&AargName;
+  YzqH__Y836fo[2].off = (void*)&sf - (void*)&t0;
+ }
+ sf.frof = YzqH__Y836fo;
+ sf.prev = e->topFrame;
+ sf.pos = 0x40000000;
+ e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
    ZthrowThisNil();
  }
  YS39();
  t->VargName = AargName;
  r = *Znao(&t0, t, YzqH__YuQR_I_imt, 2);
+ e->topFrame = sf.prev;
  return r;
 }
 Tc *YzqH__YuQR_I_imt[] = {
@@ -16912,10 +18427,11 @@ void YSkKa(Y_SI *t) {
  }
  sf.frof = YSkKafo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=6447800;
+  sf.pos=1080189624;
   ZthrowThisNil();
  }
  sf.pos=6447801;
@@ -16958,9 +18474,10 @@ int JARGModule(int round) {
   Tn *e = ZgetEnv();
   Zsf sf;
   sf.prev = e->topFrame;
-  sf.pos = 0;
+  sf.pos = 0x40000000;
   sf.frof = NULL;
   e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
   round_done = round;
   if (round == 0) {
   done = 0;
@@ -16992,15 +18509,16 @@ Tb Ypeo(YtO2 *t, YN5G *Aevent) {
  }
  sf.frof = Ypeofo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=4538700;
+  sf.pos=1078280524;
   ZthrowThisNil();
  }
- sf.pos=4538701;
+ sf.pos=1078280525;
  Yl0k(((Tc*)&Yh4P));
- sf.pos=4538702;
+ sf.pos=1078280526;
  r = 0;
  e->topFrame = sf.prev;
  return r;
@@ -17018,15 +18536,16 @@ Tb YDz0(YtO2 *t, YN5G *Aevent) {
  }
  sf.frof = YDz0fo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=8720300;
+  sf.pos=1082462124;
   ZthrowThisNil();
  }
- sf.pos=8720301;
+ sf.pos=1082462125;
  Yl0k(((Tc*)&YXVb));
- sf.pos=8720302;
+ sf.pos=1082462126;
  r = 0;
  e->topFrame = sf.prev;
  return r;
@@ -17052,20 +18571,21 @@ void YHTw(YJgz *Acontext) {
  }
  sf.frof = YHTwfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=1554200;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1075296024;
  if (YdGR(Acontext, ((Tc*)&YyTB)))
  {
-  sf.pos=1554201;
+  sf.pos=1075296025;
   rt = 1;
   goto YqIA;
  }
- sf.pos=1554202;
+ sf.pos=1075296026;
  Vw = Za(sizeof(YjUM));
- sf.pos=1554203;
+ sf.pos=1075296027;
  YJqza(Vw, ((Tc*)&YGkn));
- sf.pos=1554204;
+ sf.pos=1075296028;
  Yl3F(Acontext, ((Tc*)&YyTB), YbNW(Vw));
 YqIA:
  e->topFrame = sf.prev;
@@ -17086,25 +18606,32 @@ Tc *YqnP(YJgz *Acontext, Tc *Atext) {
  }
  sf.frof = YqnPfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=9490900;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1083232724;
  YHTw(Acontext);
- sf.pos=9490901;
+ sf.pos=1083232725;
  Vw = Za(sizeof(YjUM));
- sf.pos=9490902;
+ sf.pos=1083232726;
+ Y8My(Acontext, 5);
+ sf.pos=1083232727;
  ;
- sf.pos=9490903;
+ sf.pos=1083232728;
+ Y8My(Acontext, 6);
+ sf.pos=1083232729;
  ;
- sf.pos=9490904;
+ sf.pos=1083232730;
  YJqza(Vw, ((Tc*)&Yesb));
- sf.pos=9490905;
+ sf.pos=1083232731;
  YJqza(Vw, Atext);
- sf.pos=9490906;
+ sf.pos=1083232732;
  YJqza(Vw, ((Tc*)&Ysok));
- sf.pos=9490907;
+ sf.pos=1083232733;
+ YJqza(Vw, ((Tc*)&YN2));
+ sf.pos=1083232734;
  YJqza(Vw, ((Tc*)&YLAB));
- sf.pos=9490908;
+ sf.pos=1083232735;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -17127,10 +18654,11 @@ Tb YiUW(Y5cA *t, YN5G *Aevent) {
  }
  sf.frof = YiUWfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (t == NULL) {
-  sf.pos=1168400;
+  sf.pos=1074910224;
   ZthrowThisNil();
  }
  sf.pos=1168402;
@@ -17138,20 +18666,20 @@ Tb YiUW(Y5cA *t, YN5G *Aevent) {
  {
   sf.pos=1168403;
   YdUK = 1;
-  sf.pos=1168404;
+  sf.pos=1074910228;
   Yl0kh();
-  sf.pos=1168405;
+  sf.pos=1074910229;
   Yl0k(((Tc*)&Yh_i));
  }
- sf.pos=1168406;
+ sf.pos=1074910230;
  Yl0k(((Tc*)&Y2ap));
- sf.pos=1168407;
+ sf.pos=1074910231;
  Vid = YNKL(Aevent->Velement, ((Tc*)&YiK4));
- sf.pos=1168408;
+ sf.pos=1074910232;
  Vcb = ZaYOFva(NULL, NULL, NULL, (&ZCB_YqnP), ((Tc*)&Y4Wv));
- sf.pos=1168409;
+ sf.pos=1074910233;
  YS1u(Vid, ((Tcb*)Vcb));
- sf.pos=1168410;
+ sf.pos=1074910234;
  r = 0;
  e->topFrame = sf.prev;
  return r;
@@ -17169,9 +18697,10 @@ int JMyController(int round) {
   Tn *e = ZgetEnv();
   Zsf sf;
   sf.prev = e->topFrame;
-  sf.pos = 0;
+  sf.pos = 0x40000000;
   sf.frof = NULL;
   e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
   round_done = round;
  if (round == 2001) {
    sf.pos=1168401;
@@ -17196,20 +18725,21 @@ void YIU9(YJgz *Acontext) {
  }
  sf.frof = YIU9fo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=6935000;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1080676824;
  if (YdGR(Acontext, ((Tc*)&YWh7)))
  {
-  sf.pos=6935001;
+  sf.pos=1080676825;
   rt = 1;
   goto YMB9;
  }
- sf.pos=6935002;
+ sf.pos=1080676826;
  Vw = Za(sizeof(YjUM));
- sf.pos=6935003;
+ sf.pos=1080676827;
  YJqza(Vw, ((Tc*)&Yrlv));
- sf.pos=6935004;
+ sf.pos=1080676828;
  Yl3F(Acontext, ((Tc*)&YWh7), YbNW(Vw));
 YMB9:
  e->topFrame = sf.prev;
@@ -17232,33 +18762,36 @@ Tc *YEfx(YJgz *Acontext, Tc *Atext) {
  }
  sf.frof = YEfxfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
- sf.pos=3185100;
+ if (e->wantGC) ZthreadGC();
+ sf.pos=1076926924;
  YIU9(Acontext);
- sf.pos=3185101;
+ sf.pos=1076926925;
  Vw = Za(sizeof(YjUM));
- sf.pos=3185102;
+ sf.pos=1076926926;
  VhelloId = Y9SZ();
- sf.pos=3185103;
+ sf.pos=1076926927;
+ Y8My(Acontext, 0);
+ sf.pos=1076926928;
  ;
- sf.pos=3185104;
+ sf.pos=1076926929;
  YJqza(Vw, ((Tc*)&Y3Lh));
- sf.pos=3185105;
+ sf.pos=1076926930;
  YJqza(Vw, VhelloId);
- sf.pos=3185106;
+ sf.pos=1076926931;
  YJqza(Vw, ((Tc*)&Y16y));
- sf.pos=3185107;
+ sf.pos=1076926932;
  YJqza(Vw, Atext);
- sf.pos=3185108;
+ sf.pos=1076926933;
  YJqza(Vw, ((Tc*)&YVSY));
- sf.pos=3185109;
+ sf.pos=1076926934;
  YJqza(Vw, VhelloId);
- sf.pos=3185110;
+ sf.pos=1076926935;
  YJqza(Vw, ((Tc*)&Yn7y));
- sf.pos=3185111;
+ sf.pos=1076926936;
  YJqza(Vw, ((Tc*)&Y3zP));
- sf.pos=3185112;
+ sf.pos=1076926937;
  r = YbNW(Vw);
  e->topFrame = sf.prev;
  return r;
@@ -17270,9 +18803,10 @@ int JZutDemoPage(int round) {
   Tn *e = ZgetEnv();
   Zsf sf;
   sf.prev = e->topFrame;
-  sf.pos = 0;
+  sf.pos = 0x40000000;
   sf.frof = NULL;
   e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
   round_done = round;
  done &= JMyController(round);
  if (round == 2001) {
@@ -17519,6 +19053,10 @@ void ZimtInit(void) {
   ToYTgs[3].off = (int)((Tc*)&p->Vstack - (Tc*)p);
  }
  {
+  YyGC *p = 0;
+  ToYyGC[1].off = (int)((Tc*)&p->Vactive - (Tc*)p);
+ }
+ {
   YJgz *p = 0;
   ToYJgz[1].off = (int)((Tc*)&p->VhttpContext - (Tc*)p);
   ToYJgz[2].off = (int)((Tc*)&p->VcssNames - (Tc*)p);
@@ -17665,11 +19203,12 @@ int ZglobInit(int round) {
  Tn *e = ZgetEnv();
  Zsf sf;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  sf.frof = NULL;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  if (round == 1) {
-   sf.pos=0;
+   sf.pos=1073741824;
    Vport = Y4qx(NULL, ((Tc*)&YXa), ((Tc*)&Yb7c), 7777, ((Tc*)&Ys7y));
  }
  done &= JTHREADModule(round);
@@ -17729,6 +19268,7 @@ int main(int argc, char **argv) {
  CATCH_SIG(SIGFPE, Zdeadly);
 # endif
 #endif
+ CATCH_SIG(GC_SIG, ZwantGC);
 #if defined(__MINGW32__) || defined(_MSC_VER)
 # ifdef __MINGW32__
  _fmode = _O_BINARY;
@@ -17796,36 +19336,37 @@ int Fmain(void) {
  }
  sf.frof = mainfo;
  sf.prev = e->topFrame;
- sf.pos = 0;
+ sf.pos = 0x40000000;
  e->topFrame = &sf;
+ if (e->wantGC) ZthreadGC();
  r = 0;
- sf.pos=527000;
+ sf.pos=1074268824;
  Vserver = YAvl(NULL, Yl8r(Vport));
  sf.pos=527001;
  VindexPath = ((Tc*)&YyGk);
- sf.pos=527002;
+ sf.pos=1074268826;
  Yv7Q(Vserver, ((Tc*)&YV), ZcS(((Tc*)&YV), VindexPath));
- sf.pos=527003;
+ sf.pos=1074268827;
  Vpage = Yq8N(NULL, ((Tc*)&YI98));
- sf.pos=527004;
+ sf.pos=1074268828;
  Vcb = ZaYOFva(NULL, NULL, NULL, (&ZCB_YEfx), ((Tc*)&Y12X));
- sf.pos=527005;
+ sf.pos=1074268829;
  Y_Jv(Vpage, ((Tcb*)Vcb));
- sf.pos=527006;
+ sf.pos=1074268830;
  YylI(Vpage, ZcS(((Tc*)&YV), VindexPath));
- sf.pos=527007;
+ sf.pos=1074268831;
  YC4d(Vserver, Vpage);
- sf.pos=527008;
+ sf.pos=1074268832;
  Y1QG__YTgs__YSuw(Vserver);
- sf.pos=527009;
+ sf.pos=1074268833;
  Vurl = ZcS5(((Tc*)&YhLu), Zint2string(Yl8r(Vport)), ((Tc*)&YV), (t0 = VindexPath), (Tc*)1);
- sf.pos=527010;
+ sf.pos=1074268834;
  Yl0k(ZcS(((Tc*)&YvpG), Vurl));
- sf.pos=527011;
+ sf.pos=1074268835;
  YQj8(Vserver, VindexPath);
- sf.pos=527012;
+ sf.pos=1074268836;
  YqJz(Vserver);
- sf.pos=527013;
+ sf.pos=1074268837;
  r = 0;
  e->topFrame = sf.prev;
  return r;

@@ -1,0 +1,37 @@
+# Example unit test: basic expression evaluation.
+# Demonstrates the unit test convention for compiler internals.
+#
+# Copyright 2026 Bram Moolenaar All Rights Reserved.
+# Licensed under the Apache License, Version 2.0.  See the LICENSE file or
+# obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+
+MODULE ExprBasic @public
+
+  PROC test() @public
+    IO.print("testdir/unit/ExprBasic.zu")
+    testArithmetic()
+    testComparison()
+  }
+
+  PROC testArithmetic()
+    int r = (3 + 7) * 2 - 4
+    IO.print("arith result: " .. r)
+    CHECK.equal(r, 16)
+  }
+
+  PROC testComparison()
+    bool lt = 3 < 5
+    bool gt = 5 > 3
+    bool eq = (2 + 2) == 4
+    IO.print("comparisons: " .. lt .. " " .. gt .. " " .. eq)
+    CHECK.true(lt)
+    CHECK.true(gt)
+    CHECK.true(eq)
+  }
+
+}
+
+FUNC Main() int
+  test()
+  RETURN 0
+}

@@ -1,0 +1,37 @@
+# Example unit test: basic type operations.
+# Demonstrates the unit test convention for compiler internals.
+#
+# Copyright 2026 Bram Moolenaar All Rights Reserved.
+# Licensed under the Apache License, Version 2.0.  See the LICENSE file or
+# obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+
+MODULE TypeBasic @public
+
+  PROC test() @public
+    IO.print("testdir/unit/TypeBasic.zu")
+    testTypeInfo()
+    testTypeEquality()
+  }
+
+  PROC testTypeInfo()
+    int i = 42
+    string t = i.Type().name
+    IO.print("int type name: " .. t)
+    CHECK.equal(t, "int")
+  }
+
+  PROC testTypeEquality()
+    int a = 1
+    int b = 2
+    string ta = a.Type().name
+    string tb = b.Type().name
+    IO.print("same type for ints: " .. (ta == tb))
+    CHECK.equal(ta, tb)
+  }
+
+}
+
+FUNC Main() int
+  test()
+  RETURN 0
+}

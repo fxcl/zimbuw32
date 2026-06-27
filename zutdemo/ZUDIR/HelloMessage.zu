@@ -30,7 +30,9 @@ color: blue;
   FUNC show(ZUT.Context context, string text) string @public
     addCss(context)
     IO.StringWriter w = NEW()
+    context.listen(ZUT.EventType.mouseOver)
     ZUT.registerAction("OverController", "over")
+    context.listen(ZUT.EventType.mouseOut)
     ZUT.registerAction("OverController", "out")
     w.write(''"<div class="hello"
 zcontroller="OverController"
@@ -40,7 +42,7 @@ zaction="mouseOver: over, mouseOut: out">
     w.write(''"</div>
 <div>This is not a
 "'')
-    #
+    w.write("# ")
     w.write(''"comment</div>
 "'')
     RETURN w.ToString()

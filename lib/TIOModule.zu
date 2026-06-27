@@ -117,7 +117,13 @@ MODULE TIOModule @public @items=public
     r.input.inlcr = (c_iflag & C(INLCR)) != 0
     r.input.igncr = (c_iflag & C(IGNCR)) != 0
     r.input.icrnl = (c_iflag & C(ICRNL)) != 0
+>>>
+#ifdef IUCLC
+<<<
     r.input.iuclc = (c_iflag & C(IUCLC)) != 0
+>>>
+#endif
+<<<
     r.input.ixon = (c_iflag & C(IXON)) != 0
     r.input.ixany = (c_iflag & C(IXANY)) != 0
     r.input.ixoff = (c_iflag & C(IXOFF)) != 0
@@ -125,7 +131,13 @@ MODULE TIOModule @public @items=public
     r.input.iutf8 = (c_iflag & C(IUTF8)) != 0
 
     r.output.opost = (c_oflag & C(OPOST)) != 0
+>>>
+#ifdef OLCUC
+<<<
     r.output.olcuc = (c_oflag & C(OLCUC)) != 0
+>>>
+#endif
+<<<
     r.output.onlcr = (c_oflag & C(ONLCR)) != 0
     r.output.ocrnl = (c_oflag & C(OCRNL)) != 0
     r.output.onocr = (c_oflag & C(ONOCR)) != 0
@@ -158,12 +170,24 @@ MODULE TIOModule @public @items=public
 >>>
 #endif
 <<<
+>>>
+#ifdef CMSPAR
+<<<
     r.control.cmspar = (c_cflag & C(CMSPAR)) != 0
+>>>
+#endif
+<<<
     r.control.crtscts = (c_cflag & C(CRTSCTS)) != 0
 
     r.local.isig = (c_lflag & C(ISIG)) != 0
     r.local.icanon = (c_lflag & C(ICANON)) != 0
+>>>
+#ifdef XCASE
+<<<
     r.local.xcase = (c_lflag & C(XCASE)) != 0
+>>>
+#endif
+<<<
     r.local.echo = (c_lflag & C(ECHO)) != 0
     r.local.echoe = (c_lflag & C(ECHOE)) != 0
     r.local.echok = (c_lflag & C(ECHOK)) != 0
@@ -413,7 +437,9 @@ MODULE TIOModule @public @items=public
     if (%$input.inlcr%) tio.c_iflag |= INLCR;
     if (%$input.igncr%) tio.c_iflag |= IGNCR;
     if (%$input.icrnl%) tio.c_iflag |= ICRNL;
+#ifdef IUCLC
     if (%$input.iuclc%) tio.c_iflag |= IUCLC;
+#endif
     if (%$input.ixon%) tio.c_iflag |= IXON;
     if (%$input.ixany%) tio.c_iflag |= IXANY;
     if (%$input.ixoff%) tio.c_iflag |= IXOFF;
@@ -421,7 +447,9 @@ MODULE TIOModule @public @items=public
     if (%$input.iutf8%) tio.c_iflag |= IUTF8;
 
     if (%$output.opost%) tio.c_oflag |= OPOST;
+#ifdef OLCUC
     if (%$output.olcuc%) tio.c_oflag |= OLCUC;
+#endif
     if (%$output.onlcr%) tio.c_oflag |= ONLCR;
     if (%$output.ocrnl%) tio.c_oflag |= OCRNL;
     if (%$output.onocr%) tio.c_oflag |= ONOCR;
@@ -450,12 +478,16 @@ MODULE TIOModule @public @items=public
 #ifdef LOBLK
     if (%$control.loblk%) tio.c_cflag |= LOBLK;
 #endif
+#ifdef CMSPAR
     if (%$control.cmspar%) tio.c_cflag |= CMSPAR;
+#endif
     if (%$control.crtscts%) tio.c_cflag |= CRTSCTS;
 
     if (%$local.isig%) tio.c_lflag |= ISIG;
     if (%$local.icanon%) tio.c_lflag |= ICANON;
+#ifdef XCASE
     if (%$local.xcase%) tio.c_lflag |= XCASE;
+#endif
     if (%$local.echo%) tio.c_lflag |= ECHO;
     if (%$local.echoe%) tio.c_lflag |= ECHOE;
     if (%$local.echok%) tio.c_lflag |= ECHOK;

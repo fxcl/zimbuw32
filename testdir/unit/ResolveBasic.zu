@@ -1,0 +1,40 @@
+# Example unit test: basic name resolution / scoping.
+# Demonstrates the unit test convention for compiler internals.
+#
+# Copyright 2026 Bram Moolenaar All Rights Reserved.
+# Licensed under the Apache License, Version 2.0.  See the LICENSE file or
+# obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+
+MODULE ResolveBasic @public
+
+  PROC test() @public
+    IO.print("testdir/unit/ResolveBasic.zu")
+    testLocalScope()
+    testShadowing()
+  }
+
+  PROC testLocalScope()
+    int x = 10
+    CHECK.equal(x, 10)
+    int y = x + 5
+    IO.print("local scope: " .. (y == 15))
+    CHECK.equal(y, 15)
+  }
+
+  PROC testShadowing()
+    int x = 100
+    {
+      int x = 200
+      IO.print("inner x: " .. (x == 200))
+      CHECK.equal(x, 200)
+    }
+    IO.print("outer x preserved: " .. (x == 100))
+    CHECK.equal(x, 100)
+  }
+
+}
+
+FUNC Main() int
+  test()
+  RETURN 0
+}

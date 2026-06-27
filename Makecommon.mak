@@ -431,6 +431,22 @@ test_more: test_testmore test_testmore_zimbu
 testrun: testrunner
 	./testrunner '$(CURDIR)zimbu_test $(THREAD_ARGS) $(COMPILER_ARGS)'
 
+# Run fine-grained unit tests for compiler internals (testdir/unit/*.zu).
+# These are minimal Zimbu programs that test individual compiler components
+# such as Type, Resolve, and Annotator.
+test_unit: build_zimbu_test
+	@echo "Running unit tests in testdir/unit/..."
+	@fail=0; \
+	for f in $(CURDIR)testdir/unit/*.zu; do \
+		echo "=== $$f ==="; \
+		$(CURDIR)zimbu_test -v $(TEST_ARGS) $(KEEP_UNUSED) $(COMPILER_ARGS) "$$f" || fail=1; \
+	done; \
+	if [ $$fail -ne 0 ]; then \
+		echo "FAIL: one or more unit tests failed"; \
+		exit 1; \
+	fi; \
+	echo "All unit tests passed."
+
 testrunner: testrunner.zu build_zimbu_test
 	$(CURDIR)zimbu_test $(TEST_ARGS) $(KEEP_UNUSED) $(COMPILER_ARGS) testrunner.zu
 

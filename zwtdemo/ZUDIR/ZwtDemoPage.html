@@ -102,6 +102,7 @@ function Y8is(){ // Writer
 _ = Y8is.prototype = {};
 _.write__2 = YHhZb;
 _.writeChar = Ydti;
+_.print__7 = YRt7g;
 _.print = YRt7;
 function Yw8L(){ // File
 }
@@ -763,20 +764,6 @@ _.setName = YAUM;
 _.hasName = YHye;
 _.valid = Y8Gy;
 _.fieldSpecs = YKIca;
-function YwEo(){ // Status
-}
-_ = YwEo.prototype = new YFL0();
-_.hasField = YKyGa;
-_.name = YmNka;
-_.boolGet = YGI8a;
-_.stringGet = YJYPa;
-_.boolSet = YJyDa;
-_.stringSet = YMOja;
-_.Vf_ok = 0;
-_.hasOk = YdgU;
-_.Vf_error = null;
-_.hasError = Yc27;
-_.fieldSpecs = YubJa;
 function YEzw(){ // Top
 }
 _ = YEzw.prototype = {};
@@ -879,7 +866,6 @@ var YyE5 = ZDictAdd(0, ZDictAdd(0, ZDictAdd(0, ZDictAdd(0, ZnewDict(0, 0), ':' +
 var YO_w = ZDictAdd(0, ZDictAdd(0, ZDictAdd(0, ZnewDict(2, 0), ':' + 0, 1), ':' + 1, 2), ':' + 2, 3); // Tutorial__CPerson__X.int2PhoneType
 var YDAS = [Ykww(null, "person", 1, 12, 1)]; // Tutorial__CAddressBook__X.fieldSpecs
 var YZsK = [Ykww(null, "name", 1, 17, 0)]; // Tutorial__CGetOptions__X.fieldSpecs
-var Y1gv = [Ykww(null, "ok", 1, 1, 0), Ykww(null, "error", 2, 17, 0)]; // Tutorial__CStatus__X.fieldSpecs
 var YYlJ = null; // ZwtDemoPage.vPanel
 var Y4fJ = null; // ZwtDemoPage.hPanel
 var Yivf = null; // ZwtDemoPage.buttonStyleOver
@@ -1380,11 +1366,11 @@ function Y2EX__Yalz__YwtA__YRHR(thisO, Amsg) { // MEModule__CKeyNotFound.NEW__p3
  return thisO;
 }
 function Yxmk(Akey, Amsg) { // MEModule.throwIntKeyNotFound
- alert("Exception in D:/zimbu/lib/EModule.zu line 374 col 5: " + Y2EX__Yalz__YwtA__YRHR(null, Amsg + "Key not found: " + "" + Akey).Vmessage);
+ alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/EModule.zu line 374 col 5: " + Y2EX__Yalz__YwtA__YRHR(null, Amsg + "Key not found: " + "" + Akey).Vmessage);
  return;
 }
 function Y5LT(Akey, Amsg) { // MEModule.throwStringKeyNotFound
- alert("Exception in D:/zimbu/lib/EModule.zu line 380 col 5: " + Y2EX__Yalz__YwtA__YRHR(null, Amsg + "Key not found: \"" + Akey + "\"").Vmessage);
+ alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/EModule.zu line 380 col 5: " + Y2EX__Yalz__YwtA__YRHR(null, Amsg + "Key not found: \"" + Akey + "\"").Vmessage);
  return;
 }
 function YX0i__Yalz__YwtA__YRHRa(thisO, Apos, Amsg) { // MEModule__CKeyExists.NEW__p3
@@ -1402,11 +1388,11 @@ function YX0i__Yalz__YwtA__YRHR(thisO, Amsg) { // MEModule__CKeyExists.NEW__p3
  return thisO;
 }
 function YL9Z(Akey, Amsg) { // MEModule.throwIntKeyExists
- alert("Exception in D:/zimbu/lib/EModule.zu line 396 col 5: " + YX0i__Yalz__YwtA__YRHR(null, Amsg + "Key already exists: " + "" + Akey).Vmessage);
+ alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/EModule.zu line 396 col 5: " + YX0i__Yalz__YwtA__YRHR(null, Amsg + "Key already exists: " + "" + Akey).Vmessage);
  return;
 }
 function YEeX(Akey, Amsg) { // MEModule.throwStringKeyExists
- alert("Exception in D:/zimbu/lib/EModule.zu line 402 col 5: " + YX0i__Yalz__YwtA__YRHR(null, Amsg + "Key already exists: \"" + Akey + "\"").Vmessage);
+ alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/EModule.zu line 402 col 5: " + YX0i__Yalz__YwtA__YRHR(null, Amsg + "Key already exists: \"" + Akey + "\"").Vmessage);
  return;
 }
 function YP_P__Yalz__YwtA__YRHR(thisO, Amsg) { // MEModule__CIllegalByte.NEW__p3
@@ -1501,7 +1487,7 @@ function YHhZb(Anumber) { // MIOModule__CWriter.write
 function Ydti(Achar) { // MIOModule__CWriter.writeChar
  if (((Achar < 0) || (Achar > 1114111)))
  {
-  alert("Exception in D:/zimbu/lib/IOModule.zu line 177 col 9: " + Yw3O__Yalz__YwtA__YRHR(null, "UTF-8 character must be in range 0 - 0x10ffff, got " + "" + Achar).Vmessage);
+  alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/IOModule.zu line 177 col 9: " + Yw3O__Yalz__YwtA__YRHR(null, "UTF-8 character must be in range 0 - 0x10ffff, got " + "" + Achar).Vmessage);
   return;
  }
  return this.write(String.fromCharCode(Achar));
@@ -1513,10 +1499,13 @@ function YRt7(Atext) { // MIOModule__CWriter.print
  }
  return 0;
 }
+function YRt7g() { // MIOModule__CWriter.print
+ return this.write("\n");
+}
 function YFeQ() { // MIOModule__CFile.readByte
  if ((this.Vfd == null))
  {
-  alert("Exception in D:/zimbu/lib/IOModule.zu line 255 col 9: " + YXKl__YwtA__YRHR(null, "File is not open").Vmessage);
+  alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/IOModule.zu line 255 col 9: " + YXKl__YwtA__YRHR(null, "File is not open").Vmessage);
   return;
  }
  var Vb = 0;
@@ -1547,7 +1536,7 @@ function YAPp() { // MIOModule__CFile.readChar
   }
   else
   {
-   alert("Exception in D:/zimbu/lib/IOModule.zu line 289 col 11: " + YP_P__Yalz__YwtA__YRHR(null, "first byte out of range: " + "" + Vc).Vmessage);
+   alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/IOModule.zu line 289 col 11: " + YP_P__Yalz__YwtA__YRHR(null, "first byte out of range: " + "" + Vc).Vmessage);
    return;
   }
   }}
@@ -1558,13 +1547,13 @@ for (Vnr = ZforRangeGet(Zf2); ZforRangeCont(Zf2); Vnr = ZforRangeNext(Zf2)) {
    var Vc2 = this.readByte();
    if ((Vc2 == Y3QJ))
    {
-    alert("Exception in D:/zimbu/lib/IOModule.zu line 294 col 13: " + YP_P__Yalz__YwtA__YRHR(null, "found EOF when getting byte " + "" + Vnr).Vmessage);
+    alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/IOModule.zu line 294 col 13: " + YP_P__Yalz__YwtA__YRHR(null, "found EOF when getting byte " + "" + Vnr).Vmessage);
     return;
    }
    else {
  if ((((Vc2 & 192)) != 128))
    {
-    alert("Exception in D:/zimbu/lib/IOModule.zu line 296 col 13: " + YP_P__Yalz__YwtA__YRHR(null, "byte " + "" + Vnr + " out of range").Vmessage);
+    alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/IOModule.zu line 296 col 13: " + YP_P__Yalz__YwtA__YRHR(null, "byte " + "" + Vnr + " out of range").Vmessage);
     return;
    }
    }
@@ -1577,7 +1566,7 @@ for (Vnr = ZforRangeGet(Zf2); ZforRangeCont(Zf2); Vnr = ZforRangeNext(Zf2)) {
    {
     if ((Vc <= 127))
     {
-     alert("Exception in D:/zimbu/lib/IOModule.zu line 303 col 17: " + YP_P__Yalz__YwtA__YRHR(null, "overlong sequence").Vmessage);
+     alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/IOModule.zu line 303 col 17: " + YP_P__Yalz__YwtA__YRHR(null, "overlong sequence").Vmessage);
      return;
     }
      break;
@@ -1586,7 +1575,7 @@ for (Vnr = ZforRangeGet(Zf2); ZforRangeCont(Zf2); Vnr = ZforRangeNext(Zf2)) {
    {
     if ((Vc <= 2047))
     {
-     alert("Exception in D:/zimbu/lib/IOModule.zu line 307 col 17: " + YP_P__Yalz__YwtA__YRHR(null, "overlong sequence").Vmessage);
+     alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/IOModule.zu line 307 col 17: " + YP_P__Yalz__YwtA__YRHR(null, "overlong sequence").Vmessage);
      return;
     }
      break;
@@ -1595,7 +1584,7 @@ for (Vnr = ZforRangeGet(Zf2); ZforRangeCont(Zf2); Vnr = ZforRangeNext(Zf2)) {
    {
     if ((Vc <= 65535))
     {
-     alert("Exception in D:/zimbu/lib/IOModule.zu line 311 col 17: " + YP_P__Yalz__YwtA__YRHR(null, "overlong sequence").Vmessage);
+     alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/IOModule.zu line 311 col 17: " + YP_P__Yalz__YwtA__YRHR(null, "overlong sequence").Vmessage);
      return;
     }
      break;
@@ -1608,7 +1597,7 @@ function YwHoa(Atext) { // MIOModule__CFile.write
  var Vret = 0;
  if ((this.Vname == null))
  {
-  alert("Exception in D:/zimbu/lib/IOModule.zu line 501 col 11: " + YXKl__YwtA__YRHR(null, "File is not open").Vmessage);
+  alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/IOModule.zu line 501 col 11: " + YXKl__YwtA__YRHR(null, "File is not open").Vmessage);
   return;
  }
  var e = $doc.getElementById(this.Vname);
@@ -2028,12 +2017,12 @@ for (Vi = ZforRangeGet(Zf3); ZforRangeCont(Zf3); Vi = ZforRangeNext(Zf3)) {
   }
  case 3:
   {
-   alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 366 col 9: " + YOEA__YwtA__YRHR(null, "not implemented: " + MProto__EBinaryType[Atype]).Vmessage);
+   alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 366 col 9: " + YOEA__YwtA__YRHR(null, "not implemented: " + MProto__EBinaryType[Atype]).Vmessage);
    return;
   }
  case 4:
   {
-   alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 369 col 9: " + YOEA__YwtA__YRHR(null, "not implemented: " + MProto__EBinaryType[Atype]).Vmessage);
+   alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 369 col 9: " + YOEA__YwtA__YRHR(null, "not implemented: " + MProto__EBinaryType[Atype]).Vmessage);
    return;
   }
  case 5:
@@ -2049,7 +2038,7 @@ for (Vi = ZforRangeGet(Zf3); ZforRangeCont(Zf3); Vi = ZforRangeNext(Zf3)) {
   }
  default:
   {
-   alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 375 col 9: " + YOEA__YwtA__YRHR(null, "INTERNAL: field type not supported: " + MProto__EBinaryType[Atype]).Vmessage);
+   alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 375 col 9: " + YOEA__YwtA__YRHR(null, "INTERNAL: field type not supported: " + MProto__EBinaryType[Atype]).Vmessage);
    return;
   }
  }
@@ -2193,13 +2182,13 @@ for (Vfspec = ZforListGet(Zf2); ZforListCont(Zf2); Vfspec = ZforListNext(Zf2)) {
        var VpReader = AiReader.protoReader();
        if ((VpReader.Vrefs == null))
        {
-        alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 477 col 21: " + YOEA__YwtA__YRHR(null, "Unexpected message reference").Vmessage);
+        alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 477 col 21: " + YOEA__YwtA__YRHR(null, "Unexpected message reference").Vmessage);
         return;
        }
        var Vm = VpReader.getRef(Vkey);
        if ((Vm == null))
        {
-        alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 483 col 21: " + YOEA__YwtA__YRHR(null, "Message reference missing: " + "" + Vkey).Vmessage);
+        alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 483 col 21: " + YOEA__YwtA__YRHR(null, "Message reference missing: " + "" + Vkey).Vmessage);
         return;
        }
        if (Vfspec.Vrepeated)
@@ -2221,7 +2210,7 @@ for (Vfspec = ZforListGet(Zf2); ZforListCont(Zf2); Vfspec = ZforListNext(Zf2)) {
      }
     default:
      {
-      alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 497 col 15: " + YOEA__YwtA__YRHR(null, "INTERNAL: field type not supported: " + MProto__EType[Vfspec.Vtype]).Vmessage);
+      alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 497 col 15: " + YOEA__YwtA__YRHR(null, "INTERNAL: field type not supported: " + MProto__EType[Vfspec.Vtype]).Vmessage);
       return;
      }
     }
@@ -2317,7 +2306,7 @@ for (Vi = ZforRangeGet(Zf3); ZforRangeCont(Zf3); Vi = ZforRangeNext(Zf3)) {
      }
     default:
      {
-      alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 733 col 15: " + YOEA__YwtA__YRHR(null, "INTERNAL: type not implemented: " + MProto__EType[Vfspec.Vtype]).Vmessage);
+      alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 733 col 15: " + YOEA__YwtA__YRHR(null, "INTERNAL: type not implemented: " + MProto__EType[Vfspec.Vtype]).Vmessage);
       return;
      }
     }
@@ -2398,7 +2387,7 @@ for (Vi = ZforRangeGet(Zf3); ZforRangeCont(Zf3); Vi = ZforRangeNext(Zf3)) {
      }
     default:
      {
-      alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 787 col 15: " + YOEA__YwtA__YRHR(null, "INTERNAL: type not implemented: " + MProto__EType[Vfspec.Vtype]).Vmessage);
+      alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 787 col 15: " + YOEA__YwtA__YRHR(null, "INTERNAL: type not implemented: " + MProto__EType[Vfspec.Vtype]).Vmessage);
       return;
      }
     }
@@ -2672,7 +2661,7 @@ function YWEg(Amsg, Afspec, Aidx, AprotoWriter) { // MProto.writeOneTextField
   }
  default:
   {
-   alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 975 col 9: " + Ys_q__YwtA__YRHR(null, "INTERNAL: field type not supported: " + MProto__EType[Afspec.Vtype]).Vmessage);
+   alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 975 col 9: " + Ys_q__YwtA__YRHR(null, "INTERNAL: field type not supported: " + MProto__EType[Afspec.Vtype]).Vmessage);
    return;
   }
  }
@@ -2744,7 +2733,7 @@ function YFs_(Amsg, Afspecs, AiReader) { // MProto.mergeFromTextFields
    }
    if ((Vc != 32))
    {
-    alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1043 col 11: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Missing space after field name").Vmessage);
+    alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1043 col 11: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Missing space after field name").Vmessage);
     return;
    }
    var Vname = Vw.ToString();
@@ -2758,7 +2747,7 @@ for (Vfspec = ZforListGet(Zf3); ZforListCont(Zf3); Vfspec = ZforListNext(Zf3)) {
      Vfound = 1;
      if ((VmissingColon && (Vfspec.Vtype != 12)))
      {
-      alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1053 col 15: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Missing : after field name").Vmessage);
+      alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1053 col 15: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Missing : after field name").Vmessage);
       return;
      }
      switch (Vfspec.Vtype)
@@ -2781,7 +2770,7 @@ for (Vfspec = ZforListGet(Zf3); ZforListCont(Zf3); Vfspec = ZforListNext(Zf3)) {
        }
        if ((Vc != 10))
        {
-        alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1072 col 19: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Invalid number or missing line break").Vmessage);
+        alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1072 col 19: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Invalid number or missing line break").Vmessage);
         return;
        }
        if ((Vfspec.Vtype == 10))
@@ -2840,7 +2829,7 @@ for (Vfspec = ZforListGet(Zf3); ZforListCont(Zf3); Vfspec = ZforListNext(Zf3)) {
 for (Vnc = ZforStringGet(Zf7); ZforStringCont(Zf7); Vnc = ZforStringNext(Zf7)) {
         if ((Vc != Vnc))
         {
-         alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1108 col 21: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Expected TRUE or FALSE").Vmessage);
+         alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1108 col 21: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Expected TRUE or FALSE").Vmessage);
          return;
         }
         Vc = Vreader.readChar();
@@ -2848,7 +2837,7 @@ for (Vnc = ZforStringGet(Zf7); ZforStringCont(Zf7); Vnc = ZforStringNext(Zf7)) {
        }
        if ((Vc != 10))
        {
-        alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1114 col 19: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Invalid bool value or missing line break").Vmessage);
+        alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1114 col 19: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Invalid bool value or missing line break").Vmessage);
         return;
        }
        Amsg.boolSet(Vfspec.Vnr, Vv);
@@ -2860,7 +2849,7 @@ for (Vnc = ZforStringGet(Zf7); ZforStringCont(Zf7); Vnc = ZforStringNext(Zf7)) {
        Vc = Vreader.readChar();
        if ((Vc != 34))
        {
-        alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1123 col 19: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Missing start double quote for string").Vmessage);
+        alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1123 col 19: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Missing start double quote for string").Vmessage);
         return;
        }
        while (1)
@@ -2874,13 +2863,13 @@ for (Vnc = ZforStringGet(Zf7); ZforStringCont(Zf7); Vnc = ZforStringNext(Zf7)) {
        }
        if ((Vc != 34))
        {
-        alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1135 col 19: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Missing end double quote of string").Vmessage);
+        alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1135 col 19: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Missing end double quote of string").Vmessage);
         return;
        }
        Vc = Vreader.readChar();
        if ((Vc != 10))
        {
-        alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1140 col 19: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Missing line break after string").Vmessage);
+        alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1140 col 19: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Missing line break after string").Vmessage);
         return;
        }
        Amsg.stringSet(Vfspec.Vnr, Vsw.ToString());
@@ -2900,7 +2889,7 @@ for (Vnc = ZforStringGet(Zf7); ZforStringCont(Zf7); Vnc = ZforStringNext(Zf7)) {
        }
        if ((Vc != 10))
        {
-        alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1155 col 19: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Truncated file").Vmessage);
+        alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1155 col 19: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Truncated file").Vmessage);
         return;
        }
        Amsg.enumNameSet(Vfspec.Vnr, Vsw1.ToString());
@@ -2911,33 +2900,33 @@ for (Vnc = ZforStringGet(Zf7); ZforStringCont(Zf7); Vnc = ZforStringNext(Zf7)) {
        Vc = Vreader.readChar();
        if ((Vc != 123))
        {
-        alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1163 col 19: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Missing { for start of message").Vmessage);
+        alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1163 col 19: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Missing { for start of message").Vmessage);
         return;
        }
        Vc = Vreader.readChar();
        if ((Vc != 10))
        {
-        alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1168 col 19: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Missing line break after {").Vmessage);
+        alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1168 col 19: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Missing line break after {").Vmessage);
         return;
        }
        Amsg.mergeMessageFromReader(Vfspec.Vnr, 1, AiReader);
        Vc = Vreader.readChar();
        if ((Vc != 125))
        {
-        alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1177 col 19: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Missing } for end of message").Vmessage);
+        alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1177 col 19: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Missing } for end of message").Vmessage);
         return;
        }
        Vc = Vreader.readChar();
        if ((Vc != 10))
        {
-        alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1182 col 19: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Missing line break after }").Vmessage);
+        alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1182 col 19: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Missing line break after }").Vmessage);
         return;
        }
         break;
       }
      default:
       {
-       alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1187 col 17: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": INTERNAL: field type not supported: " + MProto__EType[Vfspec.Vtype]).Vmessage);
+       alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1187 col 17: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": INTERNAL: field type not supported: " + MProto__EType[Vfspec.Vtype]).Vmessage);
        return;
       }
      }
@@ -2949,7 +2938,7 @@ for (Vnc = ZforStringGet(Zf7); ZforStringCont(Zf7); Vnc = ZforStringNext(Zf7)) {
    {
     if (VmissingColon)
     {
-     alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1196 col 13: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Missing : after field name").Vmessage);
+     alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1196 col 13: " + Yd7N__YwtA__YRHR(null, "line " + "" + Vreader.Vlnum + ": Missing : after field name").Vmessage);
      return;
     }
     var Vdepth = 0;
@@ -3007,7 +2996,7 @@ function YRvX(Areader) { // MProto.readFloatFromText
  }
  if ((Vc != 10))
  {
-  alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1237 col 7: " + Yd7N__YwtA__YRHR(null, "line " + "" + Areader.Vlnum + ": Invalid number or missing line break").Vmessage);
+  alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1237 col 7: " + Yd7N__YwtA__YRHR(null, "line " + "" + Areader.Vlnum + ": Invalid number or missing line break").Vmessage);
   return;
  }
  return ((Vw.ToString())+'');
@@ -3017,14 +3006,14 @@ function YsvG(Amsg, Afspecs, AiReader) { // MProto.mergeFromJsonFields
  var Vb = Vsreader.readChar();
  if ((Vb != 91))
  {
-  alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1250 col 7: " + Yd7N__YwtA__YRHR(null, "Missing [ at start of Json message, got " + "" + Vb).Vmessage);
+  alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1250 col 7: " + Yd7N__YwtA__YRHR(null, "Missing [ at start of Json message, got " + "" + Vb).Vmessage);
   return;
  }
  var VfieldIndex = 1;
  var Vc = Vsreader.readChar();
  if ((Vc == Y3QJ))
  {
-  alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1256 col 7: " + Yd7N__YwtA__YRHR(null, "Syntax error in Json: Unexpected EOF").Vmessage);
+  alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1256 col 7: " + Yd7N__YwtA__YRHR(null, "Syntax error in Json: Unexpected EOF").Vmessage);
   return;
  }
  while (1)
@@ -3039,18 +3028,18 @@ function YsvG(Amsg, Afspecs, AiReader) { // MProto.mergeFromJsonFields
    VfieldIndex = YZHh(Vsreader);
    if ((VfieldIndex < 0))
    {
-    alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1267 col 11: " + Yd7N__YwtA__YRHR(null, "Syntax error in Json: can't read field number").Vmessage);
+    alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1267 col 11: " + Yd7N__YwtA__YRHR(null, "Syntax error in Json: can't read field number").Vmessage);
     return;
    }
    if ((VfieldIndex <= 50))
    {
-    alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1271 col 11: " + Yd7N__YwtA__YRHR(null, "Syntax error in Json: field number wrong: " + "" + VfieldIndex).Vmessage);
+    alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1271 col 11: " + Yd7N__YwtA__YRHR(null, "Syntax error in Json: field number wrong: " + "" + VfieldIndex).Vmessage);
     return;
    }
    Vc = Vsreader.readChar();
    if ((Vc != 44))
    {
-    alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1276 col 11: " + Yd7N__YwtA__YRHR(null, "Syntax error in Json: missing comma after field number " + "" + VfieldIndex).Vmessage);
+    alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1276 col 11: " + Yd7N__YwtA__YRHR(null, "Syntax error in Json: missing comma after field number " + "" + VfieldIndex).Vmessage);
     return;
    }
   }
@@ -3094,7 +3083,7 @@ for (Vfspec = ZforListGet(Zf2); ZforListCont(Zf2); Vfspec = ZforListNext(Zf2)) {
         }
         if ((Vc != 44))
         {
-         alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1308 col 21: " + Yd7N__YwtA__YRHR(null, "Missing comma in repeated field, got " + String.fromCharCode(Vc) + " after " + "" + Vcnt + " items").Vmessage);
+         alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1308 col 21: " + Yd7N__YwtA__YRHR(null, "Missing comma in repeated field, got " + String.fromCharCode(Vc) + " after " + "" + Vcnt + " items").Vmessage);
          return;
         }
        }
@@ -3104,7 +3093,7 @@ for (Vfspec = ZforListGet(Zf2); ZforListCont(Zf2); Vfspec = ZforListNext(Zf2)) {
      }
      else
      {
-      alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1317 col 15: " + Yd7N__YwtA__YRHR(null, "Expected [ at start of repeated field").Vmessage);
+      alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1317 col 15: " + Yd7N__YwtA__YRHR(null, "Expected [ at start of repeated field").Vmessage);
       return;
      }
     }
@@ -3125,7 +3114,7 @@ for (Vfspec = ZforListGet(Zf2); ZforListCont(Zf2); Vfspec = ZforListNext(Zf2)) {
   {
    if ((Vc != 44))
    {
-    alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1333 col 11: " + Yd7N__YwtA__YRHR(null, "Syntax error in Json: missing comma").Vmessage);
+    alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1333 col 11: " + Yd7N__YwtA__YRHR(null, "Syntax error in Json: missing comma").Vmessage);
     return;
    }
    Vc = Vsreader.readChar();
@@ -3212,23 +3201,23 @@ function Yq4x(Amsg, Afspec, AiReader) { // MProto.mergeOneJsonField
     {
      if ((Vc == Y3QJ))
      {
-      alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1398 col 15: " + Yd7N__YwtA__YRHR(null, "Unexpected end of Json").Vmessage);
+      alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1398 col 15: " + Yd7N__YwtA__YRHR(null, "Unexpected end of Json").Vmessage);
       return;
      }
-     alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1400 col 13: " + Yd7N__YwtA__YRHR(null, "Expected a number, got " + String.fromCharCode(Vc)).Vmessage);
+     alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1400 col 13: " + Yd7N__YwtA__YRHR(null, "Expected a number, got " + String.fromCharCode(Vc)).Vmessage);
      return;
     }
     var Vkey = YZHh(Vsreader);
     var VpReader = AiReader.protoReader();
     if ((VpReader.Vrefs == null))
     {
-     alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1408 col 13: " + Yd7N__YwtA__YRHR(null, "Unexpected message reference").Vmessage);
+     alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1408 col 13: " + Yd7N__YwtA__YRHR(null, "Unexpected message reference").Vmessage);
      return;
     }
     var Vm = VpReader.getRef(Vkey);
     if ((Vm == null))
     {
-     alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1414 col 13: " + Yd7N__YwtA__YRHR(null, "Message reference missing: " + "" + Vkey).Vmessage);
+     alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1414 col 13: " + Yd7N__YwtA__YRHR(null, "Message reference missing: " + "" + Vkey).Vmessage);
      return;
     }
     if (Afspec.Vrepeated)
@@ -3249,7 +3238,7 @@ function Yq4x(Amsg, Afspec, AiReader) { // MProto.mergeOneJsonField
   }
  default:
   {
-   alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1427 col 9: " + Yd7N__YwtA__YRHR(null, "INTERNAL: field type not supported: " + MProto__EType[Afspec.Vtype]).Vmessage);
+   alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1427 col 9: " + Yd7N__YwtA__YRHR(null, "INTERNAL: field type not supported: " + MProto__EType[Afspec.Vtype]).Vmessage);
    return;
   }
  }
@@ -3341,7 +3330,7 @@ for (Vi = ZforRangeGet(Zf4); ZforRangeCont(Zf4); Vi = ZforRangeNext(Zf4)) {
       }
      default:
       {
-       alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1477 col 17: " + Ys_q__YwtA__YRHR(null, "INTERNAL: field type not supported: " + MProto__EType[Vfspec.Vtype]).Vmessage);
+       alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1477 col 17: " + Ys_q__YwtA__YRHR(null, "INTERNAL: field type not supported: " + MProto__EType[Vfspec.Vtype]).Vmessage);
        return;
       }
      }
@@ -3419,7 +3408,7 @@ for (Vi = ZforRangeGet(Zf4); ZforRangeCont(Zf4); Vi = ZforRangeNext(Zf4)) {
      }
     default:
      {
-      alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1516 col 15: " + Yd7N__YwtA__YRHR(null, "INTERNAL: field type not supported: " + MProto__EType[Vfspec.Vtype]).Vmessage);
+      alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1516 col 15: " + Yd7N__YwtA__YRHR(null, "INTERNAL: field type not supported: " + MProto__EType[Vfspec.Vtype]).Vmessage);
       return;
      }
     }
@@ -3551,12 +3540,12 @@ function YmeT(Avalue) { // MProto.getVarIntSize
  return Vbytes;
 }
 function YQ3p(Areader) { // MProto.readVarFloat
- alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1848 col 7: " + YOEA__YwtA__YRHR(null, "reading float not implemented").Vmessage);
+ alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1848 col 7: " + YOEA__YwtA__YRHR(null, "reading float not implemented").Vmessage);
  return;
  return Vf;
 }
 function Yw8K(Areader) { // MProto.readVarDouble
- alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1922 col 7: " + YOEA__YwtA__YRHR(null, "reading double not implemented").Vmessage);
+ alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1922 col 7: " + YOEA__YwtA__YRHR(null, "reading double not implemented").Vmessage);
  return;
  return Vf;
 }
@@ -3599,7 +3588,7 @@ function YB1v(Areader) { // MProto.readJsonString
   var Vc = Areader.readChar();
   if ((Vc == Y3QJ))
   {
-   alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 1973 col 9: " + Yd7N__YwtA__YRHR(null, "Truncated string").Vmessage);
+   alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 1973 col 9: " + Yd7N__YwtA__YRHR(null, "Truncated string").Vmessage);
    return;
   }
   if ((Vc == 34))
@@ -3684,7 +3673,7 @@ function YzK3(Areader) { // MProto.skipJsonField
    }
    if ((Vc != 44))
    {
-    alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 2024 col 11: " + Yd7N__YwtA__YRHR(null, "Missing comma in Json list").Vmessage);
+    alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 2024 col 11: " + Yd7N__YwtA__YRHR(null, "Missing comma in Json list").Vmessage);
     return;
    }
   }
@@ -3692,12 +3681,12 @@ function YzK3(Areader) { // MProto.skipJsonField
  else {
  if ((Vc == 91))
  {
-  alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 2029 col 7: " + Yd7N__YwtA__YRHR(null, "Not implemented: skip message").Vmessage);
+  alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 2029 col 7: " + Yd7N__YwtA__YRHR(null, "Not implemented: skip message").Vmessage);
   return;
  }
  else
  {
-  alert("Exception in D:/zimbu/plugin/proto/Proto.zu line 2031 col 7: " + Yd7N__YwtA__YRHR(null, "Syntax error in Json").Vmessage);
+  alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/plugin/proto/Proto.zu line 2031 col 7: " + Yd7N__YwtA__YRHR(null, "Syntax error in Json").Vmessage);
   return;
  }
  }}}
@@ -3847,7 +3836,7 @@ function YKzF(Akey) { // MSETModule__CSet__t4.has
 function YSEn(Akey) { // MSETModule__CSet__t4.add
  if (':' + Akey in this.Vdict)
  {
-  alert("Exception in D:/zimbu/lib/SETModule.zu line 104 col 9: " + YX0i__Yalz__YwtA__YRHRa(null, null, "key already present: " + MEventModule__EEventType[Akey]).Vmessage);
+  alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/SETModule.zu line 104 col 9: " + YX0i__Yalz__YwtA__YRHRa(null, null, "key already present: " + MEventModule__EEventType[Akey]).Vmessage);
   return;
  }
  ZDictAdd(0, this.Vdict, ':' + Akey, 1);
@@ -3856,7 +3845,7 @@ function YSEn(Akey) { // MSETModule__CSet__t4.add
 function YLxA(Akey) { // MSETModule__CSet__t4.remove
  if (!(':' + Akey in this.Vdict))
  {
-  alert("Exception in D:/zimbu/lib/SETModule.zu line 174 col 9: " + Y2EX__Yalz__YwtA__YRHRa(null, null, "key: " + MEventModule__EEventType[Akey]).Vmessage);
+  alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/SETModule.zu line 174 col 9: " + Y2EX__Yalz__YwtA__YRHRa(null, null, "key: " + MEventModule__EEventType[Akey]).Vmessage);
   return;
  }
  ZDictRemove(this.Vdict, ':' + Akey, 1);
@@ -5287,7 +5276,7 @@ for (Vitem = ZforListGet(Zf3); ZforListCont(Zf3); Vitem = ZforListNext(Zf3)) {
 function Y8UT(Ab) { // MCHECKModule.true
  if (!(Ab))
  {
-  alert("Exception in D:/zimbu/lib/CHECKModule.zu line 22 col 7: " + YtEE__YwtA__YRHRa(null, null, "CHECK.true() failed").Vmessage);
+  alert("Exception in /Users/vec/workspace/zimbu/zimbuw32/lib/CHECKModule.zu line 22 col 7: " + YtEE__YwtA__YRHRa(null, null, "CHECK.true() failed").Vmessage);
   return;
  }
 }
@@ -5727,72 +5716,6 @@ function YPXNa(AfieldNr) { // MTutorial__CGetOptions.hasField
 function YKIca() { // MTutorial__CGetOptions.fieldSpecs
  return YZsK;
 }
-function YmNka() { // MTutorial__CStatus.name
- return "Status";
-}
-function YdgU() { // MTutorial__CStatus.hasOk
- return (this.Vf_ok != 0);
-}
-function Yc27() { // MTutorial__CStatus.hasError
- return (this.Vf_error != null);
-}
-function YGI8a(AfieldNr) { // MTutorial__CStatus.boolGet
- switch (AfieldNr)
- {
- case 1:
-  {
-   return (this.Vf_ok == 2);
-  }
- }
- return 0;
-}
-function YJyDa(AfieldNr, Avalue) { // MTutorial__CStatus.boolSet
- switch (AfieldNr)
- {
- case 1:
-  {
-   this.Vf_ok = (((Avalue) ? (2) : (1)));
-    break;
-  }
- }
-}
-function YJYPa(AfieldNr) { // MTutorial__CStatus.stringGet
- switch (AfieldNr)
- {
- case 2:
-  {
-   return this.Vf_error;
-  }
- }
- return "";
-}
-function YMOja(AfieldNr, Avalue) { // MTutorial__CStatus.stringSet
- switch (AfieldNr)
- {
- case 2:
-  {
-   this.Vf_error = Avalue;
-    break;
-  }
- }
-}
-function YKyGa(AfieldNr) { // MTutorial__CStatus.hasField
- switch (AfieldNr)
- {
- case 1:
-  {
-   return this.hasOk();
-  }
- case 2:
-  {
-   return this.hasError();
-  }
- }
- return 0;
-}
-function YubJa() { // MTutorial__CStatus.fieldSpecs
- return Y1gv;
-}
 function YBoY(Arequest, Adone) { // MTutorial__MAddressService.callGetAddressBook
  if (!(Arequest.valid()))
  {
@@ -6199,26 +6122,26 @@ function YD_Z() { // MZwtDemoPage.checkISA
  }
  YbMN().add(Vpanel);
 }
-function Lambda0(As) { // YJe_.Lambda0
+function Lambda7(As) { // YJe_.Lambda7
  return As + As;
 }
-function Lambda1(Ai, As) { // YJe_.Lambda1
+function Lambda15(Ai, As) { // YJe_.Lambda15
  return "" + Ai + ": " + As;
 }
-function Lambda2(An) { // YJe_.Lambda2
+function Lambda23(An) { // YJe_.Lambda23
  return (An * 2);
 }
-function Lambda3(Ai, An) { // YJe_.Lambda3
+function Lambda31(Ai, An) { // YJe_.Lambda31
  return (An + Ai);
 }
 function YJe_() { // MZwtDemoPage.checkListMap
  var Vpanel = YY8Sa(null);
  var Vsl = ["one", "two", "three"];
- Vpanel.add(Yjd7(null, "mapped string list: " + ZListToString(ZListMap(Vsl, Lambda0), 200, 1)));
- Vpanel.add(Yjd7(null, "keymapped string list: " + ZListToString(ZListKeyMap(Vsl, Lambda1), 200, 1)));
+ Vpanel.add(Yjd7(null, "mapped string list: " + ZListToString(ZListMap(Vsl, Lambda7), 200, 1)));
+ Vpanel.add(Yjd7(null, "keymapped string list: " + ZListToString(ZListKeyMap(Vsl, Lambda15), 200, 1)));
  var Vil = [11, 22, 33];
- Vpanel.add(Yjd7(null, "mapped int list: " + ZListToString(ZListMap(Vil, Lambda2), 0, 1)));
- Vpanel.add(Yjd7(null, "keymapped int list: " + ZListToString(ZListKeyMap(Vil, Lambda3), 0, 1)));
+ Vpanel.add(Yjd7(null, "mapped int list: " + ZListToString(ZListMap(Vil, Lambda23), 0, 1)));
+ Vpanel.add(Yjd7(null, "keymapped int list: " + ZListToString(ZListKeyMap(Vil, Lambda31), 0, 1)));
  YbMN().add(Vpanel);
 }
 function YoK_(thisO, Aname) { // MZwtDemoPage__CFoo.NEW

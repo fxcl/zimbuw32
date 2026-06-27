@@ -31,6 +31,7 @@ font-family: arial,sans-serif;
     addCss(context)
     IO.StringWriter w = NEW()
     string helloId = ZUT.uid()
+    context.listen(ZUT.EventType.click)
     ZUT.registerAction("MyController", "clicked")
     w.write(''"<div zcontroller="MyController"
 zaction="click: clicked"
