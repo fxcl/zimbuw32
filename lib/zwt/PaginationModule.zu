@@ -1,0 +1,89 @@
+#
+# The Zimbu compiler written in Zimbu
+#
+# part of the builtin module ZWT: Pagination
+#
+# Copyright 2009 Bram Moolenaar  All Rights Reserved.
+# Licensed under the Apache License, Version 2.0.  See the LICENSE file or
+# obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+
+#! Each item from this module gets an ALIAS in ZWT.
+MODULE PaginationModule @public
+ GENERATE_IF Z.lang == "JS"
+
+  #= A Pagination widget shows prev, numbered page buttons and next.  Clicking a
+  #- button selects it.  An HTML DIV.  No application callback is wired: ZWT
+  #- cannot call a Zimbu proc back from raw JavaScript, so selection is visual.
+  CLASS Pagination EXTENDS ZWT.Panel @public
+    #!
+    int $current  #!
+    int $total    #!
+
+    #!
+    PROC $Init()
+>>>
+      %$elem% = $doc.createElement('div');
+      %$elem%.style.display = 'flex';
+      %$elem%.style.gap = '2px';
+      %$elem%.zwtButtons = [];
+<<<
+    }
+
+    #= Create a Pagination showing |totalPages| pages with |currentPage| selected.
+    NEW(int currentPage, int totalPages) @public
+      $current = currentPage
+      $total = totalPages
+      $build()
+    }
+
+    #= Rebuild the buttons from |$current| and |$total|.
+    PROC $build() @public
+>>>
+      var root = %$elem%;
+      while (root.firstChild) { root.removeChild(root.firstChild); }
+      root.zwtButtons = [];
+      var total = %$total%;
+      var current = %$current%;
+      function select(btn) {
+        for (var i = 0; i < root.zwtButtons.length; ++i) {
+          root.zwtButtons[i].style.fontWeight = 'normal';
+          root.zwtButtons[i].style.backgroundColor = '#ffffff';
+        }
+        btn.style.fontWeight = 'bold';
+        btn.style.backgroundColor = '#e0e0e0';
+      }
+      function mk(label, page, disabled) {
+        var b = $doc.createElement('button');
+        b.type = 'button';
+        b.textContent = label;
+        b.style.padding = '4px 10px';
+        b.style.border = '1px solid #ccc';
+        b.style.backgroundColor = '#ffffff';
+        b.style.cursor = 'pointer';
+        if (disabled) {
+          b.disabled = true;
+          b.style.opacity = '0.5';
+          b.style.cursor = 'default';
+        } else {
+          b.onclick = function() { select(b); root.zwtCurrent = page; };
+        }
+        root.zwtButtons.push(b);
+        root.appendChild(b);
+        return b;
+      }
+      mk('<', current - 1, current <= 1);
+      for (var p = 1; p <= total; ++p) {
+        var b = mk(String(p), p, false);
+        if (p == current) { select(b); }
+      }
+      mk('>', current + 1, current >= total);
+<<<
+    }
+
+    FUNC $ToString() string @replace @public
+      RETURN "Pagination"
+    }
+  }
+
+ }
+}

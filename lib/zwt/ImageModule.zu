@@ -1,0 +1,69 @@
+#
+# The Zimbu compiler written in Zimbu
+#
+# part of the builtin module ZWT: Image
+#
+# Copyright 2009 Bram Moolenaar  All Rights Reserved.
+# Licensed under the Apache License, Version 2.0.  See the LICENSE file or
+# obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+
+#! Each item from this module gets an ALIAS in ZWT.
+MODULE ImageModule @public
+ GENERATE_IF Z.lang == "JS"
+
+  #= An Image displays a picture, an HTML IMG.
+  CLASS Image EXTENDS ZWT.Widget @public
+    #!
+    string $src
+    string $altText
+
+    #!
+    PROC $Init()
+>>>
+      %$elem% = $doc.createElement('img');
+<<<
+    }
+
+    #= Create a new Image loading |src| with alternative text |alt|.
+    NEW(string src, string alt) @public
+      $setSrc(src)
+      $setAlt(alt)
+    }
+
+    #= Set the image source URL to |src|.
+    PROC $setSrc(string src) @public
+      $src = src
+>>>
+      %$elem%.src = %src%;
+<<<
+    }
+
+    #= Set the alternative text to |alt|.
+    PROC $setAlt(string alt) @public
+      $altText = alt
+>>>
+      %$elem%.alt = %alt%;
+<<<
+    }
+
+    #= Set the rendered width to |width| pixels.
+    PROC $setWidth(int width) @public
+>>>
+      %$elem%.width = %width%;
+<<<
+    }
+
+    #= Set the rendered height to |height| pixels.
+    PROC $setHeight(int height) @public
+>>>
+      %$elem%.height = %height%;
+<<<
+    }
+
+    FUNC $ToString() string @replace @public
+      RETURN "Image(" .. $src .. ")"
+    }
+  }
+
+ }
+}

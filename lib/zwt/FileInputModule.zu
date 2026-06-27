@@ -1,0 +1,62 @@
+#
+# The Zimbu compiler written in Zimbu
+#
+# part of the builtin module ZWT: FileInput
+#
+# Copyright 2012 Bram Moolenaar  All Rights Reserved.
+# Licensed under the Apache License, Version 2.0.  See the LICENSE file or
+# obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+
+#! Each item from this module gets an ALIAS in ZWT.
+MODULE FileInputModule @public
+ GENERATE_IF Z.lang == "JS"
+
+  #= A FileInput is a widget that lets the user choose a file.
+  #- Renders an HTML <input type="file">.  Listen for EventType.change to be
+  #- notified when the user selects a file.
+  CLASS FileInput EXTENDS ZWT.Widget @public
+
+    #!
+    PROC $Init()
+>>>
+      %$elem% = $doc.createElement('input');
+      %$elem%.type = 'file';
+<<<
+    }
+
+    #= Create a new FileInput with no restriction on accepted files.
+    NEW() @replace @public
+    }
+
+    #= Set the |accept| attribute, e.g. ".png,image/*" or "text/csv".
+    #- The browser uses it to filter the file picker.
+    PROC $setAccept(string accept) @public
+>>>
+      %$elem%.accept = %accept%;
+<<<
+    }
+
+    #= Set whether more than one file may be selected.
+    PROC $setMultiple(bool multiple) @public
+>>>
+      %$elem%.multiple = %multiple%;
+<<<
+    }
+
+    #= Return the name of the selected file, or an empty string if none.
+    FUNC $getValue() string @public
+      string s
+>>>
+      %s% = %$elem%.value;
+<<<
+      RETURN s
+    }
+
+    #= Return "FileInput(value)", where value is the selected file name.
+    FUNC $ToString() string @replace @public
+      RETURN "FileInput(" .. $getValue() .. ")"
+    }
+  }
+
+ }
+}

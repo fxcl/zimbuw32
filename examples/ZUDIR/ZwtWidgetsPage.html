@@ -1,0 +1,2704 @@
+<html>
+  <head>
+    <script>
+      var $wnd = parent;
+      var $doc = $wnd.document;
+      var $sheetIndex = 0;
+      function $findSheetIndex() {
+        for (i = 0; i < $doc.styleSheets.length; ++i) {
+          if ($doc.styleSheets[i].title == 'zwt') {
+            $sheetIndex = i;
+            break;
+          }
+        }
+      }
+      $findSheetIndex();
+
+    </script>
+  </head>
+  <body>
+    <script><!--
+
+// structs
+// including TIMEModule structs
+// including EModule structs
+function Ytlm(){ // Exception
+}
+_ = Ytlm.prototype = {};
+_.Vmessage = null;
+_.Vpos = null;
+_.Vbacktrace = null;
+_.ToString = YH0V;
+_.writeTo__1 = YxaJa;
+_.writeTo = YxaJ;
+_.toString = Yoww;
+function YwtA(){ // Error
+}
+_ = YwtA.prototype = new Ytlm();
+function YVNj(){ // Init
+}
+_ = YVNj.prototype = new YwtA();
+function Yalz(){ // BadValue
+}
+_ = Yalz.prototype = new YwtA();
+function Y2EX(){ // KeyNotFound
+}
+_ = Y2EX.prototype = new Yalz();
+function YX0i(){ // KeyExists
+}
+_ = YX0i.prototype = new Yalz();
+function YXKl(){ // IOError
+}
+_ = YXKl.prototype = new YwtA();
+// including PIPEModule structs
+// including IModule structs
+// including SYSModule structs
+// including DYNModule structs
+// including LISTModule structs
+// including RPCModule structs
+// including ZModule structs
+function YkxB(){ // Pos
+}
+_ = YkxB.prototype = {};
+_.Vfilename = null;
+_.Vlnum = 0;
+_.Vcol = 0;
+_.Vtext = null;
+_.ToString = YpI_;
+// including STRINGModule structs
+// including IOModule structs
+function Y8is(){ // Writer
+}
+_ = Y8is.prototype = {};
+_.write__2 = YHhZb;
+function Yw8L(){ // File
+}
+_ = Yw8L.prototype = new Y8is();
+_.write = YwHoa;
+_.Vfd = null;
+_.Vname = null;
+function YjUM(){ // StringWriter
+}
+_ = YjUM.prototype = new Y8is();
+_.write = YJqza;
+_.VsLen = 0;
+_.Vs = null;
+_.Vx = null;
+_.ToString = YbNW;
+// including MULTIDICTModule structs
+function Y4gH(){ // MultiDict__t1
+}
+_ = Y4gH.prototype = {};
+_.Vdict = null;
+_.VitemCount = 0;
+_.get = YPtT;
+_.has = Yk0Q;
+_.add = YcW7;
+_.clear = YrBB;
+// including HTTPModule structs
+// including Proto structs
+// including Message structs
+// including ZUTModule structs
+// including MainPage structs
+// including BYTESTRINGModule structs
+// including THREADModule structs
+// including Config structs
+// including zimbuConfig structs
+// including SETModule structs
+function Yhqr(){ // Set__t1
+}
+_ = Yhqr.prototype = {};
+_.Vdict = null;
+_.Init = Ypau;
+_.clear__1 = Y21Ea;
+function Yeqr(){ // Set__t4
+}
+_ = Yeqr.prototype = {};
+_.Vdict = null;
+_.Init = YEEZ;
+_.has = YKzF;
+_.add = YSEn;
+_.remove = YLxA;
+// including ZWTModule structs
+// including BaseModule structs
+function Y4Y5(){ // UIObject
+}
+_ = Y4Y5.prototype = {};
+_.Velem = null;
+_.Vstyles = null;
+_.VparentStyles = null;
+_.setStyle = Y8wQ;
+_.setHidden = Ybx4;
+function YDde(){ // Widget
+}
+_ = YDde.prototype = new Y4Y5();
+_.Vparent = null;
+_.Vactive = 0;
+_.VinactiveStyle = null;
+_.Vhandlers = null;
+_.VhasJsHandler = null;
+_.addToParent = Yeuq;
+_.removeFromParent = YHfD;
+_.setHandler = YoEe;
+_.addHandler = YmNC;
+_.setJsHandler = YK1u;
+_.removeJsHandler = YcEP;
+_.setClickHandler = YRwQ;
+// including AlertModule structs
+function Yx9g(){ // Alert
+}
+_ = Yx9g.prototype = new YDde();
+_.Vseverity = 0;
+_.ValertText = null;
+_.Init = YaHg;
+_.setSeverity = Yo0d;
+_.setText = Y0sW;
+_.applyStyle = Y96W;
+// including BadgeModule structs
+function YO7C(){ // Badge
+}
+_ = YO7C.prototype = new YDde();
+_.VtextColor = 0;
+_.VbgColor = 0;
+_.Init = YfQa;
+_.setText = YiiT;
+_.setColorName = YshI;
+_.setBGColorName = YDtF;
+_.applyStyle = YazX;
+// including ButtonModule structs
+function YN0O(){ // Button
+}
+_ = YN0O.prototype = new YDde();
+_.VbuttonText = null;
+_.Init = YN0Oa;
+// including CodeModule structs
+// including DialogModule structs
+function YVvX(){ // Panel
+}
+_ = YVvX.prototype = new YDde();
+_.Vitems = null;
+_.Vcontroller = null;
+_.Vhighlighted = 0;
+_.Vhighlights = null;
+_.VhighlightStyle = null;
+_.add = YCbm;
+_.addItem = Y3xR;
+_.remove__1 = Yx9aa;
+_.remove = Yx9a;
+function Y4xQ(){ // PopupPanel
+}
+_ = Y4xQ.prototype = new YVvX();
+_.Vparent = null;
+_.VusedParent = null;
+_.Vx = 0;
+_.Vy = 0;
+_.Vwidth = 0;
+_.Vheight = 0;
+_.Init__2 = Yc8o;
+_.hide = YyVS;
+function Y1gh(){ // NoButtonDialog
+}
+_ = Y1gh.prototype = new Y4xQ();
+_.Vtable = null;
+_.Vwidget = null;
+_.VbgElem = null;
+_.Vbackground = null;
+_.Init = YslR;
+_.close = Y0ou;
+function Yjma(){ // SimpleDialog
+}
+_ = Yjma.prototype = new Y1gh();
+_.Vbuttons = null;
+_.Vhandler = null;
+_.getButtons = YzuP;
+_.Init__1 = YWCu;
+_.handleOk = Y7ly;
+function YILp(){ // OkCancelDialog
+}
+_ = YILp.prototype = new Yjma();
+_.getButtons = Y4Mpa;
+_.handleCancel = Yir6;
+_.Init = YILpa;
+// including DropdownModule structs
+// including DividerModule structs
+function YMdp(){ // Divider
+}
+_ = YMdp.prototype = new YDde();
+_.Vvertical = 0;
+_.Init = YmHV;
+_.setVertical = YC1k;
+// including EventModule structs
+function YZDx(){ // Event
+}
+_ = YZDx.prototype = {};
+_.Vwidget = null;
+_.Vtype = 0;
+_.VjsEvent = null;
+var MEventModule__EEventType = [
+"all",
+"click",
+"mouseOver",
+"mouseOut",
+"key",
+"keyDown",
+"keyUp",
+"change",
+];
+// including InputModule structs
+// including FileInputModule structs
+function Ysxu(){ // FileInput
+}
+_ = Ysxu.prototype = new YDde();
+_.Init = YACv;
+_.setAccept = YNZ8;
+_.setMultiple = Ys1Y;
+// including ImageModule structs
+function YD6n(){ // Image
+}
+_ = YD6n.prototype = new YDde();
+_.Vsrc = null;
+_.ValtText = null;
+_.Init = YvCg;
+_.setSrc = Yrbg;
+_.setAlt = YmB_;
+// including ProgressBarModule structs
+function Y6SE(){ // ProgressBar
+}
+_ = Y6SE.prototype = new YDde();
+_.Init = Yz9y;
+_.setMax = Yv4h;
+_.setValue = YBj1;
+// including RadioModule structs
+function Y3HP(){ // Radio
+}
+_ = Y3HP.prototype = new YDde();
+_.Init = YR_U;
+_.setName = YiI3;
+_.setChecked = YlQH;
+// including SliderModule structs
+function Y7bt(){ // Slider
+}
+_ = Y7bt.prototype = new YDde();
+_.Init = Ydw_;
+_.setMin = YLhg;
+_.setMax = Y54f;
+_.setStep = Ye1O;
+_.setValue = Y6W0;
+// including SpinnerModule structs
+function Yy7_(){ // Spinner
+}
+_ = Yy7_.prototype = new YDde();
+_.Vsize = 0;
+_.Init = YSDG;
+_.setSize = YqFz;
+// including SwitchModule structs
+function YeEY(){ // Switch
+}
+_ = YeEY.prototype = new YDde();
+_.Init = YB37;
+_.setChecked = YHDb;
+// including AccordionModule structs
+function YDzh(){ // Accordion
+}
+_ = YDzh.prototype = new YVvX();
+_.Vsections = 0;
+_.Init = Yi2f;
+_.addSection = YPsx;
+// including BreadcrumbModule structs
+function YznC(){ // Breadcrumb
+}
+_ = YznC.prototype = new YVvX();
+_.Vcount = 0;
+_.Init = YL7O;
+_.addItem = YpTM;
+// including CardModule structs
+function YiDQ(){ // Card
+}
+_ = YiDQ.prototype = new YVvX();
+_.Vheader = null;
+_.Vbody = null;
+_.Vfooter = null;
+_.Init = YQbV;
+_.add = Yw9i;
+_.setHeaderText = Y3gY;
+_.setFooterText = Y_Ro;
+// including PaginationModule structs
+function Yxcy(){ // Pagination
+}
+_ = Yxcy.prototype = new YVvX();
+_.Vcurrent = 0;
+_.Vtotal = 0;
+_.Init = Yt1p;
+_.build = YXl9;
+// including TabsModule structs
+function YKtT(){ // Tabs
+}
+_ = YKtT.prototype = new YVvX();
+_.Init = YzId;
+_.addTab = YYDO;
+// including SkeletonModule structs
+function Y7cP(){ // Skeleton
+}
+_ = Y7cP.prototype = new YDde();
+_.Init = YX1Y;
+_.setSize = YXK_;
+// including ToastModule structs
+function YWuK(){ // Toast
+}
+_ = YWuK.prototype = new YDde();
+_.Init = YMAz;
+_.show = YicL;
+// including TooltipModule structs
+function Y7ns(){ // Tooltip
+}
+_ = Y7ns.prototype = new Y4xQ();
+_.Init = YldA;
+_.attachTo = YSun;
+// including LabelModule structs
+function YtSx(){ // Label
+}
+_ = YtSx.prototype = new YDde();
+_.VlabelText = null;
+_.Init = YL0R;
+_.setText = YnYb;
+// including MenuModule structs
+// including PanelModule structs
+function Ynpw(){ // CellPanel
+}
+_ = Ynpw.prototype = new YVvX();
+_.Vbody = null;
+function Ym2E(){ // AbsolutePanel
+}
+_ = Ym2E.prototype = new YVvX();
+_.Init = Ym2Ea;
+function YA6u(){ // HorizontalPanel
+}
+_ = YA6u.prototype = new Ynpw();
+_.Vrow = null;
+_.Init__3 = Y7kt;
+_.add = YJ9pa;
+_.remove__1 = YodZa;
+// including StyleModule structs
+function YJIL(){ // Color
+}
+_ = YJIL.prototype = {};
+_.Vred = 0;
+_.Vgreen = 0;
+_.Vblue = 0;
+_.VcolorName = 0;
+var MStyleModule__EColorName = [
+"none",
+"aqua",
+"black",
+"blue",
+"fuchsia",
+"gray",
+"green",
+"lime",
+"maroon",
+"navy",
+"olive",
+"orange",
+"purple",
+"red",
+"silver",
+"teal",
+"white",
+"yellow",
+"inherit",
+"transparent",
+];
+var MStyleModule__EUnit = [
+"pixel",
+"percent",
+"em",
+"ex",
+"cm",
+"mm",
+"inch",
+"point",
+"pica",
+];
+var MStyleModule__EBorderStyle = [
+"none",
+"solid",
+"double",
+"dotted",
+"dashed",
+];
+var MStyleModule__EHorAlign = [
+"none",
+"left",
+"middle",
+"center",
+"right",
+];
+function YXEv(){ // Style
+}
+_ = YXEv.prototype = {};
+_.Vname = null;
+_.VstyleNr = 0;
+_.VruleNr = 0;
+_.VfontName = null;
+_.VfontSize = null;
+_.Vproperties = null;
+_.activate = YzLd;
+_.update = YZfG;
+_.setRule = YrWD;
+_.setValue = YZRy;
+_.setPixelValue = YH25;
+_.setUnitValue = YACJ;
+_.setColorProp = YrJ7;
+_.clearValue = Y8Sr;
+_.setMarginLeft = Y9lb;
+_.setMarginRight = Y8DQ;
+_.setMarginBottom = Y5cS;
+_.setPadding = YaPx;
+_.setPaddingLeft = YOar;
+_.setPaddingRight = Y1Wp;
+_.setPaddingTop = YU4V;
+_.setPaddingBot = YoPb;
+_.setHorAlign = YvB9;
+_.setFullWidth = YpB9;
+_.setFullHeight = YOjB;
+_.setBorder = Yf58;
+_.setBorderStyle = Yt3W;
+_.clearBorderStyle = Y_eb;
+_.setColorName = YrE3;
+_.setBGColorName = Y4LI;
+// including TableModule structs
+function Y1yz(){ // TableCell
+}
+_ = Y1yz.prototype = new Y4Y5();
+_.Vwidget = null;
+_.Vrowspan = 0;
+_.Vcolspan = 0;
+_.setWidget = YBrY;
+function YidE(){ // TableRow
+}
+_ = YidE.prototype = new Y4Y5();
+_.Ventries = null;
+_.resize = YhJK;
+_.addCell = YNQD;
+_.deleteCell = Ypnw;
+_.setWidget = YU2p;
+_.setColStyle = YTsy;
+function YrNL(){ // Table
+}
+_ = YrNL.prototype = new YVvX();
+_.Vrows = null;
+_.Vbody = null;
+_.Init = YZQ2;
+_.remove = Y36p;
+_.setWidget = YIDH;
+_.setCellStyle = YCAj;
+_.addRow = YPru;
+_.deleteRow = YZmd;
+_.resizeRows = YnB1;
+// including TagModule structs
+function YVuD(){ // Tag
+}
+_ = YVuD.prototype = new YDde();
+_.VtagText = null;
+_.Init = YO0X;
+_.setText = YgpG;
+// including TextareaModule structs
+function Yg_8(){ // Element
+}
+_ = Yg_8.prototype = {};
+function Yttl(){ // JsEvent
+}
+_ = Yttl.prototype = {};
+// including CHECKModule structs
+// including BOXModule structs
+// including ARGModule structs
+// including INTModule structs
+
+// declarations
+// including TIMEModule declarations
+// including EModule declarations
+// including PIPEModule declarations
+// including IModule declarations
+// including SYSModule declarations
+// including DYNModule declarations
+// including LISTModule declarations
+// including RPCModule declarations
+// including ZModule declarations
+// including STRINGModule declarations
+// including IOModule declarations
+var Y59X = Yd89(); // IOModule.stdin
+var Yb0q = Yvyt(); // IOModule.stdout
+var YeNQ = YsM3(); // IOModule.stderr
+// including MULTIDICTModule declarations
+// including HTTPModule declarations
+// including Proto declarations
+// including Message declarations
+// including ZUTModule declarations
+// including MainPage declarations
+// including BYTESTRINGModule declarations
+// including THREADModule declarations
+// including Config declarations
+// including zimbuConfig declarations
+// including SETModule declarations
+// including ZWTModule declarations
+// including BaseModule declarations
+// including AlertModule declarations
+// including BadgeModule declarations
+// including ButtonModule declarations
+// including CodeModule declarations
+// including DialogModule declarations
+// including DropdownModule declarations
+// including DividerModule declarations
+// including EventModule declarations
+// including InputModule declarations
+// including FileInputModule declarations
+// including ImageModule declarations
+// including ProgressBarModule declarations
+// including RadioModule declarations
+// including SliderModule declarations
+// including SpinnerModule declarations
+// including SwitchModule declarations
+// including AccordionModule declarations
+// including BreadcrumbModule declarations
+// including CardModule declarations
+// including PaginationModule declarations
+// including TabsModule declarations
+// including SkeletonModule declarations
+// including ToastModule declarations
+// including TooltipModule declarations
+// including LabelModule declarations
+// including MenuModule declarations
+// including PanelModule declarations
+// including StyleModule declarations
+var YphH = 0; // StyleModule__CStyle__X.styleCount
+var YPjV = ZDictAdd(0, ZDictAdd(0, ZDictAdd(0, ZDictAdd(0, ZDictAdd(0, ZDictAdd(0, ZDictAdd(0, ZDictAdd(0, ZDictAdd(0, ZnewDict(1, 1), ':' + "pixel", "px"), ':' + "percent", "%"), ':' + "em", "em"), ':' + "ex", "ex"), ':' + "cm", "cm"), ':' + "mm", "mm"), ':' + "inch", "in"), ':' + "point", "pt"), ':' + "pica", "pc"); // StyleModule__CStyle__X.unitNames
+// including TableModule declarations
+// including TagModule declarations
+// including TextareaModule declarations
+var YATn = null; // ZWTModule.rootPanel
+// including CHECKModule declarations
+// including BOXModule declarations
+// including ARGModule declarations
+// including INTModule declarations
+var Y6kt = null; // ZwtWidgetsPage.spinner
+
+// bodies
+
+function Zbind(fn, o) {
+  return function() { return fn.apply(o, arguments); };
+}
+
+function ZforListNew(p) {
+ var f = {};
+ f['list'] = p;
+ f['idx'] = 0;
+ return f;
+}
+function ZforListGet(f) {
+ if (f.list != null && f.idx < f.list.length)
+  return f.list[f.idx];
+ return null;
+}
+function ZforListCont(f) {
+  return f.list != null && f.idx < f.list.length;
+}
+function ZforListNext(f) {
+ ++f.idx;
+ if (f.list != null && f.idx < f.list.length)
+  return f.list[f.idx];
+ return null;
+}
+
+function ZforRangeNew(start, last, until, step) {
+  var f = {};
+  f['idx'] = start;
+  if (until)
+    f['last'] = last - (step > 0 ? 1 : -1);
+  else
+    f['last'] = last;
+  f['step'] = step;
+  return f;
+}
+function ZforRangeGet(f) {
+  return f.idx;
+}
+function ZforRangeCont(f) {
+  return f.step > 0 ? (f.idx <= f.last) : (f.idx >= f.last);
+}
+function ZforRangeNext(f) {
+  f.idx += f.step;
+  return f.idx;
+}
+
+function ZforEnumNew(count) {
+  var f = {};
+  f['count'] = count;
+  f['idx'] = 0;
+  return f;
+}
+function ZforEnumGet(f) {
+  return f.idx;
+}
+function ZforEnumCont(f) {
+  return f.idx < f.count;
+}
+function ZforEnumNext(f) {
+  ++f.idx;
+  return f.idx;
+}
+
+function Zthrow(msg) {
+  alert("Exception: " + msg);
+}
+
+/* List add */
+function ZLa(head, after, val) {
+  if (head == null) Zthrow("Inovking add() on NIL list");
+  if (after == -1 || after >= head.length) {
+    head.push(val);
+  } else {
+    if (after < 0) {
+      var before = head.length + after + 1;
+      if (before < 0) {
+        before = 0;
+      }
+      head.splice(before, 0, val);
+    } else {
+      head.splice(after + 1, 0, val);
+    }
+  }
+  return head;
+}
+
+function ZListGet(head, idx) {
+  if (idx >= 0) {
+    if (idx >= head.length) return null;
+    return head[idx];
+  }
+  var i = head.length + idx;
+  if (i < 0) return null;
+  return head[i];
+}
+
+function ZListPopItem(head, idx, remove) {
+  if (head == null) Zthrow(remove ? "Invoking remove() on a NIL list" : "Invoking clear() on a NIL list");
+  if (head.length == 0) return null;
+  if (idx == -1) return head.pop();
+  var i = idx;
+  if (idx < 0) {
+    i = head.length + idx;
+  }
+  if (i >= 0 && i < head.length) {
+    var a = head.splice(i, 1);
+    if (remove) return a[0];
+    return head;
+  }
+  if (remove) return null;
+  return head;
+}
+
+function ZDictAdd(ow, d, key, value) {
+  if (d[key]) {
+    if (!ow) alert("dict item already exists: " + key);
+  } else {
+    d.size++;
+  }
+  d[key] = value;
+  return d;
+}
+
+function ZnewDict(keyType, valType) {
+  var d = {size: 0};
+  d['keyType'] = keyType;
+  d['valType'] = valType;
+  return d;
+}
+
+function ZDictKeys(d, dn) {
+  var l = [];
+  var i = 0;
+  if (d == null) {
+   if (dn) return null;
+    /* TODO: throw exception */
+  }
+  for (var key in d) {
+    if (key.charCodeAt(0) == 58) {
+      if (d.keyType == 2)
+        l[i++] = parseInt(key.substring(1));
+      else  /* assume string */
+        l[i++] = key.substring(1);
+    }
+  }
+  return l;
+}
+
+function ZDictRemove(d, key, remove) {
+  var r;
+  if (key in d) {
+    d.size--;
+    r = d[key];
+    delete d[key];
+  } else if (remove) {
+    /* TODO: throw exception? */
+    alert("EXCEPTION: ZDictRemove: " + key);
+  }
+  if (remove)
+    return r;
+  return d;
+}
+
+// including TIMEModule bodies
+// including EModule bodies
+function YRHR(thisO, Amsg) { // MEModule__CException.NEW
+ if (!thisO) thisO = new Ytlm();
+ thisO.Vmessage = Amsg;
+ thisO.Vpos = null;
+ thisO.Vbacktrace = null;
+ return thisO;
+}
+function YRHRa(thisO, Apos, Amsg) { // MEModule__CException.NEW
+ if (!thisO) thisO = new Ytlm();
+ thisO.Vmessage = Amsg;
+ thisO.Vpos = Apos;
+ thisO.Vbacktrace = null;
+ return thisO;
+}
+function YH0V() { // MEModule__CException.ToString
+ var Vw = new YjUM();
+ this.writeTo(Vw);
+ return Vw.ToString();
+}
+function YxaJ(Aw) { // MEModule__CException.writeTo
+ if ((this.Vpos != null))
+ {
+  Aw.write(this.Vpos.ToString());
+  Aw.write(": ");
+ }
+ if (((this.Vmessage != null) && (this.Vmessage != "")))
+ {
+  Aw.write("Exception: ");
+  Aw.write(this.Vmessage);
+ }
+ else
+ {
+  Aw.write("Exception");
+ }
+}
+function Yoww(Averbose) { // MEModule__CException.toString
+ var Vw = new YjUM();
+ this.writeTo__1(Averbose, Vw);
+ return Vw.ToString();
+}
+function YxaJa(Averbose, Aw) { // MEModule__CException.writeTo
+ this.writeTo(Aw);
+ if ((Averbose && (this.Vbacktrace != null)))
+ {
+  Aw.write("\nStack backtrace (last called first):");
+  {
+   var Vpos;
+   var Zf2 = ZforListNew(this.Vbacktrace);
+for (Vpos = ZforListGet(Zf2); ZforListCont(Zf2); Vpos = ZforListNext(Zf2)) {
+   if ((Vpos.Vfilename == null))
+   {
+    Aw.write("\n(unknown)");
+   }
+   else
+   {
+    Aw.write("\n");
+    Aw.write(Vpos.ToString());
+    if ((Vpos.Vtext != null))
+    {
+     Aw.write(": ");
+     Aw.write(Vpos.Vtext);
+    }
+   }
+   }
+  }
+ }
+}
+function YwtA__YRHRa(thisO, Apos, Amsg) { // MEModule__CError.NEW__p1
+ if (!thisO) thisO = new YwtA();
+ thisO.Vmessage = Amsg;
+ thisO.Vpos = Apos;
+ thisO.Vbacktrace = null;
+ return thisO;
+}
+function YwtA__YRHR(thisO, Amsg) { // MEModule__CError.NEW__p1
+ if (!thisO) thisO = new YwtA();
+ thisO.Vmessage = Amsg;
+ thisO.Vpos = null;
+ thisO.Vbacktrace = null;
+ return thisO;
+}
+function Yalz__YwtA__YRHRa(thisO, Apos, Amsg) { // MEModule__CBadValue.NEW__p2
+ if (!thisO) thisO = new Yalz();
+ thisO.Vmessage = Amsg;
+ thisO.Vpos = Apos;
+ thisO.Vbacktrace = null;
+ return thisO;
+}
+function Yalz__YwtA__YRHR(thisO, Amsg) { // MEModule__CBadValue.NEW__p2
+ if (!thisO) thisO = new Yalz();
+ thisO.Vmessage = Amsg;
+ thisO.Vpos = null;
+ thisO.Vbacktrace = null;
+ return thisO;
+}
+function Y2EX__Yalz__YwtA__YRHRa(thisO, Apos, Amsg) { // MEModule__CKeyNotFound.NEW__p3
+ if (!thisO) thisO = new Y2EX();
+ thisO.Vmessage = Amsg;
+ thisO.Vpos = Apos;
+ thisO.Vbacktrace = null;
+ return thisO;
+}
+function Y2EX__Yalz__YwtA__YRHR(thisO, Amsg) { // MEModule__CKeyNotFound.NEW__p3
+ if (!thisO) thisO = new Y2EX();
+ thisO.Vmessage = Amsg;
+ thisO.Vpos = null;
+ thisO.Vbacktrace = null;
+ return thisO;
+}
+function Yxmk(Akey, Amsg) { // MEModule.throwIntKeyNotFound
+ alert("Exception in lib/EModule.zu line 374 col 5: " + Y2EX__Yalz__YwtA__YRHR(null, Amsg + "Key not found: " + "" + Akey).Vmessage);
+ return;
+}
+function Y5LT(Akey, Amsg) { // MEModule.throwStringKeyNotFound
+ alert("Exception in lib/EModule.zu line 380 col 5: " + Y2EX__Yalz__YwtA__YRHR(null, Amsg + "Key not found: \"" + Akey + "\"").Vmessage);
+ return;
+}
+function YX0i__Yalz__YwtA__YRHRa(thisO, Apos, Amsg) { // MEModule__CKeyExists.NEW__p3
+ if (!thisO) thisO = new YX0i();
+ thisO.Vmessage = Amsg;
+ thisO.Vpos = Apos;
+ thisO.Vbacktrace = null;
+ return thisO;
+}
+function YX0i__Yalz__YwtA__YRHR(thisO, Amsg) { // MEModule__CKeyExists.NEW__p3
+ if (!thisO) thisO = new YX0i();
+ thisO.Vmessage = Amsg;
+ thisO.Vpos = null;
+ thisO.Vbacktrace = null;
+ return thisO;
+}
+function YL9Z(Akey, Amsg) { // MEModule.throwIntKeyExists
+ alert("Exception in lib/EModule.zu line 396 col 5: " + YX0i__Yalz__YwtA__YRHR(null, Amsg + "Key already exists: " + "" + Akey).Vmessage);
+ return;
+}
+function YEeX(Akey, Amsg) { // MEModule.throwStringKeyExists
+ alert("Exception in lib/EModule.zu line 402 col 5: " + YX0i__Yalz__YwtA__YRHR(null, Amsg + "Key already exists: \"" + Akey + "\"").Vmessage);
+ return;
+}
+function YXKl__YwtA__YRHR(thisO, Amsg) { // MEModule__CIOError.NEW__p2
+ if (!thisO) thisO = new YXKl();
+ thisO.Vmessage = Amsg;
+ thisO.Vpos = null;
+ thisO.Vbacktrace = null;
+ return thisO;
+}
+// including PIPEModule bodies
+// including IModule bodies
+// including SYSModule bodies
+// including DYNModule bodies
+// including LISTModule bodies
+// including RPCModule bodies
+// including ZModule bodies
+function Ypp_a(thisO, Afilename, Alnum, Acol) { // MZModule__CPos.NEW
+ if (!thisO) thisO = new YkxB();
+ thisO.Vfilename = Afilename;
+ thisO.Vlnum = Alnum;
+ thisO.Vcol = Acol;
+ return thisO;
+}
+function YpI_() { // MZModule__CPos.ToString
+ var Vw = new YjUM();
+ if ((this.Vfilename == null))
+ {
+  Vw.write("[unknown file]");
+ }
+ else
+ {
+  Vw.write(this.Vfilename);
+ }
+ Vw.write(" line ");
+ Vw.write__2(this.Vlnum);
+ Vw.write(" col ");
+ Vw.write__2(this.Vcol);
+ return Vw.ToString();
+}
+// including STRINGModule bodies
+// including IOModule bodies
+function Yd89() { // MIOModule.newStdin
+ var Vfile = new Yw8L();
+ Vfile.Vname = "stdin";
+ return Vfile;
+}
+function Yvyt() { // MIOModule.newStdout
+ var Vfile = new Yw8L();
+ Vfile.Vname = "stdout";
+ return Vfile;
+}
+function YsM3() { // MIOModule.newStderr
+ var Vfile = new Yw8L();
+ Vfile.Vname = "stderr";
+ return Vfile;
+}
+function YHhZb(Anumber) { // MIOModule__CWriter.write
+ return this.write(((Anumber) + ""));
+}
+function YwHoa(Atext) { // MIOModule__CFile.write
+ var Vret = 0;
+ if ((this.Vname == null))
+ {
+  alert("Exception in lib/IOModule.zu line 501 col 11: " + YXKl__YwtA__YRHR(null, "File is not open").Vmessage);
+  return;
+ }
+ var e = $doc.getElementById(this.Vname);
+ if (e == null) {
+  e = $doc.createElement('div');
+  e.id = this.Vname;
+  $doc.body.appendChild(e);
+ }
+ e.innerHTML += Atext;
+ return Vret;
+}
+function YJqza(Atext) { // MIOModule__CStringWriter.write
+ var Vlen = (Atext).length;
+ if (this.Vx == null) {
+  this.Vx = Atext;
+ } else {
+  this.Vx = this.Vx + Atext;
+ }
+ return 1;
+}
+function YbNW() { // MIOModule__CStringWriter.ToString
+ var Vr = null;
+ if ((this.Vx == null))
+ {
+  Vr = "";
+ }
+ else
+ {
+  Vr = this.Vx;
+ }
+ return Vr;
+}
+// including MULTIDICTModule bodies
+function YByV(thisO) { // MMULTIDICTModule__CMultiDict__t1.NEW
+ if (!thisO) thisO = new Y4gH();
+ thisO.Vdict = ZnewDict(0, 0);
+ return thisO;
+}
+function YPtT(Akey) { // MMULTIDICTModule__CMultiDict__t1.get
+ return this.Vdict[':' + Akey];
+}
+function Yk0Q(Akey) { // MMULTIDICTModule__CMultiDict__t1.has
+ return ':' + Akey in this.Vdict;
+}
+function YcW7(Akey, Aitem) { // MMULTIDICTModule__CMultiDict__t1.add
+ if (':' + Akey in this.Vdict)
+ {
+  ZLa(this.Vdict[':' + Akey], -1, Aitem);
+ }
+ else
+ {
+  ZDictAdd(0, this.Vdict, ':' + Akey, [Aitem]);
+ }
+ ++(this.VitemCount);
+ return this;
+}
+function YrBB(Akey) { // MMULTIDICTModule__CMultiDict__t1.clear
+ if (':' + Akey in this.Vdict)
+ {
+  this.VitemCount -= this.Vdict[':' + Akey].length;
+  ZDictRemove(this.Vdict, ':' + Akey, 1);
+ }
+ return this;
+}
+// including HTTPModule bodies
+// including Proto bodies
+// including Message bodies
+// including ZUTModule bodies
+// including MainPage bodies
+// including BYTESTRINGModule bodies
+// including THREADModule bodies
+// including Config bodies
+// including zimbuConfig bodies
+// including SETModule bodies
+function Ypau(thisO) { // MSETModule__CSet__t1.Init
+ if (!thisO) thisO = new Yhqr();
+ thisO.Vdict = ZnewDict(2, 0);
+ return thisO;
+}
+function Yh95(thisO) { // MSETModule__CSet__t1.NEW
+ if (!thisO) thisO = Ypau(null);
+ return thisO;
+}
+function Y21Ea(Akey) { // MSETModule__CSet__t1.clear
+ if (':' + Akey in this.Vdict)
+ {
+  ZDictRemove(this.Vdict, ':' + Akey, 1);
+ }
+ return this;
+}
+function YEEZ(thisO) { // MSETModule__CSet__t4.Init
+ if (!thisO) thisO = new Yeqr();
+ thisO.Vdict = ZnewDict(0, 0);
+ return thisO;
+}
+function Yt1A(thisO) { // MSETModule__CSet__t4.NEW
+ if (!thisO) thisO = YEEZ(null);
+ return thisO;
+}
+function YKzF(Akey) { // MSETModule__CSet__t4.has
+ return ':' + Akey in this.Vdict;
+}
+function YSEn(Akey) { // MSETModule__CSet__t4.add
+ if (':' + Akey in this.Vdict)
+ {
+  alert("Exception in lib/SETModule.zu line 104 col 9: " + YX0i__Yalz__YwtA__YRHRa(null, null, "key already present: " + MEventModule__EEventType[Akey]).Vmessage);
+  return;
+ }
+ ZDictAdd(0, this.Vdict, ':' + Akey, 1);
+ return this;
+}
+function YLxA(Akey) { // MSETModule__CSet__t4.remove
+ if (!(':' + Akey in this.Vdict))
+ {
+  alert("Exception in lib/SETModule.zu line 174 col 9: " + Y2EX__Yalz__YwtA__YRHRa(null, null, "key: " + MEventModule__EEventType[Akey]).Vmessage);
+  return;
+ }
+ ZDictRemove(this.Vdict, ':' + Akey, 1);
+ return Akey;
+}
+// including ZWTModule bodies
+// including BaseModule bodies
+function Y8wQ(Astyle) { // MBaseModule__CUIObject.setStyle
+ this.Vstyles = [];
+ if ((Astyle != null))
+ {
+  ZLa(this.Vstyles, -1, Astyle);
+ }
+ Ya0K(this.Velem, this.Vstyles);
+}
+function Ybx4(Ahidden) { // MBaseModule__CUIObject.setHidden
+ var Vval = ((Ahidden) ? ("none") : (""));
+      this.Velem.style.display = Vval;
+}
+function Yeuq(Aparent) { // MBaseModule__CWidget.addToParent
+ this.removeFromParent();
+ this.Vparent = Aparent;
+ if ((Aparent != null))
+ {
+        Aparent.Velem.appendChild(this.Velem);
+ }
+}
+function YHfD() { // MBaseModule__CWidget.removeFromParent
+ if ((this.Vparent != null))
+ {
+        this.Vparent.Velem.removeChild(this.Velem);
+  this.Vparent = null;
+ }
+}
+function YoEe(AeventType, Ahandler) { // MBaseModule__CWidget.setHandler
+ if ((this.Vhandlers == null))
+ {
+  this.Vhandlers = YByV(null);
+ }
+ else {
+ if (this.Vhandlers.has(AeventType))
+ {
+  this.Vhandlers.clear(AeventType);
+ }
+ }
+ if ((Ahandler == null))
+ {
+  if ((AeventType == 0))
+  {
+   {
+    var Ve;
+    var Zf3 = ZforEnumNew(8);
+for (Ve = ZforEnumGet(Zf3); ZforEnumCont(Zf3); Ve = ZforEnumNext(Zf3)) {
+    if (((Ve != 0) && !(this.Vhandlers.has(Ve))))
+    {
+     this.removeJsHandler(Ve);
+    }
+    }
+   }
+  }
+  else
+  {
+   this.removeJsHandler(AeventType);
+  }
+ }
+ else
+ {
+  this.addHandler(AeventType, Ahandler);
+ }
+}
+function YmNC(AeventType, Ahandler) { // MBaseModule__CWidget.addHandler
+ if ((this.Vhandlers == null))
+ {
+  this.Vhandlers = YByV(null);
+ }
+ this.Vhandlers.add(AeventType, Ahandler);
+ if ((AeventType == 0))
+ {
+  {
+   var Ve;
+   var Zf2 = ZforEnumNew(8);
+for (Ve = ZforEnumGet(Zf2); ZforEnumCont(Zf2); Ve = ZforEnumNext(Zf2)) {
+   if ((Ve != 0))
+   {
+    this.setJsHandler(Ve);
+   }
+   }
+  }
+ }
+ else
+ {
+  this.setJsHandler(AeventType);
+ }
+}
+function YK1u(AeventType) { // MBaseModule__CWidget.setJsHandler
+ if ((this.VhasJsHandler == null))
+ {
+  this.VhasJsHandler = Yt1A(null);
+ }
+ if (!(this.VhasJsHandler.has(AeventType)))
+ {
+  this.VhasJsHandler.add(AeventType);
+  var Vwg = this;
+        var f = function(e) { Yh_a(Vwg, AeventType, e); };
+  switch (AeventType)
+  {
+  case 1:
+   {
+             this.Velem.onclick = f;
+     break;
+   }
+  case 2:
+   {
+             this.Velem.onmouseover = f;
+     break;
+   }
+  case 3:
+   {
+             this.Velem.onmouseout = f;
+     break;
+   }
+  case 4:
+   {
+             this.Velem.onkeypress = f;
+     break;
+   }
+  case 5:
+   {
+             this.Velem.onkeydown = f;
+     break;
+   }
+  case 6:
+   {
+             this.Velem.onkeyup = f;
+     break;
+   }
+  case 7:
+   {
+             this.Velem.onchange = f;
+     break;
+   }
+  }
+ }
+}
+function YcEP(AeventType) { // MBaseModule__CWidget.removeJsHandler
+ if ((this.VhasJsHandler == null))
+ {
+  return;
+ }
+ if (this.VhasJsHandler.has(AeventType))
+ {
+  this.VhasJsHandler.remove(AeventType);
+  switch (AeventType)
+  {
+  case 1:
+   {
+             this.Velem.onclick = null;
+     break;
+   }
+  case 2:
+   {
+             this.Velem.onmouseover = null;
+     break;
+   }
+  case 3:
+   {
+             this.Velem.onmouseout = null;
+     break;
+   }
+  case 4:
+   {
+             this.Velem.onkeypress = null;
+     break;
+   }
+  case 5:
+   {
+             this.Velem.onkeydown = null;
+     break;
+   }
+  case 6:
+   {
+             this.Velem.onkeyup = null;
+     break;
+   }
+  case 7:
+   {
+             this.Velem.onchange = null;
+     break;
+   }
+  }
+ }
+}
+function YRwQ(Ahandler) { // MBaseModule__CWidget.setClickHandler
+ this.setHandler(1, Ahandler);
+}
+function Yh_a(Aw, AeventType, Ajse) { // MBaseModule__CWidget__X.eventHandler
+ var Vze = YyE0(null, Aw, AeventType);
+        Vze.VjsEvent = Ajse || window.event;
+ if (Aw.Vhandlers.has(0))
+ {
+  {
+   var Vh;
+   var Zf2 = ZforListNew(Aw.Vhandlers.get(0));
+for (Vh = ZforListGet(Zf2); ZforListCont(Zf2); Vh = ZforListNext(Zf2)) {
+   (Vh)(Vze);
+   }
+  }
+ }
+ if (Aw.Vhandlers.has(AeventType))
+ {
+  {
+   var Vh1;
+   var Zf21 = ZforListNew(Aw.Vhandlers.get(AeventType));
+for (Vh1 = ZforListGet(Zf21); ZforListCont(Zf21); Vh1 = ZforListNext(Zf21)) {
+   (Vh1)(Vze);
+   }
+  }
+ }
+}
+// including AlertModule bodies
+function YaHg(thisO) { // MAlertModule__CAlert.Init
+ if (!thisO) thisO = new Yx9g();
+ thisO.Vactive = 1;
+      thisO.Velem = $doc.createElement('div');
+ return thisO;
+}
+function YKpA(thisO, Aseverity, Atext) { // MAlertModule__CAlert.NEW
+ if (!thisO) thisO = YaHg(null);
+ thisO.setSeverity(Aseverity);
+ thisO.setText(Atext);
+ return thisO;
+}
+function Yo0d(Aseverity) { // MAlertModule__CAlert.setSeverity
+ this.Vseverity = Aseverity;
+ this.applyStyle();
+}
+function Y0sW(Atext) { // MAlertModule__CAlert.setText
+ this.ValertText = Atext;
+      this.Velem.textContent = Atext;
+}
+function Y96W() { // MAlertModule__CAlert.applyStyle
+ var Vs = YH8J(null);
+ Vs.setPadding(8);
+ Vs.setValue("border-radius", "4px");
+ switch (this.Vseverity)
+ {
+ case 0:
+  {
+   Vs.setBGColorName(3);
+    break;
+  }
+ case 1:
+  {
+   Vs.setBGColorName(6);
+    break;
+  }
+ case 2:
+  {
+   Vs.setBGColorName(17);
+    break;
+  }
+ case 3:
+  {
+   Vs.setBGColorName(13);
+    break;
+  }
+ }
+ this.setStyle(Vs);
+}
+// including BadgeModule bodies
+function YfQa(thisO) { // MBadgeModule__CBadge.Init
+ if (!thisO) thisO = new YO7C();
+ thisO.Vactive = 1;
+      thisO.Velem = $doc.createElement('span');
+ return thisO;
+}
+function YnKg(thisO, Atext) { // MBadgeModule__CBadge.NEW
+ if (!thisO) thisO = YfQa(null);
+ thisO.VtextColor = 0;
+ thisO.VbgColor = 0;
+ thisO.setText(Atext);
+ return thisO;
+}
+function YiiT(Atext) { // MBadgeModule__CBadge.setText
+      this.Velem.textContent = Atext;
+}
+function YshI(AcolorName) { // MBadgeModule__CBadge.setColorName
+ this.VtextColor = AcolorName;
+ this.applyStyle();
+}
+function YDtF(AcolorName) { // MBadgeModule__CBadge.setBGColorName
+ this.VbgColor = AcolorName;
+ this.applyStyle();
+}
+function YazX() { // MBadgeModule__CBadge.applyStyle
+ var Vs = YH8J(null);
+ if ((this.VtextColor != 0))
+ {
+  Vs.setColorName(this.VtextColor);
+ }
+ if ((this.VbgColor != 0))
+ {
+  Vs.setBGColorName(this.VbgColor);
+ }
+ this.setStyle(Vs);
+}
+// including ButtonModule bodies
+function YUJo(thisO, Atext, AclickHandler) { // MButtonModule__CButton.NEW
+ if (!thisO) thisO = YN0Oa(null);
+ thisO.VbuttonText = Atext;
+      thisO.Velem = $doc.createElement('button');
+      thisO.Velem.innerHTML = Atext;
+      thisO.Velem.style.whiteSpace = 'nowrap';
+ thisO.setClickHandler(AclickHandler);
+ return thisO;
+}
+function YN0Oa(thisO) { // MButtonModule__CButton.Init
+ if (!thisO) thisO = new YN0O();
+ thisO.Vactive = 1;
+ return thisO;
+}
+// including CodeModule bodies
+// including DialogModule bodies
+function YslR(thisO) { // MDialogModule__CNoButtonDialog.Init
+ if (!thisO) thisO = new Y1gh();
+ thisO.Vactive = 1;
+ thisO.Vhighlighted = -1;
+ thisO.Vhighlights = Yh95(null);
+ thisO.Vx = -1;
+ thisO.Vy = -1;
+      thisO.Velem = $doc.createElement('div');
+      thisO.Velem.style.position = 'absolute';
+ var Vstyle = YH8J(null).setBGColorName(16).setBorder(2, 1, YfEv(null, 5));
+ thisO.setStyle(Vstyle);
+ thisO.Vtable = YjIc(null);
+ thisO.Vtable.setStyle(YH8J(null).setFullWidth().setFullHeight());
+ thisO.Vtable.setCellStyle(0, 0, YH8J(null).setFullHeight().setHorAlign(2).setPadding(10));
+ thisO.add(thisO.Vtable);
+ return thisO;
+}
+function Y0ou() { // MDialogModule__CNoButtonDialog.close
+ this.hide();
+ this.Vbackground.hide();
+}
+function YzuP() { // MDialogModule__CSimpleDialog.getButtons
+ var Vbuttons = [];
+ ZLa(Vbuttons, -1, YUJo(null, "OK", Zbind(Y7ly, this)));
+ return Vbuttons;
+}
+function YWCu(thisO) { // MDialogModule__CSimpleDialog.Init
+ if (!thisO) thisO = new Yjma();
+ thisO.Vactive = 1;
+ thisO.Vhighlighted = -1;
+ thisO.Vhighlights = Yh95(null);
+ thisO.Vx = -1;
+ thisO.Vy = -1;
+      thisO.Velem = $doc.createElement('div');
+      thisO.Velem.style.position = 'absolute';
+ var Vstyle = YH8J(null).setBGColorName(16).setBorder(2, 1, YfEv(null, 5));
+ thisO.setStyle(Vstyle);
+ thisO.Vtable = YjIc(null);
+ thisO.Vtable.setStyle(YH8J(null).setFullWidth().setFullHeight());
+ thisO.Vtable.setCellStyle(0, 0, YH8J(null).setFullHeight().setHorAlign(2).setPadding(10));
+ thisO.add(thisO.Vtable);
+ thisO.Vbuttons = thisO.getButtons();
+ var VbuttonPanel = Y7Mca(null);
+ {
+  var Vbutton;
+  var Zf1 = ZforListNew(thisO.Vbuttons);
+for (Vbutton = ZforListGet(Zf1); ZforListCont(Zf1); Vbutton = ZforListNext(Zf1)) {
+  VbuttonPanel.add(Vbutton);
+  }
+ }
+ VbuttonPanel.setStyle(YH8J(null).setMarginBottom(10).setHorAlign(2));
+ thisO.Vtable.setWidget(1, 0, VbuttonPanel);
+ thisO.Vtable.setCellStyle(1, 0, YH8J(null).setFullWidth());
+ return thisO;
+}
+function Y7ly(Ae) { // MDialogModule__CSimpleDialog.handleOk
+ this.close();
+ if ((this.Vhandler != null))
+ {
+  (this.Vhandler)(1);
+ }
+}
+function Y4Mpa() { // MDialogModule__COkCancelDialog.getButtons
+ var Vbuttons = [];
+ var Vok = YUJo(null, "OK", Zbind(Y7ly, this));
+ var Vstyle = YH8J(null).setMarginLeft(20).setMarginRight(20);
+ Vok.setStyle(Vstyle);
+ ZLa(Vbuttons, -1, Vok);
+ var Vcancel = YUJo(null, "Cancel", Zbind(Yir6, this));
+ Vcancel.setStyle(Vstyle);
+ ZLa(Vbuttons, -1, Vcancel);
+ return Vbuttons;
+}
+function Yir6(Ae) { // MDialogModule__COkCancelDialog.handleCancel
+ this.close();
+ if ((this.Vhandler != null))
+ {
+  (this.Vhandler)(0);
+ }
+}
+function YILpa(thisO) { // MDialogModule__COkCancelDialog.Init
+ if (!thisO) thisO = new YILp();
+ thisO.Vactive = 1;
+ thisO.Vhighlighted = -1;
+ thisO.Vhighlights = Yh95(null);
+ thisO.Vx = -1;
+ thisO.Vy = -1;
+      thisO.Velem = $doc.createElement('div');
+      thisO.Velem.style.position = 'absolute';
+ var Vstyle = YH8J(null).setBGColorName(16).setBorder(2, 1, YfEv(null, 5));
+ thisO.setStyle(Vstyle);
+ thisO.Vtable = YjIc(null);
+ thisO.Vtable.setStyle(YH8J(null).setFullWidth().setFullHeight());
+ thisO.Vtable.setCellStyle(0, 0, YH8J(null).setFullHeight().setHorAlign(2).setPadding(10));
+ thisO.add(thisO.Vtable);
+ thisO.Vbuttons = thisO.getButtons();
+ var VbuttonPanel = Y7Mca(null);
+ {
+  var Vbutton;
+  var Zf1 = ZforListNew(thisO.Vbuttons);
+for (Vbutton = ZforListGet(Zf1); ZforListCont(Zf1); Vbutton = ZforListNext(Zf1)) {
+  VbuttonPanel.add(Vbutton);
+  }
+ }
+ VbuttonPanel.setStyle(YH8J(null).setMarginBottom(10).setHorAlign(2));
+ thisO.Vtable.setWidget(1, 0, VbuttonPanel);
+ thisO.Vtable.setCellStyle(1, 0, YH8J(null).setFullWidth());
+ return thisO;
+}
+// including DropdownModule bodies
+// including DividerModule bodies
+function YmHV(thisO) { // MDividerModule__CDivider.Init
+ if (!thisO) thisO = new YMdp();
+ thisO.Vactive = 1;
+      thisO.Velem = $doc.createElement('hr');
+ return thisO;
+}
+function YEqv(thisO) { // MDividerModule__CDivider.NEW
+ if (!thisO) thisO = YmHV(null);
+ thisO.setVertical(0);
+ return thisO;
+}
+function YC1k(Avertical) { // MDividerModule__CDivider.setVertical
+ this.Vvertical = Avertical;
+      if (Avertical) {
+        this.Velem.style.width = '1px';
+        this.Velem.style.height = '100%';
+        this.Velem.style.borderWidth = '0';
+        this.Velem.style.borderLeftWidth = '1px';
+        this.Velem.style.borderLeftStyle = 'solid';
+        this.Velem.style.margin = '0 4px';
+        this.Velem.style.display = 'inline-block';
+        this.Velem.style.verticalAlign = 'middle';
+      }
+}
+function YMdp__Y2AK(thisO) { // MDividerModule__CDivider.NEW__p1
+ if (!thisO) thisO = YmHV(null);
+ return thisO;
+}
+// including EventModule bodies
+function YyE0(thisO, Awidget, Atype) { // MEventModule__CEvent.NEW
+ if (!thisO) thisO = new YZDx();
+ thisO.Vwidget = Awidget;
+ thisO.Vtype = Atype;
+ return thisO;
+}
+// including InputModule bodies
+// including FileInputModule bodies
+function YACv(thisO) { // MFileInputModule__CFileInput.Init
+ if (!thisO) thisO = new Ysxu();
+ thisO.Vactive = 1;
+      thisO.Velem = $doc.createElement('input');
+      thisO.Velem.type = 'file';
+ return thisO;
+}
+function YXrg(thisO) { // MFileInputModule__CFileInput.NEW
+ if (!thisO) thisO = YACv(null);
+ return thisO;
+}
+function YNZ8(Aaccept) { // MFileInputModule__CFileInput.setAccept
+      this.Velem.accept = Aaccept;
+}
+function Ys1Y(Amultiple) { // MFileInputModule__CFileInput.setMultiple
+      this.Velem.multiple = Amultiple;
+}
+function Ysxu__Y2AK(thisO) { // MFileInputModule__CFileInput.NEW__p1
+ if (!thisO) thisO = YACv(null);
+ return thisO;
+}
+// including ImageModule bodies
+function YvCg(thisO) { // MImageModule__CImage.Init
+ if (!thisO) thisO = new YD6n();
+ thisO.Vactive = 1;
+      thisO.Velem = $doc.createElement('img');
+ return thisO;
+}
+function Y88k(thisO, Asrc, Aalt) { // MImageModule__CImage.NEW
+ if (!thisO) thisO = YvCg(null);
+ thisO.setSrc(Asrc);
+ thisO.setAlt(Aalt);
+ return thisO;
+}
+function Yrbg(Asrc) { // MImageModule__CImage.setSrc
+ this.Vsrc = Asrc;
+      this.Velem.src = Asrc;
+}
+function YmB_(Aalt) { // MImageModule__CImage.setAlt
+ this.ValtText = Aalt;
+      this.Velem.alt = Aalt;
+}
+// including ProgressBarModule bodies
+function Yz9y(thisO) { // MProgressBarModule__CProgressBar.Init
+ if (!thisO) thisO = new Y6SE();
+ thisO.Vactive = 1;
+      thisO.Velem = $doc.createElement('progress');
+ return thisO;
+}
+function Ymww(thisO, Avalue, Amax) { // MProgressBarModule__CProgressBar.NEW
+ if (!thisO) thisO = Yz9y(null);
+ thisO.setMax(Amax);
+ thisO.setValue(Avalue);
+ return thisO;
+}
+function Yv4h(Amax) { // MProgressBarModule__CProgressBar.setMax
+      this.Velem.max = Amax;
+}
+function YBj1(Avalue) { // MProgressBarModule__CProgressBar.setValue
+      this.Velem.value = Avalue;
+}
+// including RadioModule bodies
+function YR_U(thisO) { // MRadioModule__CRadio.Init
+ if (!thisO) thisO = new Y3HP();
+ thisO.Vactive = 1;
+      thisO.Velem = $doc.createElement('input');
+      thisO.Velem.type = 'radio';
+ return thisO;
+}
+function Y4qea(thisO, Achecked) { // MRadioModule__CRadio.NEW
+ if (!thisO) thisO = YR_U(null);
+ thisO.setChecked(Achecked);
+ return thisO;
+}
+function YiI3(Aname) { // MRadioModule__CRadio.setName
+      this.Velem.name = Aname;
+}
+function YlQH(Achecked) { // MRadioModule__CRadio.setChecked
+      this.Velem.checked = Achecked;
+}
+// including SliderModule bodies
+function Ydw_(thisO) { // MSliderModule__CSlider.Init
+ if (!thisO) thisO = new Y7bt();
+ thisO.Vactive = 1;
+      thisO.Velem = $doc.createElement('input');
+      thisO.Velem.type = 'range';
+ return thisO;
+}
+function YeEL(thisO, Amin, Amax, Avalue) { // MSliderModule__CSlider.NEW
+ if (!thisO) thisO = Ydw_(null);
+ thisO.setMin(Amin);
+ thisO.setMax(Amax);
+ thisO.setValue(Avalue);
+ return thisO;
+}
+function YLhg(Amin) { // MSliderModule__CSlider.setMin
+      this.Velem.min = Amin;
+}
+function Y54f(Amax) { // MSliderModule__CSlider.setMax
+      this.Velem.max = Amax;
+}
+function Ye1O(Astep) { // MSliderModule__CSlider.setStep
+      this.Velem.step = Astep;
+}
+function Y6W0(Avalue) { // MSliderModule__CSlider.setValue
+      this.Velem.value = Avalue;
+}
+// including SpinnerModule bodies
+function YSDG(thisO) { // MSpinnerModule__CSpinner.Init
+ if (!thisO) thisO = new Yy7_();
+ thisO.Vactive = 1;
+      thisO.Velem = $doc.createElement('div');
+      if (!$wnd.__zwt_spinner_css) {
+        $wnd.__zwt_spinner_css = true;
+        if ($doc.styleSheets[$sheetIndex].title != 'zwt') {
+          $findSheetIndex();
+        }
+        var sh = $doc.styleSheets[$sheetIndex];
+        var n = sh.cssRules ? sh.cssRules.length : sh.rules.length;
+        sh.insertRule('@keyframes zwtSpin { to { transform: rotate(360deg); } }', n);
+      }
+ return thisO;
+}
+function YiG1(thisO) { // MSpinnerModule__CSpinner.NEW
+ if (!thisO) thisO = YSDG(null);
+ thisO.setSize(24);
+ return thisO;
+}
+function YqFz(Asize) { // MSpinnerModule__CSpinner.setSize
+ this.Vsize = Asize;
+      this.Velem.style.display = 'inline-block';
+      this.Velem.style.boxSizing = 'border-box';
+      this.Velem.style.width = Asize + 'px';
+      this.Velem.style.height = Asize + 'px';
+      this.Velem.style.borderWidth = Math.max(2, Math.round(Asize / 6)) + 'px';
+      this.Velem.style.borderStyle = 'solid';
+      this.Velem.style.borderColor = '#ccc';
+      this.Velem.style.borderTopColor = '#666';
+      this.Velem.style.borderRadius = '50%';
+      this.Velem.style.animation = 'zwtSpin 0.8s linear infinite';
+}
+function Yy7___Y2AK(thisO) { // MSpinnerModule__CSpinner.NEW__p1
+ if (!thisO) thisO = YSDG(null);
+ return thisO;
+}
+// including SwitchModule bodies
+function YB37(thisO) { // MSwitchModule__CSwitch.Init
+ if (!thisO) thisO = new YeEY();
+ thisO.Vactive = 1;
+      thisO.Velem = $doc.createElement('input');
+      thisO.Velem.type = 'checkbox';
+ return thisO;
+}
+function YDRf(thisO, Achecked, AchangeHandler) { // MSwitchModule__CSwitch.NEW
+ if (!thisO) thisO = YB37(null);
+ thisO.setChecked(Achecked);
+ if ((AchangeHandler != null))
+ {
+  thisO.setHandler(7, AchangeHandler);
+ }
+ return thisO;
+}
+function YHDb(Achecked) { // MSwitchModule__CSwitch.setChecked
+      this.Velem.checked = Achecked;
+}
+// including AccordionModule bodies
+function Yi2f(thisO) { // MAccordionModule__CAccordion.Init
+ if (!thisO) thisO = new YDzh();
+ thisO.Vactive = 1;
+ thisO.Vhighlighted = -1;
+ thisO.Vhighlights = Yh95(null);
+      thisO.Velem = $doc.createElement('div');
+      thisO.Velem.style.border = '1px solid #ddd';
+      thisO.Velem.style.borderRadius = '4px';
+      thisO.Velem.style.overflow = 'hidden';
+ return thisO;
+}
+function YMPE(thisO) { // MAccordionModule__CAccordion.NEW
+ if (!thisO) thisO = Yi2f(null);
+ thisO.Vsections = 0;
+ return thisO;
+}
+function YPsx(Atitle, Awidget) { // MAccordionModule__CAccordion.addSection
+ this.addItem(Awidget);
+      var head = $doc.createElement('div');
+      head.textContent = Atitle;
+      head.style.padding = '8px 12px';
+      head.style.backgroundColor = '#f5f5f5';
+      head.style.cursor = 'pointer';
+      head.style.fontWeight = 'bold';
+      head.style.borderTop = this.Vsections > 0 ? '1px solid #ddd' : 'none';
+      var body = $doc.createElement('div');
+      body.style.padding = '8px 12px';
+      body.style.backgroundColor = '#ffffff';
+      body.style.display = this.Vsections == 0 ? '' : 'none';
+      body.appendChild(Awidget.Velem);
+      head.onclick = function() {
+        body.style.display = body.style.display == 'none' ? '' : 'none';
+      };
+      this.Velem.appendChild(head);
+      this.Velem.appendChild(body);
+ this.Vsections += 1;
+ return this;
+}
+function YDzh__Ydzz(thisO) { // MAccordionModule__CAccordion.NEW__p1
+ if (!thisO) thisO = Yi2f(null);
+ return thisO;
+}
+function YDzh__YVvX__Y2AK(thisO) { // MAccordionModule__CAccordion.NEW__p2
+ if (!thisO) thisO = Yi2f(null);
+ return thisO;
+}
+// including BreadcrumbModule bodies
+function YL7O(thisO) { // MBreadcrumbModule__CBreadcrumb.Init
+ if (!thisO) thisO = new YznC();
+ thisO.Vactive = 1;
+ thisO.Vhighlighted = -1;
+ thisO.Vhighlights = Yh95(null);
+      thisO.Velem = $doc.createElement('div');
+      thisO.Velem.style.display = 'flex';
+      thisO.Velem.style.alignItems = 'center';
+ return thisO;
+}
+function YRMw(thisO) { // MBreadcrumbModule__CBreadcrumb.NEW
+ if (!thisO) thisO = YL7O(null);
+ thisO.Vcount = 0;
+ return thisO;
+}
+function YpTM(Alabel, AclickHandler) { // MBreadcrumbModule__CBreadcrumb.addItem
+ if ((this.Vcount > 0))
+ {
+        var sep = $doc.createElement('span');
+        sep.textContent = '/';
+        sep.style.margin = '0 6px';
+        sep.style.color = '#999';
+        this.Velem.appendChild(sep);
+ }
+ var Vitem = Yjd7(null, Alabel);
+ this.addItem(Vitem);
+ if ((AclickHandler != null))
+ {
+  Vitem.setClickHandler(AclickHandler);
+ }
+      Vitem.Velem.style.cursor = 'pointer';
+      Vitem.Velem.style.color = '#0066cc';
+      Vitem.Velem.style.textDecoration = 'none';
+      if (this.Vcount == 0) {
+        Vitem.Velem.style.fontWeight = 'bold';
+        Vitem.Velem.style.color = '#333';
+        Vitem.Velem.style.cursor = 'default';
+      }
+      this.Velem.appendChild(Vitem.Velem);
+ this.Vcount += 1;
+ return this;
+}
+function YznC__Ydzz(thisO) { // MBreadcrumbModule__CBreadcrumb.NEW__p1
+ if (!thisO) thisO = YL7O(null);
+ return thisO;
+}
+function YznC__YVvX__Y2AK(thisO) { // MBreadcrumbModule__CBreadcrumb.NEW__p2
+ if (!thisO) thisO = YL7O(null);
+ return thisO;
+}
+// including CardModule bodies
+function YQbV(thisO) { // MCardModule__CCard.Init
+ if (!thisO) thisO = new YiDQ();
+ thisO.Vactive = 1;
+ thisO.Vhighlighted = -1;
+ thisO.Vhighlights = Yh95(null);
+      thisO.Velem = $doc.createElement('div');
+      thisO.Velem.style.border = '1px solid #ddd';
+      thisO.Velem.style.borderRadius = '4px';
+      thisO.Velem.style.boxShadow = '0 2px 4px rgba(0,0,0,0.08)';
+      thisO.Velem.style.backgroundColor = '#ffffff';
+      thisO.Velem.style.margin = '4px 0';
+      thisO.Vheader = $doc.createElement('div');
+      thisO.Vheader.style.padding = '8px 12px';
+      thisO.Vheader.style.borderBottom = '1px solid #eee';
+      thisO.Vheader.style.fontWeight = 'bold';
+      thisO.Vheader.style.display = 'none';
+      thisO.Vbody = $doc.createElement('div');
+      thisO.Vbody.style.padding = '12px';
+      thisO.Vfooter = $doc.createElement('div');
+      thisO.Vfooter.style.padding = '8px 12px';
+      thisO.Vfooter.style.borderTop = '1px solid #eee';
+      thisO.Vfooter.style.display = 'none';
+      thisO.Velem.appendChild(thisO.Vheader);
+      thisO.Velem.appendChild(thisO.Vbody);
+      thisO.Velem.appendChild(thisO.Vfooter);
+ return thisO;
+}
+function YVM5(thisO) { // MCardModule__CCard.NEW
+ if (!thisO) thisO = YQbV(null);
+ return thisO;
+}
+function Yw9i(Awidget) { // MCardModule__CCard.add
+ this.addItem(Awidget);
+      this.Vbody.appendChild(Awidget.Velem);
+}
+function Y3gY(Atext) { // MCardModule__CCard.setHeaderText
+      this.Vheader.textContent = Atext;
+      this.Vheader.style.display = Atext.length > 0 ? '' : 'none';
+}
+function Y_Ro(Atext) { // MCardModule__CCard.setFooterText
+      this.Vfooter.textContent = Atext;
+      this.Vfooter.style.display = Atext.length > 0 ? '' : 'none';
+}
+function YiDQ__Ydzz(thisO) { // MCardModule__CCard.NEW__p1
+ if (!thisO) thisO = YQbV(null);
+ return thisO;
+}
+function YiDQ__YVvX__Y2AK(thisO) { // MCardModule__CCard.NEW__p2
+ if (!thisO) thisO = YQbV(null);
+ return thisO;
+}
+// including PaginationModule bodies
+function Yt1p(thisO) { // MPaginationModule__CPagination.Init
+ if (!thisO) thisO = new Yxcy();
+ thisO.Vactive = 1;
+ thisO.Vhighlighted = -1;
+ thisO.Vhighlights = Yh95(null);
+      thisO.Velem = $doc.createElement('div');
+      thisO.Velem.style.display = 'flex';
+      thisO.Velem.style.gap = '2px';
+      thisO.Velem.zwtButtons = [];
+ return thisO;
+}
+function Yipt(thisO, AcurrentPage, AtotalPages) { // MPaginationModule__CPagination.NEW
+ if (!thisO) thisO = Yt1p(null);
+ thisO.Vcurrent = AcurrentPage;
+ thisO.Vtotal = AtotalPages;
+ thisO.build();
+ return thisO;
+}
+function YXl9() { // MPaginationModule__CPagination.build
+      var root = this.Velem;
+      while (root.firstChild) { root.removeChild(root.firstChild); }
+      root.zwtButtons = [];
+      var total = this.Vtotal;
+      var current = this.Vcurrent;
+      function select(btn) {
+        for (var i = 0; i < root.zwtButtons.length; ++i) {
+          root.zwtButtons[i].style.fontWeight = 'normal';
+          root.zwtButtons[i].style.backgroundColor = '#ffffff';
+        }
+        btn.style.fontWeight = 'bold';
+        btn.style.backgroundColor = '#e0e0e0';
+      }
+      function mk(label, page, disabled) {
+        var b = $doc.createElement('button');
+        b.type = 'button';
+        b.textContent = label;
+        b.style.padding = '4px 10px';
+        b.style.border = '1px solid #ccc';
+        b.style.backgroundColor = '#ffffff';
+        b.style.cursor = 'pointer';
+        if (disabled) {
+          b.disabled = true;
+          b.style.opacity = '0.5';
+          b.style.cursor = 'default';
+        } else {
+          b.onclick = function() { select(b); root.zwtCurrent = page; };
+        }
+        root.zwtButtons.push(b);
+        root.appendChild(b);
+        return b;
+      }
+      mk('<', current - 1, current <= 1);
+      for (var p = 1; p <= total; ++p) {
+        var b = mk(String(p), p, false);
+        if (p == current) { select(b); }
+      }
+      mk('>', current + 1, current >= total);
+}
+// including TabsModule bodies
+function YzId(thisO) { // MTabsModule__CTabs.Init
+ if (!thisO) thisO = new YKtT();
+ thisO.Vactive = 1;
+ thisO.Vhighlighted = -1;
+ thisO.Vhighlights = Yh95(null);
+      thisO.Velem = $doc.createElement('div');
+      thisO.Velem.zwtTabBar = $doc.createElement('div');
+      thisO.Velem.zwtButtons = [];
+      thisO.Velem.zwtPanels = [];
+      thisO.Velem.zwtTabBar.style.marginBottom = '4px';
+      thisO.Velem.appendChild(thisO.Velem.zwtTabBar);
+ return thisO;
+}
+function YfQ7(thisO) { // MTabsModule__CTabs.NEW
+ if (!thisO) thisO = YzId(null);
+ return thisO;
+}
+function YYDO(Atitle, Awidget) { // MTabsModule__CTabs.addTab
+ this.addItem(Awidget);
+      var btn = $doc.createElement('button');
+      btn.type = 'button';
+      btn.textContent = Atitle;
+      btn.style.padding = '6px 12px';
+      btn.style.marginRight = '2px';
+      btn.style.cursor = 'pointer';
+      var panel = $doc.createElement('div');
+      panel.style.padding = '8px';
+      panel.style.display = 'none';
+      panel.appendChild(Awidget.Velem);
+      btn.onclick = (function(root, b, p) {
+        return function() {
+          for (var i = 0; i < root.zwtButtons.length; ++i) {
+            root.zwtButtons[i].style.fontWeight = 'normal';
+            root.zwtPanels[i].style.display = 'none';
+          }
+          b.style.fontWeight = 'bold';
+          p.style.display = '';
+        };
+      })(this.Velem, btn, panel);
+      this.Velem.zwtButtons.push(btn);
+      this.Velem.zwtPanels.push(panel);
+      this.Velem.zwtTabBar.appendChild(btn);
+      this.Velem.appendChild(panel);
+      if (this.Velem.zwtButtons.length == 1) {
+        btn.style.fontWeight = 'bold';
+        panel.style.display = '';
+      }
+ return this;
+}
+function YKtT__Ydzz(thisO) { // MTabsModule__CTabs.NEW__p1
+ if (!thisO) thisO = YzId(null);
+ return thisO;
+}
+function YKtT__YVvX__Y2AK(thisO) { // MTabsModule__CTabs.NEW__p2
+ if (!thisO) thisO = YzId(null);
+ return thisO;
+}
+// including SkeletonModule bodies
+function YX1Y(thisO) { // MSkeletonModule__CSkeleton.Init
+ if (!thisO) thisO = new Y7cP();
+ thisO.Vactive = 1;
+      thisO.Velem = $doc.createElement('div');
+      thisO.Velem.style.display = 'inline-block';
+      thisO.Velem.style.borderRadius = '4px';
+      thisO.Velem.style.backgroundColor = '#e0e0e0';
+      thisO.Velem.style.backgroundImage = 'linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%)';
+      thisO.Velem.style.backgroundSize = '200px 100%';
+      thisO.Velem.style.backgroundRepeat = 'no-repeat';
+      thisO.Velem.style.animation = 'zwtShimmer 1.4s ease infinite';
+      if (!$wnd.__zwt_skeleton_css) {
+        $wnd.__zwt_skeleton_css = true;
+        if ($doc.styleSheets[$sheetIndex].title != 'zwt') { $findSheetIndex(); }
+        var sh = $doc.styleSheets[$sheetIndex];
+        var n = sh.cssRules ? sh.cssRules.length : sh.rules.length;
+        sh.insertRule('@keyframes zwtShimmer { 0% { background-position: -200px 0; } 100% { background-position: 200px 0; } }', n);
+      }
+ return thisO;
+}
+function YiwN(thisO) { // MSkeletonModule__CSkeleton.NEW
+ if (!thisO) thisO = YX1Y(null);
+ thisO.setSize(120, 16);
+ return thisO;
+}
+function YXK_(Awidth, Aheight) { // MSkeletonModule__CSkeleton.setSize
+      this.Velem.style.width = Awidth + 'px';
+      this.Velem.style.height = Aheight + 'px';
+}
+function Y7cP__Y2AK(thisO) { // MSkeletonModule__CSkeleton.NEW__p1
+ if (!thisO) thisO = YX1Y(null);
+ return thisO;
+}
+// including ToastModule bodies
+function YMAz(thisO) { // MToastModule__CToast.Init
+ if (!thisO) thisO = new YWuK();
+ thisO.Vactive = 1;
+      thisO.Velem = $doc.createElement('div');
+      thisO.Velem.style.position = 'fixed';
+      thisO.Velem.style.top = '16px';
+      thisO.Velem.style.right = '16px';
+      thisO.Velem.style.zIndex = '2000';
+      thisO.Velem.style.display = 'flex';
+      thisO.Velem.style.flexDirection = 'column';
+      thisO.Velem.style.gap = '8px';
+ return thisO;
+}
+function YyUe(thisO) { // MToastModule__CToast.NEW
+ if (!thisO) thisO = YMAz(null);
+ return thisO;
+}
+function YicL(Amessage) { // MToastModule__CToast.show
+      var t = $doc.createElement('div');
+      t.textContent = Amessage;
+      t.style.backgroundColor = '#333333';
+      t.style.color = '#ffffff';
+      t.style.padding = '10px 16px';
+      t.style.borderRadius = '4px';
+      t.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
+      t.style.minWidth = '180px';
+      t.style.opacity = '1';
+      t.style.transition = 'opacity 0.4s ease';
+      this.Velem.appendChild(t);
+      $wnd.setTimeout(function() {
+        t.style.opacity = '0';
+        $wnd.setTimeout(function() {
+          if (t.parentNode) { t.parentNode.removeChild(t); }
+        }, 400);
+      }, 2500);
+ return this;
+}
+function YWuK__Y2AK(thisO) { // MToastModule__CToast.NEW__p1
+ if (!thisO) thisO = YMAz(null);
+ return thisO;
+}
+// including TooltipModule bodies
+function YldA(thisO) { // MTooltipModule__CTooltip.Init
+ if (!thisO) thisO = new Y7ns();
+ thisO.Vactive = 1;
+ thisO.Vhighlighted = -1;
+ thisO.Vhighlights = Yh95(null);
+ thisO.Vx = -1;
+ thisO.Vy = -1;
+      thisO.Velem = $doc.createElement('div');
+      thisO.Velem.style.position = 'absolute';
+ var Vstyle = YH8J(null).setBGColorName(16).setBorder(2, 1, YfEv(null, 5));
+ thisO.setStyle(Vstyle);
+      thisO.Velem = $doc.createElement('div');
+      thisO.Velem.style.position = 'absolute';
+      thisO.Velem.style.padding = '4px 8px';
+      thisO.Velem.style.fontSize = '12px';
+      thisO.Velem.style.maxWidth = '240px';
+      thisO.Velem.style.backgroundColor = '#333333';
+      thisO.Velem.style.color = '#ffffff';
+      thisO.Velem.style.borderRadius = '3px';
+      thisO.Velem.style.zIndex = '1000';
+      thisO.Velem.style.display = 'none';
+      thisO.Velem.style.pointerEvents = 'none';
+      $doc.body.appendChild(thisO.Velem);
+ return thisO;
+}
+function YLj2(thisO, Atext) { // MTooltipModule__CTooltip.NEW
+ if (!thisO) thisO = YldA(null);
+      thisO.Velem.textContent = Atext;
+ return thisO;
+}
+function YSun(Ahost) { // MTooltipModule__CTooltip.attachTo
+      var tip = this.Velem;
+      var hostEl = Ahost.Velem;
+      hostEl.onmouseover = function() {
+        tip.style.display = '';
+        tip.style.left = hostEl.offsetLeft + 'px';
+        tip.style.top = (hostEl.offsetTop + hostEl.offsetHeight + 4) + 'px';
+      };
+      hostEl.onmouseout = function() {
+        tip.style.display = 'none';
+      };
+ return this;
+}
+// including LabelModule bodies
+function YL0R(thisO) { // MLabelModule__CLabel.Init
+ if (!thisO) thisO = new YtSx();
+ thisO.Vactive = 1;
+      thisO.Velem = $doc.createElement('span');
+ return thisO;
+}
+function Yjd7(thisO, Atext) { // MLabelModule__CLabel.NEW
+ if (!thisO) thisO = YL0R(null);
+ thisO.setText(Atext);
+ return thisO;
+}
+function YnYb(Atext) { // MLabelModule__CLabel.setText
+ if ((Atext != this.VlabelText))
+ {
+  this.VlabelText = Atext;
+  if (typeof(this.Velem.textContent) != "undefined") {
+    this.Velem.textContent = Atext;
+  } else {
+    this.Velem.innerText = Atext;
+  }
+ }
+}
+// including MenuModule bodies
+// including PanelModule bodies
+function YCbm(Awidget) { // MPanelModule__CPanel.add
+ this.addItem(Awidget);
+      this.Velem.appendChild(Awidget.Velem);
+}
+function Y3xR(Awidget) { // MPanelModule__CPanel.addItem
+ if ((this.Vitems == null))
+ {
+  this.Vitems = [];
+ }
+ ZLa(this.Vitems, -1, Awidget);
+ Awidget.Vparent = this;
+}
+function Yx9a(Awidget) { // MPanelModule__CPanel.remove
+ {
+  var Vi;
+  var Zf1 = ZforRangeNew(0, this.Vitems.length, 1, 1);
+for (Vi = ZforRangeGet(Zf1); ZforRangeCont(Zf1); Vi = ZforRangeNext(Zf1)) {
+  if ((ZListGet(this.Vitems, Vi) == Awidget))
+  {
+   this.remove__1(Vi);
+   break;
+  }
+  }
+ }
+}
+function Yx9aa(Aindex) { // MPanelModule__CPanel.remove
+ if (((Aindex >= 0) && (Aindex < this.Vitems.length)))
+ {
+  var Vwidget = ZListPopItem(this.Vitems, Aindex, 1);
+  Vwidget.removeFromParent();
+  if ((Aindex == this.Vhighlighted))
+  {
+   this.Vhighlighted = -1;
+  }
+  this.Vhighlights.clear__1(Aindex);
+  return Vwidget;
+ }
+ return null;
+}
+function Yiyaa(thisO) { // MPanelModule__CAbsolutePanel.NEW
+ if (!thisO) thisO = Ym2Ea(null);
+ return thisO;
+}
+function Ym2E__YVvX__Y2AK(thisO) { // MPanelModule__CAbsolutePanel.NEW__p2
+ if (!thisO) thisO = Ym2Ea(null);
+ return thisO;
+}
+function Ym2Ea(thisO) { // MPanelModule__CAbsolutePanel.Init
+ if (!thisO) thisO = new Ym2E();
+ thisO.Vactive = 1;
+ thisO.Vhighlighted = -1;
+ thisO.Vhighlights = Yh95(null);
+ return thisO;
+}
+function Y7Mca(thisO) { // MPanelModule__CHorizontalPanel.NEW
+ if (!thisO) thisO = Y7kt(null);
+ return thisO;
+}
+function Y7kt(thisO) { // MPanelModule__CHorizontalPanel.Init
+ if (!thisO) thisO = new YA6u();
+ thisO.Vactive = 1;
+ thisO.Vhighlighted = -1;
+ thisO.Vhighlights = Yh95(null);
+      thisO.Velem = $doc.createElement('table');
+      thisO.Velem.border = 0;
+      thisO.Velem.cellPadding = 0;
+      thisO.Velem.cellSpacing = 0;
+      thisO.Vbody = $doc.createElement('tbody');
+      thisO.Velem.appendChild(thisO.Vbody);
+      thisO.Vrow = $doc.createElement('tr');
+      thisO.Vbody.appendChild(thisO.Vrow)
+ return thisO;
+}
+function YJ9pa(Awidget) { // MPanelModule__CHorizontalPanel.add
+ this.addItem(Awidget);
+      var td = $doc.createElement('td');
+      td.appendChild(Awidget.Velem);
+      this.Vrow.appendChild(td);
+}
+function YodZa(Aindex) { // MPanelModule__CHorizontalPanel.remove
+ if (((Aindex >= 0) && (Aindex < this.Vitems.length)))
+ {
+  var Vwidget = ZListPopItem(this.Vitems, Aindex, 1);
+  if ((Vwidget.Vparent == this))
+  {
+          this.Vrow.removeChild(Vwidget.Velem.parentNode);
+   Vwidget.Vparent = null;
+  }
+  return Vwidget;
+ }
+ return null;
+}
+function YA6u__Ynpw__YVvX__Y2AK(thisO) { // MPanelModule__CHorizontalPanel.NEW__p3
+ if (!thisO) thisO = Y7kt(null);
+ return thisO;
+}
+function Yc8o(thisO) { // MPanelModule__CPopupPanel.Init
+ if (!thisO) thisO = new Y4xQ();
+ thisO.Vactive = 1;
+ thisO.Vhighlighted = -1;
+ thisO.Vhighlights = Yh95(null);
+ thisO.Vx = -1;
+ thisO.Vy = -1;
+      thisO.Velem = $doc.createElement('div');
+      thisO.Velem.style.position = 'absolute';
+ var Vstyle = YH8J(null).setBGColorName(16).setBorder(2, 1, YfEv(null, 5));
+ thisO.setStyle(Vstyle);
+ return thisO;
+}
+function YyVS() { // MPanelModule__CPopupPanel.hide
+ if ((this.VusedParent != null))
+ {
+  this.VusedParent.remove(this);
+  this.VusedParent = null;
+ }
+ return this;
+}
+// including StyleModule bodies
+function YfEv(thisO, AcolorName) { // MStyleModule__CColor.NEW
+ if (!thisO) thisO = new YJIL();
+ thisO.VcolorName = AcolorName;
+ return thisO;
+}
+function YH8J(thisO) { // MStyleModule__CStyle.NEW
+ if (!thisO) thisO = new YXEv();
+ thisO.Vproperties = ZnewDict(1, 1);
+ thisO.VstyleNr = (YphH)++;
+ thisO.Vname = "zwt" + "" + thisO.VstyleNr;
+ thisO.VruleNr = -1;
+ return thisO;
+}
+function YzLd() { // MStyleModule__CStyle.activate
+ if ((this.VruleNr < 0))
+ {
+   if ($doc.styleSheets[$sheetIndex].title != 'zwt') {
+     $findSheetIndex();
+   }
+   var sheet = $doc.styleSheets[$sheetIndex]
+   if (sheet.cssRules) {
+     this.VruleNr = sheet.cssRules.length;
+   } else {
+     this.VruleNr = sheet.rules.length;
+   }
+  this.setRule();
+ }
+}
+function YZfG() { // MStyleModule__CStyle.update
+ if ((this.VruleNr >= 0))
+ {
+   if ($doc.styleSheets[$sheetIndex].title != 'zwt') {
+     $findSheetIndex();
+   }
+   var sheet = $doc.styleSheets[$sheetIndex]
+   if (sheet.cssRules) {
+     sheet.deleteRule(this.VruleNr);
+   } else {
+     sheet.removeRule(this.VruleNr);
+   }
+  this.setRule();
+ }
+}
+function YrWD() { // MStyleModule__CStyle.setRule
+ var Vs = "";
+ {
+  var Vprop;
+  var Zf1 = ZforListNew(ZDictKeys(this.Vproperties, 0));
+for (Vprop = ZforListGet(Zf1); ZforListCont(Zf1); Vprop = ZforListNext(Zf1)) {
+  Vs += Vprop + ": " + this.Vproperties[':' + Vprop] + "; ";
+  }
+ }
+ var Vr = "." + this.Vname;
+   var sheet = $doc.styleSheets[$sheetIndex]
+   if (sheet.insertRule) {
+     sheet.insertRule(Vr + '{' + Vs + '}', this.VruleNr);
+   } else {
+     sheet.addRule(Vr, Vs, this.VruleNr);
+   }
+}
+function YZRy(Aprop, Av) { // MStyleModule__CStyle.setValue
+ this.Vproperties[':' + Aprop] = Av;
+ this.update();
+ return this;
+}
+function YH25(Aprop, Av) { // MStyleModule__CStyle.setPixelValue
+ this.Vproperties[':' + Aprop] = "" + Av + "px";
+ this.update();
+ return this;
+}
+function YACJ(Aprop, Av, Au) { // MStyleModule__CStyle.setUnitValue
+ this.Vproperties[':' + Aprop] = "" + Av + YPjV[':' + MStyleModule__EUnit[Au]];
+ this.update();
+ return this;
+}
+function YrJ7(Aprop, Acolor) { // MStyleModule__CStyle.setColorProp
+ if ((Acolor.VcolorName != 0))
+ {
+  this.Vproperties[':' + Aprop] = MStyleModule__EColorName[Acolor.VcolorName];
+ }
+ else
+ {
+  var Vr = (((Acolor.Vred < 0)) ? (0) : ((((Acolor.Vred > 255)) ? (255) : (Acolor.Vred))));
+  var Vg = (((Acolor.Vgreen < 0)) ? (0) : ((((Acolor.Vgreen > 255)) ? (255) : (Acolor.Vgreen))));
+  var Vb = (((Acolor.Vblue < 0)) ? (0) : ((((Acolor.Vblue > 255)) ? (255) : (Acolor.Vblue))));
+  this.Vproperties[':' + Aprop] = "rgb(" + "" + Vr + "," + "" + Vg + "," + "" + Vb + ")";
+ }
+ this.update();
+ return this;
+}
+function Y8Sr(Aprop) { // MStyleModule__CStyle.clearValue
+ if (':' + Aprop in this.Vproperties)
+ {
+  ZDictRemove(this.Vproperties, ':' + Aprop, 1);
+  this.update();
+ }
+ return this;
+}
+function Y9lb(Av) { // MStyleModule__CStyle.setMarginLeft
+ return this.setPixelValue("margin-left", Av);
+}
+function Y8DQ(Av) { // MStyleModule__CStyle.setMarginRight
+ return this.setPixelValue("margin-right", Av);
+}
+function Y5cS(Av) { // MStyleModule__CStyle.setMarginBottom
+ return this.setPixelValue("margin-bottom", Av);
+}
+function YaPx(Av) { // MStyleModule__CStyle.setPadding
+ this.setPaddingLeft(Av);
+ this.setPaddingRight(Av);
+ this.setPaddingTop(Av);
+ this.setPaddingBot(Av);
+ return this;
+}
+function YOar(Av) { // MStyleModule__CStyle.setPaddingLeft
+ return this.setPixelValue("padding-left", Av);
+}
+function Y1Wp(Av) { // MStyleModule__CStyle.setPaddingRight
+ return this.setPixelValue("padding-right", Av);
+}
+function YU4V(Av) { // MStyleModule__CStyle.setPaddingTop
+ return this.setPixelValue("padding-top", Av);
+}
+function YoPb(Av) { // MStyleModule__CStyle.setPaddingBot
+ return this.setPixelValue("padding-bottom", Av);
+}
+function YvB9(Aalign) { // MStyleModule__CStyle.setHorAlign
+ if ((Aalign == 0))
+ {
+  this.clearValue("text-align");
+  this.clearValue("margin-left");
+  this.clearValue("margin-right");
+  return this;
+ }
+ if ((Aalign == 2))
+ {
+  this.setValue("text-align", "center");
+  this.setValue("margin-left", "auto");
+  this.setValue("margin-right", "auto");
+ }
+ else
+ {
+  this.setValue("text-align", MStyleModule__EHorAlign[Aalign]);
+ }
+ return this;
+}
+function YpB9() { // MStyleModule__CStyle.setFullWidth
+ this.setUnitValue("width", 100, 1);
+ return this;
+}
+function YOjB() { // MStyleModule__CStyle.setFullHeight
+ return this.setUnitValue("height", 100, 1);
+}
+function Yf58(Athickness, Abs, Ac) { // MStyleModule__CStyle.setBorder
+ this.setPixelValue("border-width", Athickness);
+ this.setBorderStyle(Abs);
+ return this.setColorProp("border-color", Ac);
+}
+function Yt3W(Abs) { // MStyleModule__CStyle.setBorderStyle
+ if ((Abs == 0))
+ {
+  return this.clearBorderStyle();
+ }
+ return this.setValue("border-style", MStyleModule__EBorderStyle[Abs]);
+}
+function Y_eb() { // MStyleModule__CStyle.clearBorderStyle
+ return this.clearValue("border-style");
+}
+function YrE3(AcolorName) { // MStyleModule__CStyle.setColorName
+ return this.setColorProp("color", YfEv(null, AcolorName));
+}
+function Y4LI(AcolorName) { // MStyleModule__CStyle.setBGColorName
+ return this.setColorProp("background-color", YfEv(null, AcolorName));
+}
+function Ya0K(Aelem, Astyles) { // MStyleModule.setElementStyle
+ if (((Astyles == null) || (Astyles.length == 0)))
+ {
+      Aelem.className = null;
+ }
+ else
+ {
+  var Vname = null;
+  {
+   var Vs;
+   var Zf2 = ZforListNew(Astyles);
+for (Vs = ZforListGet(Zf2); ZforListCont(Zf2); Vs = ZforListNext(Zf2)) {
+   Vs.activate();
+   if ((Vname == null))
+   {
+    Vname = Vs.Vname;
+   }
+   else
+   {
+    Vname += " " + Vs.Vname;
+   }
+   }
+  }
+      Aelem.className = Vname;
+ }
+}
+// including TableModule bodies
+function YVAn(thisO, Awidget) { // MTableModule__CTableCell.NEW
+ if (!thisO) thisO = new Y1yz();
+ thisO.Vwidget = Awidget;
+ thisO.Vrowspan = 1;
+ thisO.Vcolspan = 1;
+      thisO.Velem = $doc.createElement('td');
+ if ((Awidget != null))
+ {
+        thisO.Velem.appendChild(Awidget.Velem);
+ }
+ return thisO;
+}
+function YBrY(Awidget) { // MTableModule__CTableCell.setWidget
+ if ((this.Vwidget != null))
+ {
+  this.Vwidget.removeFromParent();
+ }
+ this.Vwidget = Awidget;
+ if ((Awidget != null))
+ {
+  Awidget.addToParent(this);
+ }
+}
+function Ylk9(thisO) { // MTableModule__CTableRow.NEW
+ if (!thisO) thisO = new YidE();
+ thisO.Ventries = [];
+      thisO.Velem = $doc.createElement('tr');
+ return thisO;
+}
+function YhJK(Alen) { // MTableModule__CTableRow.resize
+ while ((this.Ventries.length < Alen))
+ {
+  this.addCell();
+ }
+ if ((Alen >= 0))
+ {
+  while ((this.Ventries.length > Alen))
+  {
+   this.deleteCell(Alen);
+  }
+ }
+}
+function YNQD() { // MTableModule__CTableRow.addCell
+ var Vcell = YVAn(null, null);
+ ZLa(this.Ventries, -1, Vcell);
+      this.Velem.appendChild(Vcell.Velem);
+}
+function Ypnw(Aidx) { // MTableModule__CTableRow.deleteCell
+ if (((Aidx < 0) || (Aidx >= this.Ventries.length)))
+ {
+  return;
+ }
+ var Vcell = ZListPopItem(this.Ventries, Aidx, 1);
+ Vcell.setWidget(null);
+      this.Velem.removeChild(Vcell.Velem);
+}
+function YU2p(Aidx, Awidget) { // MTableModule__CTableRow.setWidget
+ if ((Aidx < 0))
+ {
+  return;
+ }
+ if ((this.Ventries.length <= Aidx))
+ {
+  this.resize((Aidx + 1));
+ }
+ ZListGet(this.Ventries, Aidx).setWidget(Awidget);
+}
+function YTsy(AcolIdx, Astyle) { // MTableModule__CTableRow.setColStyle
+ if (((AcolIdx >= 0) && (AcolIdx < this.Ventries.length)))
+ {
+  ZListGet(this.Ventries, AcolIdx).setStyle(Astyle);
+ }
+}
+function YjIc(thisO) { // MTableModule__CTable.NEW
+ if (!thisO) thisO = YZQ2(null);
+ return thisO;
+}
+function YZQ2(thisO) { // MTableModule__CTable.Init
+ if (!thisO) thisO = new YrNL();
+ thisO.Vactive = 1;
+ thisO.Vhighlighted = -1;
+ thisO.Vhighlights = Yh95(null);
+ thisO.Vrows = [];
+      thisO.Velem = $doc.createElement('table');
+      thisO.Velem.border = 0;
+      thisO.Velem.cellPadding = 0;
+      thisO.Velem.cellSpacing = 0;
+      thisO.Vbody = $doc.createElement('tbody');
+      thisO.Velem.appendChild(thisO.Vbody);
+ return thisO;
+}
+function Y36p(Awidget) { // MTableModule__CTable.remove
+ YKvi("Table.remove() cannot be used");
+}
+function YIDH(ArowIdx, AcolIdx, Awidget) { // MTableModule__CTable.setWidget
+ if ((ArowIdx >= this.Vrows.length))
+ {
+  this.resizeRows((ArowIdx + 1));
+ }
+ ZListGet(this.Vrows, ArowIdx).setWidget(AcolIdx, Awidget);
+}
+function YCAj(ArowIdx, AcolIdx, Astyle) { // MTableModule__CTable.setCellStyle
+ if (((ArowIdx >= 0) && (ArowIdx < this.Vrows.length)))
+ {
+  ZListGet(this.Vrows, ArowIdx).setColStyle(AcolIdx, Astyle);
+ }
+}
+function YPru() { // MTableModule__CTable.addRow
+ var Vr = Ylk9(null);
+ ZLa(this.Vrows, -1, Vr);
+      this.Vbody.appendChild(Vr.Velem);
+}
+function YZmd(Aidx) { // MTableModule__CTable.deleteRow
+ if (((Aidx < 0) || (Aidx >= this.Vrows.length)))
+ {
+  return;
+ }
+ var Vr = ZListPopItem(this.Vrows, Aidx, 1);
+      this.Vbody.removeChild(Vr.Velem);
+}
+function YnB1(Asize) { // MTableModule__CTable.resizeRows
+ if ((Asize >= 0))
+ {
+  while ((this.Vrows.length < Asize))
+  {
+   this.addRow();
+  }
+  while ((this.Vrows.length > Asize))
+  {
+   this.deleteRow(Asize);
+  }
+ }
+}
+function YrNL__Ydzz(thisO) { // MTableModule__CTable.NEW__p1
+ if (!thisO) thisO = YZQ2(null);
+ return thisO;
+}
+function YrNL__YVvX__Y2AK(thisO) { // MTableModule__CTable.NEW__p2
+ if (!thisO) thisO = YZQ2(null);
+ return thisO;
+}
+// including TagModule bodies
+function YO0X(thisO) { // MTagModule__CTag.Init
+ if (!thisO) thisO = new YVuD();
+ thisO.Vactive = 1;
+      thisO.Velem = $doc.createElement('span');
+ return thisO;
+}
+function YDSo(thisO, Atext, AcloseHandler) { // MTagModule__CTag.NEW
+ if (!thisO) thisO = YO0X(null);
+ thisO.setText(Atext);
+ if ((AcloseHandler != null))
+ {
+  thisO.setClickHandler(AcloseHandler);
+        var x = $doc.createElement('span');
+        x.textContent = ' ×';
+        x.style.marginLeft = '4px';
+        x.style.cursor = 'pointer';
+        thisO.Velem.appendChild(x);
+ }
+ return thisO;
+}
+function YgpG(Atext) { // MTagModule__CTag.setText
+ this.VtagText = Atext;
+      this.Velem.textContent = Atext;
+}
+// including TextareaModule bodies
+function YbMN() { // MZWTModule.root
+ if ((YATn == null))
+ {
+  YATn = Yiyaa(null);
+  var Vv = null;
+        Vv = $doc.body;
+  YATn.Velem = Vv;
+ }
+ return YATn;
+}
+function YKvi(Amessage) { // MZWTModule.error
+      throw(Amessage);
+}
+// including CHECKModule bodies
+// including BOXModule bodies
+// including ARGModule bodies
+// including INTModule bodies
+function Yrrb() { // MZwtWidgetsPage.init
+ YbMN().add(Yjd7(null, "ZWT form widgets"));
+ var Vr1 = Y4qea(null, 1);
+ Vr1.setName("grp");
+ var Vr2 = Y4qea(null, 0);
+ Vr2.setName("grp");
+ YbMN().add(Vr1);
+ YbMN().add(Vr2);
+ var Vslider = YeEL(null, 0, 100, 25);
+ Vslider.setStep(5);
+ YbMN().add(Vslider);
+ var Vbar = Ymww(null, 3, 10);
+ YbMN().add(Vbar);
+ var Vfile = YXrg(null);
+ Vfile.setAccept(".csv");
+ Vfile.setMultiple(1);
+ YbMN().add(Vfile);
+ YbMN().add(Yjd7(null, "Display & status widgets"));
+ var Vbadge = YnKg(null, "NEW");
+ Vbadge.setBGColorName(6);
+ Vbadge.setColorName(16);
+ YbMN().add(Vbadge);
+ var Vtag = YDSo(null, "removable", YtV_);
+ YbMN().add(Vtag);
+ YbMN().add(YKpA(null, 0, "This is an informational alert."));
+ YbMN().add(YKpA(null, 1, "Saved successfully."));
+ YbMN().add(YKpA(null, 2, "Check this before continuing."));
+ YbMN().add(YKpA(null, 3, "Something went wrong."));
+ YbMN().add(YEqv(null));
+ Y6kt = YiG1(null);
+ YbMN().add(Y6kt);
+ var Vsw = YDRf(null, 1, YE1V);
+ YbMN().add(Vsw);
+ var Vimg = Y88k(null, "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='60'><rect width='120' height='60' fill='%234488dd'/><text x='60' y='36' font-family='sans-serif' font-size='16' fill='white' text-anchor='middle'>ZWT</text></svg>", "ZWT placeholder");
+ YbMN().add(Vimg);
+ YbMN().add(Yjd7(null, "Containers & nav widgets"));
+ var Vcard = YVM5(null);
+ Vcard.setHeaderText("Card title");
+ Vcard.add(Yjd7(null, "Card body content goes here."));
+ Vcard.setFooterText("Card footer");
+ YbMN().add(Vcard);
+ var Vtabs = YfQ7(null);
+ Vtabs.addTab("First", Yjd7(null, "Content of the first tab."));
+ Vtabs.addTab("Second", Yjd7(null, "Content of the second tab."));
+ Vtabs.addTab("Third", Yjd7(null, "Content of the third tab."));
+ YbMN().add(Vtabs);
+ var Vacc = YMPE(null);
+ Vacc.addSection("Section one", Yjd7(null, "Details for section one."));
+ Vacc.addSection("Section two", Yjd7(null, "Details for section two."));
+ Vacc.addSection("Section three", Yjd7(null, "Details for section three."));
+ YbMN().add(Vacc);
+ var Vcrumb = YRMw(null);
+ Vcrumb.addItem("Home", null);
+ Vcrumb.addItem("Library", YMjN);
+ Vcrumb.addItem("Current", YMjN);
+ YbMN().add(Vcrumb);
+ YbMN().add(Yipt(null, 2, 5));
+ YbMN().add(Yjd7(null, "Overlays & feedback widgets"));
+ var VhoverMe = Yjd7(null, "Hover over me");
+ YbMN().add(VhoverMe);
+ var Vtip = YLj2(null, "This tooltip appears on hover.");
+ Vtip.attachTo(VhoverMe);
+ var Vtoast = YyUe(null);
+ YbMN().add(Vtoast);
+ Vtoast.show("Page loaded.");
+ var Vsk1 = YiwN(null);
+ Vsk1.setSize(200, 24);
+ YbMN().add(Vsk1);
+ var Vsk2 = YiwN(null);
+ Vsk2.setSize(140, 16);
+ YbMN().add(Vsk2);
+}
+function YtV_(Ae) { // MZwtWidgetsPage.onTagClose
+ Ae.Vwidget.setHidden(1);
+}
+function YE1V(Ae) { // MZwtWidgetsPage.onSwitchChange
+ Y6kt.setHidden(1);
+}
+function YMjN(Ae) { // MZwtWidgetsPage.onCrumbClick
+ Ae.Vwidget.setHidden(1);
+}
+
+Yrrb();
+    --></script>
+  </body>
+</html>

@@ -1,0 +1,79 @@
+#
+# The Zimbu compiler written in Zimbu
+#
+# part of the builtin module ZWT: Alert
+#
+# Copyright 2009 Bram Moolenaar  All Rights Reserved.
+# Licensed under the Apache License, Version 2.0.  See the LICENSE file or
+# obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+
+#! Each item from this module gets an ALIAS in ZWT.
+MODULE AlertModule @public
+ GENERATE_IF Z.lang == "JS"
+
+  #= Severity of an Alert, used to pick its background color.
+  ENUM Severity @public
+    info      #= informational, neutral
+    success   #= a successful outcome
+    warning   #= something to be careful about
+    error     #= a problem occurred
+  }
+
+  #= An Alert (banner) is a block message with a severity color, an HTML DIV.
+  CLASS Alert EXTENDS ZWT.Widget @public
+    #!
+    Severity $severity
+    string   $alertText
+
+    #!
+    PROC $Init()
+>>>
+      %$elem% = $doc.createElement('div');
+<<<
+    }
+
+    #= Create a new Alert with |severity| and |text|.
+    NEW(Severity severity, string text) @public
+      $setSeverity(severity)
+      $setText(text)
+    }
+
+    #= Set the |severity|, which recolors the Alert.
+    PROC $setSeverity(Severity severity) @public
+      $severity = severity
+      $applyStyle()
+    }
+
+    #= Replace the message text with |text|.
+    PROC $setText(string text) @public
+      $alertText = text
+>>>
+      %$elem%.textContent = %text%;
+<<<
+    }
+
+    #! Rebuild padding and background from |$severity|.
+    PROC $applyStyle()
+      ZWT.Style s = NEW()
+      s.setPadding(8)
+      s.setValue("border-radius", "4px")
+      SWITCH $severity
+        CASE Severity.info
+          s.setBGColorName(ZWT.ColorName.blue)
+        CASE Severity.success
+          s.setBGColorName(ZWT.ColorName.green)
+        CASE Severity.warning
+          s.setBGColorName(ZWT.ColorName.yellow)
+        CASE Severity.error
+          s.setBGColorName(ZWT.ColorName.red)
+      }
+      $setStyle(s)
+    }
+
+    FUNC $ToString() string @replace @public
+      RETURN "Alert(" .. $severity.ToString() .. ")"
+    }
+  }
+
+ }
+}

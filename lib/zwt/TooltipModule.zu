@@ -1,0 +1,66 @@
+#
+# The Zimbu compiler written in Zimbu
+#
+# part of the builtin module ZWT: Tooltip
+#
+# Copyright 2009 Bram Moolenaar  All Rights Reserved.
+# Licensed under the Apache License, Version 2.0.  See the LICENSE file or
+# obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+
+#! Each item from this module gets an ALIAS in ZWT.
+MODULE TooltipModule @public
+ GENERATE_IF Z.lang == "JS"
+
+  #= A Tooltip shows |text| in a small box anchored below a host widget when the
+  #- mouse hovers over it.  Call |attachTo| to bind it.  It composes a PopupPanel
+  #- but toggles visibility itself, so no Zimbu callback is needed.
+  CLASS Tooltip EXTENDS ZWT.PopupPanel @public
+    #!
+    PROC $Init()
+>>>
+      %$elem% = $doc.createElement('div');
+      %$elem%.style.position = 'absolute';
+      %$elem%.style.padding = '4px 8px';
+      %$elem%.style.fontSize = '12px';
+      %$elem%.style.maxWidth = '240px';
+      %$elem%.style.backgroundColor = '#333333';
+      %$elem%.style.color = '#ffffff';
+      %$elem%.style.borderRadius = '3px';
+      %$elem%.style.zIndex = '1000';
+      %$elem%.style.display = 'none';
+      %$elem%.style.pointerEvents = 'none';
+      $doc.body.appendChild(%$elem%);
+<<<
+    }
+
+    #= Create a Tooltip showing |text|.
+    NEW(string text) @public
+>>>
+      %$elem%.textContent = %text%;
+<<<
+    }
+
+    #= Bind this Tooltip to |host|: show on hover, hide on leave.  Returns THIS.
+    FUNC $attachTo(ZWT.Widget host) Tooltip @public
+>>>
+      var tip = %$elem%;
+      var hostEl = %host.elem%;
+      hostEl.onmouseover = function() {
+        tip.style.display = '';
+        tip.style.left = hostEl.offsetLeft + 'px';
+        tip.style.top = (hostEl.offsetTop + hostEl.offsetHeight + 4) + 'px';
+      };
+      hostEl.onmouseout = function() {
+        tip.style.display = 'none';
+      };
+<<<
+      RETURN THIS
+    }
+
+    FUNC $ToString() string @replace @public
+      RETURN "Tooltip"
+    }
+  }
+
+ }
+}

@@ -1,0 +1,56 @@
+#
+# The Zimbu compiler written in Zimbu
+#
+# part of the builtin module ZWT: Switch
+#
+# Copyright 2009 Bram Moolenaar  All Rights Reserved.
+# Licensed under the Apache License, Version 2.0.  See the LICENSE file or
+# obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+
+#! Each item from this module gets an ALIAS in ZWT.
+MODULE SwitchModule @public
+ GENERATE_IF Z.lang == "JS"
+
+  #= A Switch is a toggle built on an HTML checkbox INPUT.
+  #- Use |isChecked| to read the state. The |change| event fires on toggle.
+  CLASS Switch EXTENDS ZWT.Widget @public
+    #!
+    PROC $Init()
+>>>
+      %$elem% = $doc.createElement('input');
+      %$elem%.type = 'checkbox';
+<<<
+    }
+
+    #= Create a new Switch, initially |checked|.
+    #- When |changeHandler| is not NIL it fires on every toggle.
+    NEW(bool checked, proc<ZWT.Event> changeHandler) @public
+      $setChecked(checked)
+      IF changeHandler != NIL
+        $setHandler(ZWT.EventType.change, changeHandler)
+      }
+    }
+
+    #= Set the checked state to |checked|.
+    PROC $setChecked(bool checked) @public
+>>>
+      %$elem%.checked = %checked%;
+<<<
+    }
+
+    #= Return whether the Switch is currently checked.
+    FUNC $isChecked() bool @public
+      bool r
+>>>
+      %r% = %$elem%.checked;
+<<<
+      RETURN r
+    }
+
+    FUNC $ToString() string @replace @public
+      RETURN "Switch"
+    }
+  }
+
+ }
+}

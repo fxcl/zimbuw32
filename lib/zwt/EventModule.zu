@@ -44,6 +44,7 @@ MODULE EventModule @public
     key              #= key pressed that produces a character
     keyDown          #= key pressed
     keyUp            #= key released
+    change           #= value changed by the user
   }
 
 }

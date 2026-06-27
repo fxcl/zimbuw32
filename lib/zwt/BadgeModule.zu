@@ -1,0 +1,71 @@
+#
+# The Zimbu compiler written in Zimbu
+#
+# part of the builtin module ZWT: Badge
+#
+# Copyright 2009 Bram Moolenaar  All Rights Reserved.
+# Licensed under the Apache License, Version 2.0.  See the LICENSE file or
+# obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+
+#! Each item from this module gets an ALIAS in ZWT.
+MODULE BadgeModule @public
+ GENERATE_IF Z.lang == "JS"
+
+  #= A Badge is a small inline status label, an HTML SPAN.
+  #- Set a text color with |setColorName| and a background with |setBGColorName|.
+  CLASS Badge EXTENDS ZWT.Widget @public
+    ZWT.ColorName $textColor #!
+    ZWT.ColorName $bgColor   #!
+
+    #!
+    PROC $Init()
+>>>
+      %$elem% = $doc.createElement('span');
+<<<
+    }
+
+    #= Create a new Badge with |text| as the text.
+    NEW(string text) @public
+      $textColor = ZWT.ColorName.none
+      $bgColor = ZWT.ColorName.none
+      $setText(text)
+    }
+
+    #= Replace the text of the Badge with |text|.
+    PROC $setText(string text) @public
+>>>
+      %$elem%.textContent = %text%;
+<<<
+    }
+
+    #= Set the text color to |colorName|.
+    PROC $setColorName(ZWT.ColorName colorName) @public
+      $textColor = colorName
+      $applyStyle()
+    }
+
+    #= Set the background color to |colorName|.
+    PROC $setBGColorName(ZWT.ColorName colorName) @public
+      $bgColor = colorName
+      $applyStyle()
+    }
+
+    #! Rebuild the element style from |$textColor| and |$bgColor|.
+    PROC $applyStyle()
+      ZWT.Style s = NEW()
+      IF $textColor != ZWT.ColorName.none
+        s.setColorName($textColor)
+      }
+      IF $bgColor != ZWT.ColorName.none
+        s.setBGColorName($bgColor)
+      }
+      $setStyle(s)
+    }
+
+    FUNC $ToString() string @replace @public
+      RETURN "Badge"
+    }
+  }
+
+ }
+}

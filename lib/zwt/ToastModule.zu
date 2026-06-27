@@ -1,0 +1,66 @@
+#
+# The Zimbu compiler written in Zimbu
+#
+# part of the builtin module ZWT: Toast
+#
+# Copyright 2009 Bram Moolenaar  All Rights Reserved.
+# Licensed under the Apache License, Version 2.0.  See the LICENSE file or
+# obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+
+#! Each item from this module gets an ALIAS in ZWT.
+MODULE ToastModule @public
+ GENERATE_IF Z.lang == "JS"
+
+  #= A Toast is a fixed stack in the top-right corner that shows transient
+  #- messages.  Add it to the root panel once, then call |show| for each message.
+  #- Toasts fade out and remove themselves after a short delay.  An HTML DIV.
+  CLASS Toast EXTENDS ZWT.Widget @public
+    #!
+    PROC $Init()
+>>>
+      %$elem% = $doc.createElement('div');
+      %$elem%.style.position = 'fixed';
+      %$elem%.style.top = '16px';
+      %$elem%.style.right = '16px';
+      %$elem%.style.zIndex = '2000';
+      %$elem%.style.display = 'flex';
+      %$elem%.style.flexDirection = 'column';
+      %$elem%.style.gap = '8px';
+<<<
+    }
+
+    #= Create an empty Toast stack.
+    NEW() @replace @public
+    }
+
+    #= Show |message| as a toast that fades out after a short delay.  Returns THIS.
+    FUNC $show(string message) Toast @public
+>>>
+      var t = $doc.createElement('div');
+      t.textContent = %message%;
+      t.style.backgroundColor = '#333333';
+      t.style.color = '#ffffff';
+      t.style.padding = '10px 16px';
+      t.style.borderRadius = '4px';
+      t.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
+      t.style.minWidth = '180px';
+      t.style.opacity = '1';
+      t.style.transition = 'opacity 0.4s ease';
+      %$elem%.appendChild(t);
+      $wnd.setTimeout(function() {
+        t.style.opacity = '0';
+        $wnd.setTimeout(function() {
+          if (t.parentNode) { t.parentNode.removeChild(t); }
+        }, 400);
+      }, 2500);
+<<<
+      RETURN THIS
+    }
+
+    FUNC $ToString() string @replace @public
+      RETURN "Toast"
+    }
+  }
+
+ }
+}

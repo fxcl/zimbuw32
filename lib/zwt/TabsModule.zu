@@ -1,0 +1,76 @@
+#
+# The Zimbu compiler written in Zimbu
+#
+# part of the builtin module ZWT: Tabs
+#
+# Copyright 2009 Bram Moolenaar  All Rights Reserved.
+# Licensed under the Apache License, Version 2.0.  See the LICENSE file or
+# obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+
+#! Each item from this module gets an ALIAS in ZWT.
+MODULE TabsModule @public
+ GENERATE_IF Z.lang == "JS"
+
+  #= A Tabs widget shows one panel of content at a time, switched via a row of
+  #- tab buttons.  Call |addTab| for each panel.  The first panel is shown by
+  #- default.  An HTML DIV.
+  CLASS Tabs EXTENDS ZWT.Panel @public
+    #!
+    PROC $Init()
+>>>
+      %$elem% = $doc.createElement('div');
+      %$elem%.zwtTabBar = $doc.createElement('div');
+      %$elem%.zwtButtons = [];
+      %$elem%.zwtPanels = [];
+      %$elem%.zwtTabBar.style.marginBottom = '4px';
+      %$elem%.appendChild(%$elem%.zwtTabBar);
+<<<
+    }
+
+    #= Create an empty Tabs widget.
+    NEW() @replace @public
+    }
+
+    #= Add a tab with |title| whose content is |widget|.  Returns THIS.
+    FUNC $addTab(string title, ZWT.Widget widget) Tabs @public
+      $addItem(widget)
+>>>
+      var btn = $doc.createElement('button');
+      btn.type = 'button';
+      btn.textContent = %title%;
+      btn.style.padding = '6px 12px';
+      btn.style.marginRight = '2px';
+      btn.style.cursor = 'pointer';
+      var panel = $doc.createElement('div');
+      panel.style.padding = '8px';
+      panel.style.display = 'none';
+      panel.appendChild(%widget.elem%);
+      btn.onclick = (function(root, b, p) {
+        return function() {
+          for (var i = 0; i < root.zwtButtons.length; ++i) {
+            root.zwtButtons[i].style.fontWeight = 'normal';
+            root.zwtPanels[i].style.display = 'none';
+          }
+          b.style.fontWeight = 'bold';
+          p.style.display = '';
+        };
+      })(%$elem%, btn, panel);
+      %$elem%.zwtButtons.push(btn);
+      %$elem%.zwtPanels.push(panel);
+      %$elem%.zwtTabBar.appendChild(btn);
+      %$elem%.appendChild(panel);
+      if (%$elem%.zwtButtons.length == 1) {
+        btn.style.fontWeight = 'bold';
+        panel.style.display = '';
+      }
+<<<
+      RETURN THIS
+    }
+
+    FUNC $ToString() string @replace @public
+      RETURN "Tabs"
+    }
+  }
+
+ }
+}

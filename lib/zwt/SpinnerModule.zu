@@ -1,0 +1,64 @@
+#
+# The Zimbu compiler written in Zimbu
+#
+# part of the builtin module ZWT: Spinner
+#
+# Copyright 2009 Bram Moolenaar  All Rights Reserved.
+# Licensed under the Apache License, Version 2.0.  See the LICENSE file or
+# obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+
+#! Each item from this module gets an ALIAS in ZWT.
+MODULE SpinnerModule @public
+ GENERATE_IF Z.lang == "JS"
+
+  #= A Spinner is a spinning ring that signals ongoing work, an HTML DIV.
+  #- The |zwtSpin| keyframes are injected into the "zwt" stylesheet once.
+  CLASS Spinner EXTENDS ZWT.Widget @public
+    #!
+    int $size
+
+    #!
+    PROC $Init()
+>>>
+      %$elem% = $doc.createElement('div');
+      if (!$wnd.__zwt_spinner_css) {
+        $wnd.__zwt_spinner_css = true;
+        if ($doc.styleSheets[$sheetIndex].title != 'zwt') {
+          $findSheetIndex();
+        }
+        var sh = $doc.styleSheets[$sheetIndex];
+        var n = sh.cssRules ? sh.cssRules.length : sh.rules.length;
+        sh.insertRule('@keyframes zwtSpin { to { transform: rotate(360deg); } }', n);
+      }
+<<<
+    }
+
+    #= Create a new Spinner with a default size of 24 pixels.
+    NEW() @replace @public
+      $setSize(24)
+    }
+
+    #= Set the diameter of the Spinner to |size| pixels.
+    PROC $setSize(int size) @public
+      $size = size
+>>>
+      %$elem%.style.display = 'inline-block';
+      %$elem%.style.boxSizing = 'border-box';
+      %$elem%.style.width = %size% + 'px';
+      %$elem%.style.height = %size% + 'px';
+      %$elem%.style.borderWidth = Math.max(2, Math.round(%size% / 6)) + 'px';
+      %$elem%.style.borderStyle = 'solid';
+      %$elem%.style.borderColor = '#ccc';
+      %$elem%.style.borderTopColor = '#666';
+      %$elem%.style.borderRadius = '50%';
+      %$elem%.style.animation = 'zwtSpin 0.8s linear infinite';
+<<<
+    }
+
+    FUNC $ToString() string @replace @public
+      RETURN "Spinner"
+    }
+  }
+
+ }
+}

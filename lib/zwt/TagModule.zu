@@ -1,0 +1,59 @@
+#
+# The Zimbu compiler written in Zimbu
+#
+# part of the builtin module ZWT: Tag
+#
+# Copyright 2009 Bram Moolenaar  All Rights Reserved.
+# Licensed under the Apache License, Version 2.0.  See the LICENSE file or
+# obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+
+#! Each item from this module gets an ALIAS in ZWT.
+MODULE TagModule @public
+ GENERATE_IF Z.lang == "JS"
+
+  #= A Tag (chip) is a compact label, an HTML SPAN.
+  #- When a |closeHandler| is given a dismiss "x" is shown and clicking the Tag
+  #- invokes the handler (e.g. to hide or remove it).
+  CLASS Tag EXTENDS ZWT.Widget @public
+    #!
+    string $tagText
+
+    #!
+    PROC $Init()
+>>>
+      %$elem% = $doc.createElement('span');
+<<<
+    }
+
+    #= Create a new Tag with |text|.
+    #- When |closeHandler| is not NIL the Tag becomes dismissible.
+    NEW(string text, proc<ZWT.Event> closeHandler) @public
+      $setText(text)
+      IF closeHandler != NIL
+        $setClickHandler(closeHandler)
+>>>
+        var x = $doc.createElement('span');
+        x.textContent = ' ×';
+        x.style.marginLeft = '4px';
+        x.style.cursor = 'pointer';
+        %$elem%.appendChild(x);
+<<<
+      }
+    }
+
+    #= Replace the text of the Tag with |text|.
+    #- Note: this clears a previously added dismiss "x".
+    PROC $setText(string text) @public
+      $tagText = text
+>>>
+      %$elem%.textContent = %text%;
+<<<
+    }
+
+    FUNC $ToString() string @replace @public
+      RETURN "Tag(" .. $tagText .. ")"
+    }
+  }
+
+ }
+}

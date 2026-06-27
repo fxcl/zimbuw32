@@ -1,0 +1,82 @@
+#
+# The Zimbu compiler written in Zimbu
+#
+# part of the builtin module ZWT: Card
+#
+# Copyright 2009 Bram Moolenaar  All Rights Reserved.
+# Licensed under the Apache License, Version 2.0.  See the LICENSE file or
+# obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+
+#! Each item from this module gets an ALIAS in ZWT.
+MODULE CardModule @public
+ GENERATE_IF Z.lang == "JS"
+
+  #= A Card is a bordered container with an optional header and footer and a
+  #- body that holds its children, an HTML DIV.
+  CLASS Card EXTENDS ZWT.Panel @public
+    #!
+    ZWT.Element $header  #!
+    ZWT.Element $body    #!
+    ZWT.Element $footer  #!
+
+    #!
+    PROC $Init()
+>>>
+      %$elem% = $doc.createElement('div');
+      %$elem%.style.border = '1px solid #ddd';
+      %$elem%.style.borderRadius = '4px';
+      %$elem%.style.boxShadow = '0 2px 4px rgba(0,0,0,0.08)';
+      %$elem%.style.backgroundColor = '#ffffff';
+      %$elem%.style.margin = '4px 0';
+      %$header% = $doc.createElement('div');
+      %$header%.style.padding = '8px 12px';
+      %$header%.style.borderBottom = '1px solid #eee';
+      %$header%.style.fontWeight = 'bold';
+      %$header%.style.display = 'none';
+      %$body% = $doc.createElement('div');
+      %$body%.style.padding = '12px';
+      %$footer% = $doc.createElement('div');
+      %$footer%.style.padding = '8px 12px';
+      %$footer%.style.borderTop = '1px solid #eee';
+      %$footer%.style.display = 'none';
+      %$elem%.appendChild(%$header%);
+      %$elem%.appendChild(%$body%);
+      %$elem%.appendChild(%$footer%);
+<<<
+    }
+
+    #= Create an empty Card.
+    NEW() @replace @public
+    }
+
+    #= Add |widget| to the Card body.
+    PROC $add(ZWT.Widget widget) @replace @public
+      $addItem(widget)
+>>>
+      %$body%.appendChild(%widget.elem%);
+<<<
+    }
+
+    #= Show |text| in the Card header.  When |text| is empty the header is hidden.
+    PROC $setHeaderText(string text) @public
+>>>
+      %$header%.textContent = %text%;
+      %$header%.style.display = %text%.length > 0 ? '' : 'none';
+<<<
+    }
+
+    #= Show |text| in the Card footer.  When |text| is empty the footer is hidden.
+    PROC $setFooterText(string text) @public
+>>>
+      %$footer%.textContent = %text%;
+      %$footer%.style.display = %text%.length > 0 ? '' : 'none';
+<<<
+    }
+
+    FUNC $ToString() string @replace @public
+      RETURN "Card"
+    }
+  }
+
+ }
+}

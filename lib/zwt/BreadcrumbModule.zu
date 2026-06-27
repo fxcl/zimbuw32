@@ -1,0 +1,73 @@
+#
+# The Zimbu compiler written in Zimbu
+#
+# part of the builtin module ZWT: Breadcrumb
+#
+# Copyright 2009 Bram Moolenaar  All Rights Reserved.
+# Licensed under the Apache License, Version 2.0.  See the LICENSE file or
+# obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+
+#! Each item from this module gets an ALIAS in ZWT.
+MODULE BreadcrumbModule @public
+ GENERATE_IF Z.lang == "JS"
+
+  #= A Breadcrumb shows a trail of labels separated by "/".  Pass a click
+  #- handler to make an item navigate.  The first item is rendered as the
+  #- current location.  An HTML DIV.
+  CLASS Breadcrumb EXTENDS ZWT.Panel @public
+    #!
+    int $count  #!
+
+    #!
+    PROC $Init()
+>>>
+      %$elem% = $doc.createElement('div');
+      %$elem%.style.display = 'flex';
+      %$elem%.style.alignItems = 'center';
+<<<
+    }
+
+    #= Create an empty Breadcrumb.
+    NEW() @replace @public
+      $count = 0
+    }
+
+    #= Append |label| to the trail.  When |clickHandler| is not NIL the item is
+    #- clickable.  Returns THIS.
+    FUNC $addItem(string label, proc<ZWT.Event> clickHandler) Breadcrumb @public
+      IF $count > 0
+>>>
+        var sep = $doc.createElement('span');
+        sep.textContent = '/';
+        sep.style.margin = '0 6px';
+        sep.style.color = '#999';
+        %$elem%.appendChild(sep);
+<<<
+      }
+      ZWT.Label item = ZWT.Label.NEW(label)
+      $addItem(item)
+      IF clickHandler != NIL
+        item.setClickHandler(clickHandler)
+      }
+>>>
+      %item.elem%.style.cursor = 'pointer';
+      %item.elem%.style.color = '#0066cc';
+      %item.elem%.style.textDecoration = 'none';
+      if (%$count% == 0) {
+        %item.elem%.style.fontWeight = 'bold';
+        %item.elem%.style.color = '#333';
+        %item.elem%.style.cursor = 'default';
+      }
+      %$elem%.appendChild(%item.elem%);
+<<<
+      $count += 1
+      RETURN THIS
+    }
+
+    FUNC $ToString() string @replace @public
+      RETURN "Breadcrumb"
+    }
+  }
+
+ }
+}

@@ -1,0 +1,68 @@
+#
+# The Zimbu compiler written in Zimbu
+#
+# part of the builtin module ZWT: Accordion
+#
+# Copyright 2009 Bram Moolenaar  All Rights Reserved.
+# Licensed under the Apache License, Version 2.0.  See the LICENSE file or
+# obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+
+#! Each item from this module gets an ALIAS in ZWT.
+MODULE AccordionModule @public
+ GENERATE_IF Z.lang == "JS"
+
+  #= An Accordion stacks collapsible sections.  Call |addSection| for each.
+  #- Click a section header to toggle its body.  The first section starts open.
+  #- An HTML DIV.
+  CLASS Accordion EXTENDS ZWT.Panel @public
+    #!
+    int $sections  #!
+
+    #!
+    PROC $Init()
+>>>
+      %$elem% = $doc.createElement('div');
+      %$elem%.style.border = '1px solid #ddd';
+      %$elem%.style.borderRadius = '4px';
+      %$elem%.style.overflow = 'hidden';
+<<<
+    }
+
+    #= Create an empty Accordion.
+    NEW() @replace @public
+      $sections = 0
+    }
+
+    #= Add a section with |title| whose content is |widget|.  Returns THIS.
+    FUNC $addSection(string title, ZWT.Widget widget) Accordion @public
+      $addItem(widget)
+>>>
+      var head = $doc.createElement('div');
+      head.textContent = %title%;
+      head.style.padding = '8px 12px';
+      head.style.backgroundColor = '#f5f5f5';
+      head.style.cursor = 'pointer';
+      head.style.fontWeight = 'bold';
+      head.style.borderTop = %$sections% > 0 ? '1px solid #ddd' : 'none';
+      var body = $doc.createElement('div');
+      body.style.padding = '8px 12px';
+      body.style.backgroundColor = '#ffffff';
+      body.style.display = %$sections% == 0 ? '' : 'none';
+      body.appendChild(%widget.elem%);
+      head.onclick = function() {
+        body.style.display = body.style.display == 'none' ? '' : 'none';
+      };
+      %$elem%.appendChild(head);
+      %$elem%.appendChild(body);
+<<<
+      $sections += 1
+      RETURN THIS
+    }
+
+    FUNC $ToString() string @replace @public
+      RETURN "Accordion"
+    }
+  }
+
+ }
+}

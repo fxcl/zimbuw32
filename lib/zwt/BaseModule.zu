@@ -323,6 +323,10 @@ MODULE BaseModule @public
 >>>
              %$elem%.onkeyup = f;
 <<<
+          CASE ZWT.EventType.change
+>>>
+             %$elem%.onchange = f;
+<<<
         }
       }
     }
@@ -358,6 +362,10 @@ MODULE BaseModule @public
           CASE ZWT.EventType.keyUp
 >>>
              %$elem%.onkeyup = null;
+<<<
+          CASE ZWT.EventType.change
+>>>
+             %$elem%.onchange = null;
 <<<
         }
       }

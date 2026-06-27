@@ -1,0 +1,122 @@
+# Exercises the ZWT widget set: the original form widgets (Radio, Slider,
+# ProgressBar, FileInput) plus the Phase 1 display & status widgets (Badge,
+# Tag, Alert, Divider, Spinner, Image, Switch).
+# Compiled to JS via IMPORT.ZWT in zwt_widgets_demo.zu.
+# The new EventType.change value is proven by BaseModule.zu's SWITCH CASEs,
+# which compile as part of every ZWT page.
+
+MODULE ZwtWidgetsPage
+  #! The spinner, hidden by the Switch's change handler to prove it fires.
+  ZWT.Spinner spinner
+
+  PROC init()
+    ZWT.root().add(ZWT.Label.NEW("ZWT form widgets"))
+
+    ZWT.Radio r1 = ZWT.Radio.NEW(TRUE)
+    r1.setName("grp")
+    ZWT.Radio r2 = ZWT.Radio.NEW(FALSE)
+    r2.setName("grp")
+    ZWT.root().add(r1)
+    ZWT.root().add(r2)
+
+    ZWT.Slider slider = ZWT.Slider.NEW(0, 100, 25)
+    slider.setStep(5)
+    ZWT.root().add(slider)
+
+    ZWT.ProgressBar bar = ZWT.ProgressBar.NEW(3, 10)
+    ZWT.root().add(bar)
+
+    ZWT.FileInput file = ZWT.FileInput.NEW()
+    file.setAccept(".csv")
+    file.setMultiple(TRUE)
+    ZWT.root().add(file)
+
+    ZWT.root().add(ZWT.Label.NEW("Display & status widgets"))
+
+    ZWT.Badge badge = ZWT.Badge.NEW("NEW")
+    badge.setBGColorName(ZWT.ColorName.green)
+    badge.setColorName(ZWT.ColorName.white)
+    ZWT.root().add(badge)
+
+    ZWT.Tag tag = ZWT.Tag.NEW("removable", onTagClose)
+    ZWT.root().add(tag)
+
+    ZWT.root().add(ZWT.Alert.NEW(ZWT.AlertSeverity.info, "This is an informational alert."))
+    ZWT.root().add(ZWT.Alert.NEW(ZWT.AlertSeverity.success, "Saved successfully."))
+    ZWT.root().add(ZWT.Alert.NEW(ZWT.AlertSeverity.warning, "Check this before continuing."))
+    ZWT.root().add(ZWT.Alert.NEW(ZWT.AlertSeverity.error, "Something went wrong."))
+
+    ZWT.root().add(ZWT.Divider.NEW())
+
+    spinner = ZWT.Spinner.NEW()
+    ZWT.root().add(spinner)
+
+    ZWT.Switch sw = ZWT.Switch.NEW(TRUE, onSwitchChange)
+    ZWT.root().add(sw)
+
+    # Self-contained inline SVG (no network fetch).
+    ZWT.Image img = ZWT.Image.NEW("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='60'><rect width='120' height='60' fill='%234488dd'/><text x='60' y='36' font-family='sans-serif' font-size='16' fill='white' text-anchor='middle'>ZWT</text></svg>", "ZWT placeholder")
+    ZWT.root().add(img)
+
+    ZWT.root().add(ZWT.Label.NEW("Containers & nav widgets"))
+
+    ZWT.Card card = ZWT.Card.NEW()
+    card.setHeaderText("Card title")
+    card.add(ZWT.Label.NEW("Card body content goes here."))
+    card.setFooterText("Card footer")
+    ZWT.root().add(card)
+
+    ZWT.Tabs tabs = ZWT.Tabs.NEW()
+    tabs.addTab("First", ZWT.Label.NEW("Content of the first tab."))
+    tabs.addTab("Second", ZWT.Label.NEW("Content of the second tab."))
+    tabs.addTab("Third", ZWT.Label.NEW("Content of the third tab."))
+    ZWT.root().add(tabs)
+
+    ZWT.Accordion acc = ZWT.Accordion.NEW()
+    acc.addSection("Section one", ZWT.Label.NEW("Details for section one."))
+    acc.addSection("Section two", ZWT.Label.NEW("Details for section two."))
+    acc.addSection("Section three", ZWT.Label.NEW("Details for section three."))
+    ZWT.root().add(acc)
+
+    ZWT.Breadcrumb crumb = ZWT.Breadcrumb.NEW()
+    crumb.addItem("Home", NIL)
+    crumb.addItem("Library", onCrumbClick)
+    crumb.addItem("Current", onCrumbClick)
+    ZWT.root().add(crumb)
+
+    ZWT.root().add(ZWT.Pagination.NEW(2, 5))
+
+    ZWT.root().add(ZWT.Label.NEW("Overlays & feedback widgets"))
+
+    ZWT.Label hoverMe = ZWT.Label.NEW("Hover over me")
+    ZWT.root().add(hoverMe)
+    ZWT.Tooltip tip = ZWT.Tooltip.NEW("This tooltip appears on hover.")
+    tip.attachTo(hoverMe)
+
+    ZWT.Toast toast = ZWT.Toast.NEW()
+    ZWT.root().add(toast)
+    toast.show("Page loaded.")
+
+    ZWT.Skeleton sk1 = ZWT.Skeleton.NEW()
+    sk1.setSize(200, 24)
+    ZWT.root().add(sk1)
+    ZWT.Skeleton sk2 = ZWT.Skeleton.NEW()
+    sk2.setSize(140, 16)
+    ZWT.root().add(sk2)
+  }
+
+  #! Dismiss the Tag that was clicked.
+  PROC onTagClose(ZWT.Event e)
+    e.widget.setHidden(TRUE)
+  }
+
+  #! Hide the spinner when the Switch is toggled (proves the change event fires).
+  PROC onSwitchChange(ZWT.Event e)
+    spinner.setHidden(TRUE)
+  }
+
+  #! Hide the breadcrumb item that was clicked (proves the click handler fires).
+  PROC onCrumbClick(ZWT.Event e)
+    e.widget.setHidden(TRUE)
+  }
+}

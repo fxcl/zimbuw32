@@ -10,17 +10,36 @@
 # https://docs.google.com/a/google.com/Doc?docid=0AR71dZfgJD1pZGc2dDJmajVfMWY4djd0emd0&hl=en
 
 IMPORT "zwt/BaseModule.zu"
+IMPORT "zwt/AlertModule.zu"
+IMPORT "zwt/BadgeModule.zu"
 IMPORT "zwt/ButtonModule.zu"
 IMPORT "zwt/CodeModule.zu"
 IMPORT "zwt/DialogModule.zu"
 IMPORT "zwt/DropdownModule.zu"
+IMPORT "zwt/DividerModule.zu"
 IMPORT "zwt/EventModule.zu"
 IMPORT "zwt/InputModule.zu"
+IMPORT "zwt/FileInputModule.zu"
+IMPORT "zwt/ImageModule.zu"
+IMPORT "zwt/ProgressBarModule.zu"
+IMPORT "zwt/RadioModule.zu"
+IMPORT "zwt/SliderModule.zu"
+IMPORT "zwt/SpinnerModule.zu"
+IMPORT "zwt/SwitchModule.zu"
+IMPORT "zwt/AccordionModule.zu"
+IMPORT "zwt/BreadcrumbModule.zu"
+IMPORT "zwt/CardModule.zu"
+IMPORT "zwt/PaginationModule.zu"
+IMPORT "zwt/TabsModule.zu"
+IMPORT "zwt/SkeletonModule.zu"
+IMPORT "zwt/ToastModule.zu"
+IMPORT "zwt/TooltipModule.zu"
 IMPORT "zwt/LabelModule.zu"
 IMPORT "zwt/MenuModule.zu"
 IMPORT "zwt/PanelModule.zu"
 IMPORT "zwt/StyleModule.zu"
 IMPORT "zwt/TableModule.zu"
+IMPORT "zwt/TagModule.zu"
 IMPORT "zwt/TextareaModule.zu"
 
 #= Zimbu Web Toolkit.  A GUI in a web browser.
@@ -101,6 +120,34 @@ MODULE ZWTModule @public
     # Input widget
     ALIAS InputModule.Input                 Input @public
     ALIAS InputModule.Checkbox              Checkbox @public
+
+    # Additional form widgets
+    ALIAS FileInputModule.FileInput         FileInput @public
+    ALIAS RadioModule.Radio                 Radio @public
+    ALIAS SliderModule.Slider               Slider @public
+    ALIAS ProgressBarModule.ProgressBar     ProgressBar @public
+
+    # Display & status widgets
+    ALIAS AlertModule.Alert                 Alert @public
+    ALIAS AlertModule.Severity              AlertSeverity @public
+    ALIAS BadgeModule.Badge                 Badge @public
+    ALIAS DividerModule.Divider             Divider @public
+    ALIAS ImageModule.Image                 Image @public
+    ALIAS SpinnerModule.Spinner             Spinner @public
+    ALIAS SwitchModule.Switch               Switch @public
+    ALIAS TagModule.Tag                     Tag @public
+
+    # Containers & nav widgets
+    ALIAS AccordionModule.Accordion         Accordion @public
+    ALIAS BreadcrumbModule.Breadcrumb       Breadcrumb @public
+    ALIAS CardModule.Card                   Card @public
+    ALIAS PaginationModule.Pagination       Pagination @public
+    ALIAS TabsModule.Tabs                   Tabs @public
+
+    # Overlays & feedback widgets
+    ALIAS SkeletonModule.Skeleton           Skeleton @public
+    ALIAS ToastModule.Toast                 Toast @public
+    ALIAS TooltipModule.Tooltip             Tooltip @public
 
     # Dropdown widget
     ALIAS DropdownModule.Dropdown           Dropdown @public
@@ -690,6 +737,31 @@ MODULE ZWTModule @public
       # ss.setCacheTime(5 * 60)
       server.addServlet(ss)
 
+    }
+
+    #
+    #= Run a ZWT application in one call.
+    #- Creates a server on |port|, serves |pageType| at "index.html" with the
+    #- given |title|, redirects "/" there, starts the server, opens it in the
+    #- browser, and blocks until the server quits.
+    #- This collapses the manual createPage + redirect + start + openInBrowser
+    #- + waitForExit sequence (see zwtdemo/zwtdemo.zu) into a single call.
+    #-
+    #- Limitation: since this blocks until the server exits, additional servlets
+    #- (e.g. RPC handlers) cannot be registered after the call.  Apps needing RPC
+    #- should use createPage() and the HTTP.Server building blocks directly.
+    #- Example:
+    #%   ZWT.run(MyPage.Type(), "My app", 8080)
+    PROC run(type pageType, string title, int port) @public
+      HTTP.Server server = NEW(port)
+      string path = "index.html"
+      ZWT.createPage(server, path, title, pageType)
+      server.redirect("/", "/" .. path)
+      server.start()
+      IO.print("ZWT: serving '" .. title .. "' at http://localhost:"
+               .. port .. "/" .. path)
+      server.openInBrowser(path)
+      server.waitForExit()
     }
 
   } # GENERATE_IF

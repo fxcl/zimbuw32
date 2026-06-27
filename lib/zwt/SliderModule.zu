@@ -1,0 +1,77 @@
+#
+# The Zimbu compiler written in Zimbu
+#
+# part of the builtin module ZWT: Slider (range input)
+#
+# Copyright 2012 Bram Moolenaar  All Rights Reserved.
+# Licensed under the Apache License, Version 2.0.  See the LICENSE file or
+# obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+
+#! Each item from this module gets an ALIAS in ZWT.
+MODULE SliderModule @public
+ GENERATE_IF Z.lang == "JS"
+
+  #= A Slider is a widget that lets the user pick a number from a range.
+  #- Renders an HTML <input type="range">.
+  CLASS Slider EXTENDS ZWT.Widget @public
+
+    #!
+    PROC $Init()
+>>>
+      %$elem% = $doc.createElement('input');
+      %$elem%.type = 'range';
+<<<
+    }
+
+    #= Create a new Slider for the range [|min| .. |max|] set to |value|.
+    NEW(int min, int max, int value) @public
+      $setMin(min)
+      $setMax(max)
+      $setValue(value)
+    }
+
+    #= Set the smallest value the slider can take to |min|.
+    PROC $setMin(int min) @public
+>>>
+      %$elem%.min = %min%;
+<<<
+    }
+
+    #= Set the largest value the slider can take to |max|.
+    PROC $setMax(int max) @public
+>>>
+      %$elem%.max = %max%;
+<<<
+    }
+
+    #= Set the granularity between values to |step|.
+    PROC $setStep(int step) @public
+>>>
+      %$elem%.step = %step%;
+<<<
+    }
+
+    #= Set the current value to |value|.
+    PROC $setValue(int value) @public
+>>>
+      %$elem%.value = %value%;
+<<<
+    }
+
+    #= Return the current value.
+    FUNC $getValue() int @public
+      int v
+>>>
+      %v% = parseInt(%$elem%.value, 10);
+<<<
+      RETURN v
+    }
+
+    #= Return "Slider(value)", where value is the current value.
+    FUNC $ToString() string @replace @public
+      RETURN "Slider(" .. $getValue() .. ")"
+    }
+  }
+
+ }
+}

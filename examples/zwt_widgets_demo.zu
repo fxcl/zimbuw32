@@ -1,0 +1,12 @@
+# Compile-gate for the four new ZWT widgets: builds them to JS and serves the
+# page via ZWT.run().  A clean build proves Radio/Slider/ProgressBar/FileInput,
+# their methods, and their ZWT aliases all compile.
+
+IMPORT.ZWT "zwt_widgets_page.zu"
+
+ARG.Int port = NEW("p", "port", 8091, "Port for the HTTP server")
+
+FUNC Main() int
+  ZWT.run(ZwtWidgetsPage.Type(), "Zimbu ZWT widgets demo", port.value())
+  RETURN 0
+}

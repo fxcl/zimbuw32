@@ -1,0 +1,55 @@
+#
+# The Zimbu compiler written in Zimbu
+#
+# part of the builtin module ZWT: Divider
+#
+# Copyright 2009 Bram Moolenaar  All Rights Reserved.
+# Licensed under the Apache License, Version 2.0.  See the LICENSE file or
+# obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+
+#! Each item from this module gets an ALIAS in ZWT.
+MODULE DividerModule @public
+ GENERATE_IF Z.lang == "JS"
+
+  #= A Divider is a horizontal (default) or vertical separator line, an HTML HR.
+  #- Use |setVertical| to switch to a vertical line between side-by-side items.
+  CLASS Divider EXTENDS ZWT.Widget @public
+    #!
+    bool $vertical
+
+    #!
+    PROC $Init()
+>>>
+      %$elem% = $doc.createElement('hr');
+<<<
+    }
+
+    #= Create a new horizontal Divider.
+    NEW() @replace @public
+      $setVertical(FALSE)
+    }
+
+    #= When |vertical| is TRUE render a vertical line.
+    PROC $setVertical(bool vertical) @public
+      $vertical = vertical
+>>>
+      if (%vertical%) {
+        %$elem%.style.width = '1px';
+        %$elem%.style.height = '100%';
+        %$elem%.style.borderWidth = '0';
+        %$elem%.style.borderLeftWidth = '1px';
+        %$elem%.style.borderLeftStyle = 'solid';
+        %$elem%.style.margin = '0 4px';
+        %$elem%.style.display = 'inline-block';
+        %$elem%.style.verticalAlign = 'middle';
+      }
+<<<
+    }
+
+    FUNC $ToString() string @replace @public
+      RETURN "Divider"
+    }
+  }
+
+ }
+}

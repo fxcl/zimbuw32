@@ -1,0 +1,61 @@
+#
+# The Zimbu compiler written in Zimbu
+#
+# part of the builtin module ZWT: ProgressBar
+#
+# Copyright 2012 Bram Moolenaar  All Rights Reserved.
+# Licensed under the Apache License, Version 2.0.  See the LICENSE file or
+# obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+
+#! Each item from this module gets an ALIAS in ZWT.
+MODULE ProgressBarModule @public
+ GENERATE_IF Z.lang == "JS"
+
+  #= A ProgressBar is a widget that shows progress as a fraction of a whole.
+  #- Renders an HTML <progress> element.
+  CLASS ProgressBar EXTENDS ZWT.Widget @public
+
+    #!
+    PROC $Init()
+>>>
+      %$elem% = $doc.createElement('progress');
+<<<
+    }
+
+    #= Create a new ProgressBar showing |value| out of |max|.
+    NEW(int value, int max) @public
+      $setMax(max)
+      $setValue(value)
+    }
+
+    #= Set the maximum (complete) value to |max|.
+    PROC $setMax(int max) @public
+>>>
+      %$elem%.max = %max%;
+<<<
+    }
+
+    #= Set the current progress to |value|.
+    PROC $setValue(int value) @public
+>>>
+      %$elem%.value = %value%;
+<<<
+    }
+
+    #= Return the current progress value.
+    FUNC $getValue() int @public
+      int v
+>>>
+      %v% = parseInt(%$elem%.value, 10);
+<<<
+      RETURN v
+    }
+
+    #= Return "ProgressBar(value)".
+    FUNC $ToString() string @replace @public
+      RETURN "ProgressBar(" .. $getValue() .. ")"
+    }
+  }
+
+ }
+}
