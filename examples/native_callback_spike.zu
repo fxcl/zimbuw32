@@ -1,0 +1,36 @@
+#
+# Callback trampoline spike v3 (minimal) -- instance method form only.
+# Mirrors THREADModule's proven %[$body]% pattern: an instance method
+# references another method of the SAME class via %[$name]%.
+#
+# NOTE: >>> and <<< MUST be at column 0 (start of line), even inside a class
+# method. This is a lexer rule -- see THREADModule.zu lines 66/70/91/105/117.
+#
+# Build: ./zimbu examples/native_callback_spike.zu
+# Run:   ./examples/native_callback_spike
+
+CLASS Handler
+  PROC $onExit()
+>>>
+  extern int printf(const char *, ...);
+  printf("[spike] instance onExit fired via atexit\n");
+<<<
+  }
+
+  FUNC $register() status
+>>>
+  extern int atexit(void (*)(void));
+  extern int printf(const char *, ...);
+  atexit((void (*)(void))%[$onExit]%);
+  printf("[spike] atexit(instance) registered\n");
+<<<
+    RETURN OK
+  }
+}
+
+FUNC Main() int
+  Handler h = NEW()
+  h.register()
+  IO.print("[spike] Main returning; handler should fire next")
+  RETURN 0
+}

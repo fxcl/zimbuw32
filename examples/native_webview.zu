@@ -1,0 +1,129 @@
+#
+# Native desktop WebView spike for Zimbu (macOS / Cocoa + WebKit) — Phase 2.
+#
+# LOCAL proof file. zimbuw32/ is gitignored in the outer repo (vendored upstream
+# tree); this file is not tracked there. Reversible: rm this file and nothing
+# else changes. NO compiler source edit, NO rebuild.
+#
+# Build: ./zimbu examples/native_webview.zu \
+#          -ccendarg "-framework WebKit -framework AppKit -framework Foundation"
+# Run:   ./native_webview
+#        (point a ZWT server at http://localhost:8097/ first, or just watch the
+#         webview show the load/error page — instantiation is the gate.)
+#
+# Goal: prove a WKWebView can be created and load a URL inside a native NSWindow,
+# driven PURELY through the Objective-C runtime from C (objc_msgSend /
+# objc_getClass / sel_registerName). This is the WebView-embedding binding pattern
+# a future ZWT-to-native bridge would use: ZWT compiles to HTML/JS, a native shell
+# hosts it in WKWebView instead of the system browser. Reuses the exact mechanism
+# proven in native_window.zu (Phase 1) — extends it with four WKWebView selectors.
+#
+# Why pure C and not #import/<WebKit/WebKit.h>: same constraint as native_window —
+# the emitted TU is a .c compiled in C mode; WebKit/AppKit headers carry ObjC
+# @interface syntax that only compiles in .m mode, and #include of system headers
+# inside a `>>>` block is illegal (function definitions at function scope). So we
+# include NOTHING, forward-declare the objc runtime, and reach WKWebView et al. by
+# class name at runtime.
+#
+# ATS note: http://localhost is App Transport Security-exempt (loopback), so a
+# local ZWT server loads without an Info.plist exception. A non-loopback http://
+# URL would be blocked by ATS and the webview shows the block — still proves the
+# binding; just not the page render.
+#
+# MRC note: generated .c is NOT -fobjc-arc. AppKit/WebKit retain the window and
+# webview once added to the hierarchy; a few drops leaked over a 5s demo are fine.
+# We only drain the autorelease pool.
+
+FUNC Main() int
+>>>
+  /* Forward declarations ONLY (legal at function scope; definitions are not, so
+   * no #include of system headers here). Drive the ObjC runtime from pure C. */
+  typedef void *id;
+  typedef void *SEL;
+  typedef signed char BOOL;
+  typedef unsigned long NSUInteger;
+  #define nil ((id)0)
+  #define YES ((BOOL)1)
+  #define NO  ((BOOL)0)
+  extern id objc_msgSend(id, SEL, ...);
+  extern id objc_getClass(const char *);
+  extern SEL sel_registerName(const char *);
+  extern int printf(const char *, ...);
+
+  /* NSRect layout matches the macOS ABI: origin(x,y) + size(w,h) = 4 doubles. */
+  typedef struct { double x, y, width, height; } ZNWSRect;
+
+  /* Cast objc_msgSend to a precise non-variadic prototype so the compiler lowers
+   * the ABI correctly (notably ZNWSRect, 32 bytes, passed by hidden reference). */
+  #define C0(ret, recv, sel) \
+    ((ret (*)(id, SEL))objc_msgSend)((id)(recv), sel_registerName(sel))
+
+  id pool = C0(id, objc_getClass("NSAutoreleasePool"), "alloc");
+  pool    = C0(id, pool, "init");
+
+  id app = C0(id, objc_getClass("NSApplication"), "sharedApplication");
+  printf("[zimbu-wv] NSApplication sharedApplication OK\n");
+  ((void (*)(id, SEL, long))objc_msgSend)((id)app,
+      sel_registerName("setActivationPolicy:"), (long)0);  /* Regular policy */
+
+  id strClass = objc_getClass("NSString");
+  #define NSSTR(cstr) \
+    ((id (*)(id, SEL, const char *, unsigned long))objc_msgSend)( \
+        (id)strClass, sel_registerName("stringWithCString:encoding:"), (cstr), 4UL) /* UTF-8 */
+
+  /* --- WKWebView: configuration + initWithFrame:configuration: --- */
+  id config = C0(id, objc_getClass("WKWebViewConfiguration"), "alloc");
+  config    = C0(id, config, "init");
+  printf("[zimbu-wv] WKWebViewConfiguration OK\n");
+
+  ZNWSRect webFrame = { 0.0, 0.0, 800.0, 600.0 };
+  id webView = C0(id, objc_getClass("WKWebView"), "alloc");
+  webView = ((id (*)(id, SEL, ZNWSRect, id))objc_msgSend)(
+              (id)webView, sel_registerName("initWithFrame:configuration:"),
+              webFrame, (id)config);
+  printf("[zimbu-wv] WKWebView initWithFrame:configuration: OK\n");
+
+  /* Make the webview fill the window as it resizes. NSViewWidthSizable(2) |
+   * NSViewHeightSizable(16) = 18;.contentView setAutoresizesSubviews:YES. */
+  ((void (*)(id, SEL, NSUInteger))objc_msgSend)(
+      (id)webView, sel_registerName("setAutoresizingMask:"), (NSUInteger)18);
+
+  /* --- Load: NSURL URLWithString: -> NSURLRequest requestWithURL: -> loadRequest: --- */
+  id url = ((id (*)(id, SEL, id))objc_msgSend)(
+              (id)objc_getClass("NSURL"), sel_registerName("URLWithString:"),
+              NSSTR("http://localhost:8097/"));
+  id req = ((id (*)(id, SEL, id))objc_msgSend)(
+              (id)objc_getClass("NSURLRequest"), sel_registerName("requestWithURL:"),
+              (id)url);
+  ((void (*)(id, SEL, id))objc_msgSend)((id)webView, sel_registerName("loadRequest:"), (id)req);
+  printf("[zimbu-wv] loadRequest: issued for http://localhost:8097/\n");
+
+  /* --- NSWindow hosting the webview --- */
+  ZNWSRect frame = { 100.0, 100.0, 800.0, 600.0 };
+  id win = C0(id, objc_getClass("NSWindow"), "alloc");
+  win = ((id (*)(id, SEL, ZNWSRect, unsigned long, unsigned long, BOOL))objc_msgSend)(
+          (id)win, sel_registerName("initWithContentRect:styleMask:backing:defer:"),
+          frame, (unsigned long)15, (unsigned long)2, NO);
+  printf("[zimbu-wv] NSWindow created OK\n");
+  ((void (*)(id, SEL, id))objc_msgSend)((id)win, sel_registerName("setTitle:"), NSSTR("Zimbu Native WebView"));
+  ((void (*)(id, SEL, id))objc_msgSend)((id)win, sel_registerName("setContentView:"), (id)webView);
+  ((void (*)(id, SEL, id))objc_msgSend)((id)win, sel_registerName("makeKeyAndOrderFront:"), nil);
+  ((void (*)(id, SEL, BOOL))objc_msgSend)((id)app, sel_registerName("activateIgnoringOtherApps:"), YES);
+
+  /* Self-close after 5 s via NSTimer -> [app terminate:] (same proven pattern as
+   * native_window.zu). terminate: ends the process reliably from the run loop. */
+  SEL termSel = sel_registerName("terminate:");
+  ((id (*)(id, SEL, double, id, SEL, id, BOOL))objc_msgSend)(
+      (id)objc_getClass("NSTimer"),
+      sel_registerName("scheduledTimerWithTimeInterval:target:selector:userInfo:repeats:"),
+      5.0, (id)app, termSel, nil, NO);
+
+  printf("[zimbu-wv] entering NSApplication run; window+webview visible ~5s\n");
+  C0(void, app, "run");   /* blocks until terminate: exits the process */
+
+  printf("[zimbu-wv] run returned (no terminate fired)\n");
+  C0(void, pool, "drain");
+<<<
+
+  RETURN 0
+}
