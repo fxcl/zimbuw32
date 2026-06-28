@@ -41,6 +41,7 @@ IMPORT "zwt/StyleModule.zu"
 IMPORT "zwt/TableModule.zu"
 IMPORT "zwt/TagModule.zu"
 IMPORT "zwt/TextareaModule.zu"
+IMPORT "zwt/LiveModule.zu"
 
 #= Zimbu Web Toolkit.  A GUI in a web browser.
 #
@@ -154,6 +155,10 @@ MODULE ZWTModule @public
 
     # Textarea widget
     ALIAS TextareaModule.Textarea           Textarea @public
+
+    # Live updates -- WebSocket -> widget live-binding helpers (no HTTP polling)
+    ALIAS LiveModule.bindLabel              bindLabel @public
+    ALIAS LiveModule.bindProgressBar        bindProgressBar @public
 
     # Style 'n stuff
     ALIAS StyleModule.Color                 Color @public
@@ -762,6 +767,29 @@ MODULE ZWTModule @public
                .. port .. "/" .. path)
       server.openInBrowser(path)
       server.waitForExit()
+    }
+
+    #= Like run(), but non-blocking.
+    #- Creates the server, serves the page, starts it and opens the browser, then
+    #- RETURNS the running HTTP.Server WITHOUT calling waitForExit().  This lets
+    #- the caller register additional servlets -- RPC handlers or a WebSocket
+    #- endpoint on the same port -- after start, which run() cannot do because it
+    #- blocks.  The caller is responsible for calling server.waitForExit() (or
+    #- otherwise keeping the process alive).
+    #- Example:
+    #%   HTTP.Server s = ZWT.runAsync(MyPage.Type(), "My app", 8080)
+    #%   s.addWebSocket("/ws", wsHandler)
+    #%   s.waitForExit()
+    FUNC runAsync(type pageType, string title, int port) HTTP.Server @public
+      HTTP.Server server = NEW(port)
+      string path = "index.html"
+      ZWT.createPage(server, path, title, pageType)
+      server.redirect("/", "/" .. path)
+      server.start()
+      IO.print("ZWT: serving '" .. title .. "' at http://localhost:"
+               .. port .. "/" .. path)
+      server.openInBrowser(path)
+      RETURN server
     }
 
   } # GENERATE_IF

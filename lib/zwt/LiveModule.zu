@@ -1,0 +1,47 @@
+#
+# The Zimbu compiler written in Zimbu
+#
+# part of the builtin module ZWT: Live -- WebSocket live-binding helpers
+#
+# Copyright 2009 Bram Moolenaar  All Rights Reserved
+# Licensed under the Apache License, Version 2.0.  See the LICENSE file or
+# obtain a copy at: http://www.apache.org/licenses/LICENSE-2.0
+
+#! Each item from this module gets an ALIAS in ZWT.
+MODULE LiveModule @public
+ GENERATE_IF Z.lang == "JS"
+
+  #= Live updates over WebSocket.
+  #- A first-class bridge from a server-pushed WebSocket frame stream into a ZWT
+  #- widget, replacing the hand-written "open a WebSocket and poke the DOM"
+  #- interleave that ws_zwt_page.zu carries inline.  Each bind opens its own
+  #- WebSocket to |path| (a server path such as "/ws"); every inbound frame's
+  #- data is applied to the widget through its element, so the page refreshes
+  #- live from server pushes instead of HTTP polling.
+  #-
+  #- Build-robust by design: the WebSocket wiring is pure JavaScript inside the
+  #- interleave (no Zimbu lambda is bridged into a JS callback), so it depends on
+  #- no widget-method callback marshalling.  This is exactly the deferred
+  #- WS->widget bridge noted at examples/ws_zwt_page.zu:8-10.
+
+  #= Bind |label|'s text to a WebSocket at |path|.
+  #- Each frame's data replaces the label text.
+  PROC bindLabel(ZWT.Label label, string path) @public
+>>>
+    var ws = new WebSocket("ws://" + window.location.host + %path%);
+    ws.onmessage = function(e) { %label%.elem.textContent = e.data; };
+<<<
+  }
+
+  #= Bind |bar|'s value to a WebSocket at |path|.
+  #- Each frame's data is parsed as an integer and set as the progress value,
+  #- mirroring ProgressBar.$setValue (which sets the <progress> element's value).
+  PROC bindProgressBar(ZWT.ProgressBar bar, string path) @public
+>>>
+    var ws = new WebSocket("ws://" + window.location.host + %path%);
+    ws.onmessage = function(e) { %bar%.elem.value = parseInt(e.data, 10); };
+<<<
+  }
+
+ }
+}

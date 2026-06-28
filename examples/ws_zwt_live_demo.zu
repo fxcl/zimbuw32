@@ -1,0 +1,40 @@
+# Phase A demo: ZWT.runAsync() + first-class WebSocket -> widget live binding.
+#
+# A ZWT page (ws_zwt_live_page.zu) binds a Label and a ProgressBar to the /ws
+# WebSocket.  This server uses ZWT.runAsync() (non-blocking) so it can register
+# the /ws endpoint AFTER start -- exactly what the blocking ZWT.run() cannot do.
+# Each connection runs wsCounter, which pushes an incrementing 0..100 counter
+# once a second; the page widgets refresh live from those frames (no polling).
+#
+# Build:  ./zimbu examples/ws_zwt_live_demo.zu
+# Run:    ./ws_zwt_live_demo -p 8097
+# Then open the printed URL; the label and progress bar tick up once a second.
+
+IMPORT.ZWT "ws_zwt_live_page.zu"
+
+ARG.Int port = NEW("p", "port", 8097, "Port for the HTTP + WebSocket server")
+
+# Push an incrementing 0..100 counter once a second until the browser closes
+# the tab.  send() returns FAIL when the peer is gone, so we exit cleanly.
+PROC wsCounter(HTTP.WebSocketConnection conn)
+  int i = 0
+  WHILE TRUE
+    IF conn.send("" .. i) == FAIL
+      BREAK
+    }
+    i += 1
+    IF i > 100
+      i = 0
+    }
+    TIME.sleepSec(1)   # 1s push cadence (mirrors ws_zwt_page.zu)
+  }
+}
+
+FUNC Main() int
+  IO.initSockets()
+  HTTP.Server server = ZWT.runAsync(WsZwtLivePage.Type(), "Zimbu ZWT live", port.value())
+  server.addWebSocket("/ws", wsCounter)
+  IO.print("ws_zwt_live_demo: open http://localhost:" .. port.value() .. "/")
+  server.waitForExit()
+  RETURN 0
+}

@@ -1,0 +1,23 @@
+# Browser-side ZWT page whose widgets update live from server-pushed WebSocket
+# frames via the first-class ZWT.bindLabel / ZWT.bindProgressBar helpers (see
+# lib/zwt/LiveModule.zu).  No hand-written WebSocket or DOM code here -- unlike
+# examples/ws_zwt_page.zu, the live binding is a single ZWT call per widget.
+#
+# Compiled to JS via IMPORT.ZWT in ws_zwt_live_demo.zu.
+
+MODULE WsZwtLivePage
+  PROC init()
+    ZWT.Label title = ZWT.Label.NEW("ZWT live over WebSocket")
+    ZWT.ProgressBar bar = ZWT.ProgressBar.NEW(0, 100)
+    ZWT.Label counter = ZWT.Label.NEW("(connecting...)")
+
+    ZWT.root().add(title)
+    ZWT.root().add(bar)
+    ZWT.root().add(counter)
+
+    # Each bind opens its own WebSocket to /ws; every server-pushed frame
+    # drives the widget's element live -- no HTTP polling.
+    ZWT.bindLabel(counter, "/ws")
+    ZWT.bindProgressBar(bar, "/ws")
+  }
+}
