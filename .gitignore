@@ -126,6 +126,7 @@ examples/zwt_widgets_demo
 examples/native_webview
 examples/native_callback_spike
 examples/native_window
+examples/native_zwt_demo
 examples/gui_demo
 examples/tui_demo
 livedemo/livedemo.c
