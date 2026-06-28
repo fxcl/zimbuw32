@@ -536,6 +536,176 @@ MODULE PanelModule @public
     }
   }
 
+  #= A panel that lays out its children with CSS flexbox.
+  #- Unlike the table-based VerticalPanel/HorizontalPanel, children are plain
+  #- DOM nodes in a flex container, so flex-grow, wrapping and alignment all
+  #- apply.  Defaults to a row; pass a direction to NEW() for a column, etc.
+  CLASS FlexPanel EXTENDS Panel @public
+
+    #! Create the container DIV and make it a flex container.
+    PROC $Init()
+>>>
+      %$elem% = $doc.createElement('div');
+<<<
+      $setStyle(NEW().setDisplay(ZWT.Display.flex))
+    }
+
+    #= Create a FlexPanel laid out as a row (the CSS default).
+    NEW() @replace @default @public
+    }
+
+    #= Create a FlexPanel laid out with main-axis direction |d|.
+    NEW(ZWT.FlexDirection d) @public
+      $getStyle().setFlexDirection(d)
+    }
+
+    #= Set the main-axis direction.  Returns THIS for chaining.
+    FUNC $setDirection(ZWT.FlexDirection d) FlexPanel @public
+      ZWT.Style s = $getStyle()
+      IF s != NIL
+        s.setFlexDirection(d)
+      }
+      RETURN THIS
+    }
+
+    #= Set whether children wrap onto new lines.  Returns THIS for chaining.
+    FUNC $setWrap(ZWT.FlexWrap w) FlexPanel @public
+      ZWT.Style s = $getStyle()
+      IF s != NIL
+        s.setFlexWrap(w)
+      }
+      RETURN THIS
+    }
+
+    #= Distribute children along the main axis.  Returns THIS for chaining.
+    FUNC $setJustifyContent(ZWT.FlexAlign a) FlexPanel @public
+      ZWT.Style s = $getStyle()
+      IF s != NIL
+        s.setJustifyContent(a)
+      }
+      RETURN THIS
+    }
+
+    #= Align children on the cross axis.  Returns THIS for chaining.
+    FUNC $setAlignItems(ZWT.FlexAlign a) FlexPanel @public
+      ZWT.Style s = $getStyle()
+      IF s != NIL
+        s.setAlignItems(a)
+      }
+      RETURN THIS
+    }
+
+    #= Align wrapped lines on the cross axis.  Returns THIS for chaining.
+    FUNC $setAlignContent(ZWT.FlexAlign a) FlexPanel @public
+      ZWT.Style s = $getStyle()
+      IF s != NIL
+        s.setAlignContent(a)
+      }
+      RETURN THIS
+    }
+
+    #= Return "FlexPanel(contents...)".
+    FUNC $ToString() string @replace @public
+      list<string> ls = NEW()
+      FOR item IN $items
+        ls.add(item.ToString())
+      }
+      RETURN "FlexPanel(" .. ls.ToString() .. ")"
+    }
+  }
+
+  #= A panel that lays out its children with CSS grid.
+  #- Define tracks with setColumns()/setRows(); children flow into cells.
+  #- Use a child Style's setGridColumn()/setGridRow() to place items explicitly.
+  CLASS GridPanel EXTENDS Panel @public
+
+    #! Create the container DIV and make it a grid container.
+    PROC $Init()
+>>>
+      %$elem% = $doc.createElement('div');
+<<<
+      $setStyle(NEW().setDisplay(ZWT.Display.grid))
+    }
+
+    #= Create an empty GridPanel.
+    NEW() @replace @default @public
+    }
+
+    #= Set the column track template, e.g. "1fr 1fr 1fr".
+    #- Returns THIS for chaining.
+    FUNC $setColumns(string tpl) GridPanel @public
+      ZWT.Style s = $getStyle()
+      IF s != NIL
+        s.setGridTemplateColumns(tpl)
+      }
+      RETURN THIS
+    }
+
+    #= Set the row track template, e.g. "auto 1fr".
+    #- Returns THIS for chaining.
+    FUNC $setRows(string tpl) GridPanel @public
+      ZWT.Style s = $getStyle()
+      IF s != NIL
+        s.setGridTemplateRows(tpl)
+      }
+      RETURN THIS
+    }
+
+    #= Set the gap between rows and columns in pixels.  Returns THIS for chaining.
+    FUNC $setGap(int px) GridPanel @public
+      ZWT.Style s = $getStyle()
+      IF s != NIL
+        s.setGridGap(px)
+      }
+      RETURN THIS
+    }
+
+    #= Set the gap between columns in pixels.  Returns THIS for chaining.
+    FUNC $setColumnGap(int px) GridPanel @public
+      ZWT.Style s = $getStyle()
+      IF s != NIL
+        s.setColumnGap(px)
+      }
+      RETURN THIS
+    }
+
+    #= Set the gap between rows in pixels.  Returns THIS for chaining.
+    FUNC $setRowGap(int px) GridPanel @public
+      ZWT.Style s = $getStyle()
+      IF s != NIL
+        s.setRowGap(px)
+      }
+      RETURN THIS
+    }
+
+    #= Justify items inside their cells.  Returns THIS for chaining.
+    FUNC $setJustifyItems(ZWT.FlexAlign a) GridPanel @public
+      ZWT.Style s = $getStyle()
+      IF s != NIL
+        s.setJustifyItems(a)
+      }
+      RETURN THIS
+    }
+
+    #= Align items on the cross axis.  Returns THIS for chaining.
+    FUNC $setAlignItems(ZWT.FlexAlign a) GridPanel @public
+      ZWT.Style s = $getStyle()
+      IF s != NIL
+        s.setAlignItems(a)
+      }
+      RETURN THIS
+    }
+
+    #= Return "GridPanel(contents...)".
+    FUNC $ToString() string @replace @public
+      list<string> ls = NEW()
+      FOR item IN $items
+        ls.add(item.ToString())
+      }
+      RETURN "GridPanel(" .. ls.ToString() .. ")"
+    }
+  }
+
   #! not implemented yet
   CLASS DockPanel EXTENDS CellPanel @public
   }

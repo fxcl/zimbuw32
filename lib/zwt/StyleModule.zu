@@ -147,6 +147,47 @@ MODULE StyleModule @public
     bottom
   }
 
+  #= How children of an element are laid out (the CSS display property).
+  #- Use |flex| for a FlexPanel layout and |grid| for a GridPanel layout.
+  ENUM Display @public
+    none         #= element is not displayed
+    block        #= a block-level box
+    inline       #= an inline-level box
+    inlineBlock  #= an inline-level block container
+    flex         #= a block-level flex container
+    inlineFlex   #= an inline-level flex container
+    grid         #= a block-level grid container
+    inlineGrid   #= an inline-level grid container
+  }
+
+  #= Direction of the main axis in a flex container (CSS flex-direction).
+  ENUM FlexDirection @public
+    row            #= main axis left to right
+    rowReverse     #= main axis right to left
+    column         #= main axis top to bottom
+    columnReverse  #= main axis bottom to top
+  }
+
+  #= Whether flex items wrap onto multiple lines (CSS flex-wrap).
+  ENUM FlexWrap @public
+    nowrap        #= items stay on one line
+    wrap          #= items wrap onto new lines
+    wrapReverse   #= items wrap onto new lines in reverse order
+  }
+
+  #= Alignment of flex/grid items along an axis.
+  #- Used for justify-content, align-items, align-content and align-self.
+  ENUM FlexAlign @public
+    flexStart     #= packed toward the start of the axis
+    flexEnd       #= packed toward the end of the axis
+    center        #= packed toward the center
+    stretch       #= stretch to fill the container
+    baseline      #= align by text baseline
+    spaceBetween  #= first at start, last at end, even space between
+    spaceAround   #= even space between, half-size at the ends
+    spaceEvenly   #= even space between and at the ends
+  }
+
   #= A style to be attached to a Widget or Table cell.
   #= Specifies various properties for the item.
   CLASS Style @public
@@ -791,6 +832,135 @@ MODULE StyleModule @public
       RETURN $clearValue("font-size")
     }
 
+    ############ flex / grid layout
+
+    #= Set the display mode (e.g. |Display.flex| or |Display.grid|).
+    #- Passing |Display.none| hides the element.
+    FUNC $setDisplay(Display d) Style @public
+      IF d == Display.none
+        RETURN $clearValue("display")
+      }
+      RETURN $setValue("display", displayNames[d.ToString()])
+    }
+
+    #= Clear the display mode, back to the default.
+    FUNC $clearDisplay() Style @public
+      RETURN $clearValue("display")
+    }
+
+    #= Set the flex direction (main axis) for a flex container.
+    FUNC $setFlexDirection(FlexDirection d) Style @public
+      RETURN $setValue("flex-direction", flexDirectionNames[d.ToString()])
+    }
+
+    #= Set whether flex items wrap onto multiple lines.
+    FUNC $setFlexWrap(FlexWrap w) Style @public
+      RETURN $setValue("flex-wrap", flexWrapNames[w.ToString()])
+    }
+
+    #= Distribute items along the main axis (CSS justify-content).
+    FUNC $setJustifyContent(FlexAlign a) Style @public
+      RETURN $setValue("justify-content", flexAlignNames[a.ToString()])
+    }
+
+    #= Align items on the cross axis (CSS align-items).
+    FUNC $setAlignItems(FlexAlign a) Style @public
+      RETURN $setValue("align-items", flexAlignNames[a.ToString()])
+    }
+
+    #= Align multiple lines on the cross axis (CSS align-content).
+    FUNC $setAlignContent(FlexAlign a) Style @public
+      RETURN $setValue("align-content", flexAlignNames[a.ToString()])
+    }
+
+    #= Align a single item, overriding align-items (CSS align-self).
+    FUNC $setAlignSelf(FlexAlign a) Style @public
+      RETURN $setValue("align-self", flexAlignNames[a.ToString()])
+    }
+
+    #= Set the flex grow factor.  0 = do not grow, 1 = absorb free space.
+    FUNC $setFlexGrow(int grow) Style @public
+      RETURN $setValue("flex-grow", grow .. "")
+    }
+
+    #= Set the flex shrink factor.  0 = do not shrink, 1 = shrink.
+    FUNC $setFlexShrink(int shrink) Style @public
+      RETURN $setValue("flex-shrink", shrink .. "")
+    }
+
+    #= Set the flex basis (initial size) in pixels.
+    FUNC $setFlexBasis(int v) Style @public
+      RETURN $setPixelValue("flex-basis", v)
+    }
+
+    #= Set the flex basis to |v| in unit |u|.
+    FUNC $setFlexBasis(int v, Unit u) Style @public
+      RETURN $setUnitValue("flex-basis", v, u)
+    }
+
+    #= Set the flex basis to a keyword, e.g. "auto" or "max-content".
+    FUNC $setFlexBasis(string s) Style @public
+      RETURN $setValue("flex-basis", s)
+    }
+
+    #= Set the order of a flex/grid item.  Lower values come first.
+    FUNC $setOrder(int order) Style @public
+      RETURN $setValue("order", order .. "")
+    }
+
+    #= Set the grow and shrink factors at once.
+    FUNC $setFlex(int grow, int shrink) Style @public
+      $setFlexGrow(grow)
+      RETURN $setFlexShrink(shrink)
+    }
+
+    ############ grid
+
+    #= Set the column track template, e.g. "1fr 1fr" or "repeat(3, 1fr)".
+    FUNC $setGridTemplateColumns(string tpl) Style @public
+      RETURN $setValue("grid-template-columns", tpl)
+    }
+
+    #= Set the row track template, e.g. "auto 1fr" or "repeat(2, 50px)".
+    FUNC $setGridTemplateRows(string tpl) Style @public
+      RETURN $setValue("grid-template-rows", tpl)
+    }
+
+    #= Set a child's column placement, e.g. "1" or "1 / 3".
+    FUNC $setGridColumn(string col) Style @public
+      RETURN $setValue("grid-column", col)
+    }
+
+    #= Set a child's row placement, e.g. "1" or "1 / span 2".
+    FUNC $setGridRow(string row) Style @public
+      RETURN $setValue("grid-row", row)
+    }
+
+    #= Set a child's grid area, e.g. "header" or "1 / 1 / 3 / 3".
+    FUNC $setGridArea(string area) Style @public
+      RETURN $setValue("grid-area", area)
+    }
+
+    #= Set the gap between rows and columns in pixels.
+    FUNC $setGridGap(int v) Style @public
+      RETURN $setPixelValue("gap", v)
+    }
+
+    #= Set the gap between columns in pixels.
+    FUNC $setColumnGap(int v) Style @public
+      RETURN $setPixelValue("column-gap", v)
+    }
+
+    #= Set the gap between rows in pixels.
+    FUNC $setRowGap(int v) Style @public
+      RETURN $setPixelValue("row-gap", v)
+    }
+
+    #= Justify grid items inside their cells (CSS justify-items).
+    FUNC $setJustifyItems(FlexAlign a) Style @public
+      RETURN $setValue("justify-items", flexAlignNames[a.ToString()])
+    }
+
     ############
 
     SHARED
@@ -806,6 +976,42 @@ MODULE StyleModule @public
           "inch":    "in",
           "point":   "pt",
           "pica":    "pc",
+      ] #!
+
+      # camelCase enum member -> hyphenated CSS keyword (e.g. rowReverse -> row-reverse)
+      dict<string, string> displayNames = [
+          "none":         "none",
+          "block":        "block",
+          "inline":       "inline",
+          "inlineBlock":  "inline-block",
+          "flex":         "flex",
+          "inlineFlex":   "inline-flex",
+          "grid":         "grid",
+          "inlineGrid":   "inline-grid",
+      ] #!
+
+      dict<string, string> flexDirectionNames = [
+          "row":            "row",
+          "rowReverse":     "row-reverse",
+          "column":         "column",
+          "columnReverse":  "column-reverse",
+      ] #!
+
+      dict<string, string> flexWrapNames = [
+          "nowrap":       "nowrap",
+          "wrap":         "wrap",
+          "wrapReverse":  "wrap-reverse",
+      ] #!
+
+      dict<string, string> flexAlignNames = [
+          "flexStart":     "flex-start",
+          "flexEnd":       "flex-end",
+          "center":        "center",
+          "stretch":       "stretch",
+          "baseline":      "baseline",
+          "spaceBetween":  "space-between",
+          "spaceAround":   "space-around",
+          "spaceEvenly":   "space-evenly",
       ] #!
     }
   }

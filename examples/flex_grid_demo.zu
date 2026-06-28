@@ -1,0 +1,13 @@
+# Compile-gate for Plan A #2: builds the FlexPanel/GridPanel API and the
+# flex/grid Style methods to JS, served via ZWT.run().  A clean build proves the
+# Display/FlexDirection/FlexWrap/FlexAlign enums, their CSS dicts, the ~24 Style
+# methods, and the two new panels all compile.
+
+IMPORT.ZWT "flex_grid_page.zu"
+
+ARG.Int port = NEW("p", "port", 8094, "Port for the HTTP server")
+
+FUNC Main() int
+  ZWT.run(FlexGridPage.Type(), "Zimbu ZWT flex/grid demo", port.value())
+  RETURN 0
+}

@@ -1,0 +1,51 @@
+# Exercises the Plan A #2 Flexbox/Grid layout API: FlexPanel, GridPanel, and the
+# flex/grid Style methods.  Compiled to JS via IMPORT.ZWT in flex_grid_demo.zu.
+# The Display / FlexDirection / FlexWrap / FlexAlign enums and their ToString-
+# keyed CSS dicts compile as part of every ZWT page (see StyleModule.zu), so a
+# clean build proves the whole API surface.  Visual layout is manual to verify
+# (consistent with the rest of zwtdemo), per the §8 testing reality.
+
+MODULE FlexGridPage
+
+  PROC init()
+    ZWT.root().add(ZWT.Label.NEW("Flexbox & Grid layout demo"))
+
+    # A row that spreads three items across the full width.
+    ZWT.FlexPanel row = ZWT.FlexPanel.NEW()
+    row.setJustifyContent(ZWT.FlexAlign.spaceBetween)
+    row.setAlignItems(ZWT.FlexAlign.center)
+    row.add(ZWT.Label.NEW("left"))
+    row.add(ZWT.Label.NEW("center"))
+    row.add(ZWT.Label.NEW("right"))
+    ZWT.root().add(row)
+
+    # A column; the middle child grows to fill the free vertical space.  The
+    # grow + background are set via a child Style (Panel.add(widget, style)).
+    ZWT.FlexPanel col = ZWT.FlexPanel.NEW(ZWT.FlexDirection.column)
+    col.add(ZWT.Label.NEW("top"))
+    ZWT.Style grow = ZWT.Style.NEW().setFlexGrow(1)
+                   .setBGColorName(ZWT.ColorName.silver)
+    col.add(ZWT.Label.NEW("grows"), grow)
+    col.add(ZWT.Label.NEW("bottom"))
+    ZWT.root().add(col)
+
+    # A wrapping row: items wrap onto new lines instead of overflowing.
+    ZWT.FlexPanel wrap = ZWT.FlexPanel.NEW()
+    wrap.setWrap(ZWT.FlexWrap.wrap)
+    wrap.setAlignContent(ZWT.FlexAlign.flexStart)
+    FOR i IN 0 UNTIL 6
+      wrap.add(ZWT.Label.NEW("item " .. i))
+    }
+    ZWT.root().add(wrap)
+
+    # A 3-column grid with an 8 px gap; six labels flow into two rows.
+    ZWT.GridPanel grid = ZWT.GridPanel.NEW()
+    grid.setColumns("1fr 1fr 1fr")
+    grid.setGap(8)
+    grid.setJustifyItems(ZWT.FlexAlign.center)
+    FOR i IN 0 UNTIL 6
+      grid.add(ZWT.Label.NEW("cell " .. i))
+    }
+    ZWT.root().add(grid)
+  }
+}

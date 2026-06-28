@@ -92,6 +92,8 @@ MODULE ZWTModule @public
     ALIAS PanelModule.ScrollPanel           ScrollPanel @public
     ALIAS PanelModule.PopupPanel            PopupPanel @public
     ALIAS PanelModule.VerticalPanel         VerticalPanel @public
+    ALIAS PanelModule.FlexPanel             FlexPanel @public
+    ALIAS PanelModule.GridPanel             GridPanel @public
 
     # Dialogs
     ALIAS DialogModule.NoButtonDialog       NoButtonDialog @public
@@ -167,6 +169,10 @@ MODULE ZWTModule @public
     ALIAS StyleModule.BorderStyle           BorderStyle @public
     ALIAS StyleModule.HorAlign              HorAlign @public
     ALIAS StyleModule.VerAlign              VerAlign @public
+    ALIAS StyleModule.Display               Display @public
+    ALIAS StyleModule.FlexDirection         FlexDirection @public
+    ALIAS StyleModule.FlexWrap              FlexWrap @public
+    ALIAS StyleModule.FlexAlign             FlexAlign @public
     ALIAS StyleModule.Style                 Style @public
     ALIAS StyleModule.setElementStyle       setElementStyle @public
 
