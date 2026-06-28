@@ -170,6 +170,7 @@ COMP_SOURCES = \
 	lib/VARBYTESTRINGModule.zu \
 	lib/VARSTRINGLoader.zu \
 	lib/VARSTRINGModule.zu \
+	lib/WebViewLoader.zu \
 	lib/ZLoader.zu \
 	lib/ZModule.zu \
 	lib/ZUTLoader.zu \
@@ -229,6 +230,7 @@ DOCINPUT = \
 	lib/TUPLEModule.zu \
 	lib/VARBYTESTRINGModule.zu \
 	lib/VARSTRINGModule.zu \
+	lib/WebViewModule.zu \
 	lib/ZModule.zu \
 	lib/ZUTModule.zu \
 	lib/zwt/BaseModule.zu \

@@ -1,0 +1,37 @@
+# Bare WEBVIEW.open() demo -- exercises the builtin directly, without ZWT.
+#
+# Serves a fixed HTML string on a local HTTP server, then opens it in a native
+# desktop window via the builtin WEBVIEW module.  Proves WEBVIEW.open() is a
+# composable primitive: usable on its own, independent of the ZWT framework
+# (cf. native_zwt_demo.zu, which reaches it via ZWT.runNative()).
+#
+# Build (macOS -- WebKit auto-links via uses(webview), NO flags needed):
+#   ./zimbu examples/native_webview_demo.zu
+# Linux/Windows: pass platform webview libs via --ccendarg (see WEBVIEW docs).
+# Run: ./examples/native_webview_demo
+#      (a native window opens showing the page; close it to exit)
+
+ARG.Int port = NEW("p", "port", 8096, "Port for the HTTP server")
+
+FUNC Main() int
+  HTTP.Server server = NEW(port.value())
+  string html = "<!DOCTYPE html><html><head><meta charset='utf-8'>"
+  html ..= "<title>WEBVIEW</title></head>"
+  html ..= "<body style='font-family:sans-serif;margin:2em'>"
+  html ..= "<h1>Hello from WEBVIEW.open()</h1>"
+  html ..= "<p>Served by a local HTTP.Server, shown in a native window.</p>"
+  html ..= "</body></html>"
+
+  # Bind the fixed HTML to /index.html and redirect the root to it.
+  HTTP.Servlet servlet = HTTP.StringServlet.NEW(html)
+  servlet.addPath("/index.html")
+  server.addServlet(servlet)
+  server.redirect("/", "/index.html")
+  server.start()
+
+  string url = "http://localhost:" .. port.value() .. "/index.html"
+  IO.print("WEBVIEW: serving at " .. url)
+  WEBVIEW.open(url, "WEBVIEW demo")
+  server.quit()
+  RETURN 0
+}

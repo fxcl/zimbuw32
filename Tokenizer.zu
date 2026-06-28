@@ -182,6 +182,7 @@ MODULE Tokenizer @items=public   # TODO: restrict visibility
       "VARBYTES": Token.Type.id,  # TODO: remove
       "VARBYTESTRING": Token.Type.id,
       "VARSTRING": Token.Type.id,
+      "WEBVIEW": TType.id,
       "WHILE": TType.while,
       "Z": TType.id,
       "ZUT": TType.id,

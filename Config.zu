@@ -185,10 +185,38 @@ MODULE Config @items=public                   # TODO: restrict visibility
     }
   }
 
+  # TRUE iff this compiler binary was built on macOS. Resolved at compiler-build
+  # time via the C preprocessor: __APPLE__ is defined (by Clang) only on macOS.
+  # Zimbu rebuilds per-OS and links user programs with the local cc, so the
+  # build host == the link host, which makes this the right test for which
+  # framework flags to emit. Mirrors the run()/%intSize% C-block idiom (line 78).
+  FUNC darwinHost() bool
+    bool r = FALSE
+>>>
+#ifdef __APPLE__
+    %r% = 1;
+#else
+    %r% = 0;
+#endif
+<<<
+    RETURN r
+  }
+
   # call when using the native macOS GUI. AppKit/Foundation are macOS-only
   # frameworks; the arg is hardcoded (no config entry) for this first slice.
   PROC addAppKitLib()
     %libArgs.add("-framework AppKit -framework Foundation")
+  }
+
+  # call when using the native WebView (WEBVIEW module). macOS: host-detected,
+  # adds WebKit + AppKit + Foundation (WebKit is NOT pulled in by uses(appkit)).
+  # Other hosts: no-op -- Linux/Windows pass platform libs via --ccendarg until
+  # their flag paths land. The darwinHost() guard is essential: an unconditional
+  # -framework flag cannot be cancelled by --ccendarg and would break Linux.
+  PROC addWebViewLib()
+    IF darwinHost()
+      %libArgs.add("-framework WebKit -framework AppKit -framework Foundation")
+    }
   }
 
   FUNC compilerCmd(string srcName, string binName) string

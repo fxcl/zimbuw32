@@ -1,0 +1,38 @@
+#
+# The Zimbu compiler written in Zimbu
+#
+# WebView module loader - native desktop WebView (macOS WKWebView et al.)
+#
+# The low-level work lives in lib/WebViewModule.zu; it drives the OS native
+# toolkits from pure C via Zimbu's `>>> uses(webview) blockgc` C interleave.
+# `uses(webview)` triggers Config.addWebViewLib(), which adds the
+# OS-appropriate link flags (on macOS "-framework WebKit -framework AppKit
+# -framework Foundation"), so user programs that IMPORT.WEBVIEW auto-link with
+# no extra flags on macOS. Mirrors lib/GUILoader.zu.
+#
+
+IMPORT "../Builtin.zu"
+IMPORT "../Declaration.zu"
+IMPORT "../SContext.zu"
+
+MODULE WebViewLoader @public @items=public
+  Declaration moduleDecl
+
+  # Prepare for using the builtin WEBVIEW module.
+  FUNC prepare() Builtin
+    Builtin b = NEW()
+    b.moduleName = "WebViewModule"
+    b.fileName = "WebViewModule.zu"
+    b.setup = setup
+    RETURN b
+  }
+
+  # Invoked when the WEBVIEW module is used, after it was processed first time.
+  PROC setup(Builtin builtin, SContext ctx)
+    IF moduleDecl == NIL
+      # Add this module to the list of predefined symbols.
+      moduleDecl = Builtin.addLibModule("WEBVIEW", builtin)
+    }
+  }
+
+}

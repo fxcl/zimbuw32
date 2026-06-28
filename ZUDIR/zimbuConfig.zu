@@ -1,4 +1,4 @@
-# Generated from zimbuConfig.proto
+# Generated from zimbuw32/zimbuConfig.proto
 
 IMPORT "$PLUGIN/proto/Proto.zu"
 IMPORT "$PLUGIN/proto/Message.zu"

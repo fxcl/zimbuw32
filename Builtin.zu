@@ -69,6 +69,7 @@ IMPORT "lib/TIOLoader.zu"
 IMPORT "lib/TYPELoader.zu"
 IMPORT "lib/VARBYTESTRINGLoader.zu"
 IMPORT "lib/VARSTRINGLoader.zu"
+IMPORT "lib/WebViewLoader.zu"
 IMPORT "lib/ZLoader.zu"
 IMPORT "lib/ZUTLoader.zu"
 IMPORT "lib/ZWTLoader.zu"
@@ -172,6 +173,7 @@ CLASS Builtin @items=public                   # TODO: restrict visibility
       %availableModules["TYPE"] = TYPELoader.prepare()
       %availableModules["VARBYTESTRING"] = VARBYTESTRINGLoader.prepare()
       %availableModules["VARSTRING"] = VARSTRINGLoader.prepare()
+      %availableModules["WEBVIEW"] = WebViewLoader.prepare()
       %availableModules["Z"] = ZLoader.prepare()
       %availableModules["ZUT"] = ZUTLoader.prepare()
       %availableModules["ZWT"] = ZWTLoader.prepare()
