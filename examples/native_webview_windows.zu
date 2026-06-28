@@ -1,0 +1,168 @@
+#
+# Native desktop WebView spike for Zimbu (Windows / Win32 + WebView2) — Phase 2, #6.
+#
+# Sibling to native_webview.zu (macOS/objc) and native_webview_linux.zu (GTK3).
+# LOCAL proof file. zimbuw32/ is gitignored in the outer repo (vendored upstream
+# tree); not tracked there. Reversible: rm this file and nothing else changes.
+# NO compiler source edit, NO rebuild.
+#
+# Build (Windows, MSVC link line — adapt -l names for MinGW):
+#   ./zimbu examples/native_webview_windows.zu --ccendarg "ole32.lib user32.lib"
+# Run:   ./native_webview_windows
+#        (point a ZWT server at http://localhost:8097/ first.)
+#
+# Gate on macOS/Linux: ./zimbu examples/native_webview_windows.zu
+#   Expect clean C emit + .c compile, then LINK FAILURE on undefined symbols
+#   (_CreateWindowExA / _RegisterClassExA / _DefWindowProcA / _CoInitializeEx /
+#   _LoadLibraryA / _GetMessageA ...). That link failure IS the syntax gate
+#   passing: it proves the >>> block balances, the % substitution, and every
+#   forward declaration type-checks. No --nolink flag exists; link fail is the
+#   ceiling on a non-Windows host. A real gate needs a Windows box.
+#
+# Goal: prove the Win32 + WebView2 path is REACHABLE from Zimbu >>> interleave:
+#   CoInitializeEx readies COM; RegisterClassExA/CreateWindowExA make a top-level
+#   window; LoadLibraryA("EmbeddedBrowserWebView.dll") + GetProcAddress resolve the
+#   WebView2 loader export CreateCoreWebView2EnvironmentWithOptions. This is the
+#   binding shape a future ZWT-to-native bridge would take on Windows, mirroring
+#   the objc_msgSend / GTK3 patterns proven on the other two hosts.
+#
+# Why pure C, no #include <windows.h>: same constraint as native_webview — the
+# emitted TU is a .c compiled in C mode; #include of a system header inside a
+# `>>>` block is illegal (function definitions at function scope). So we include
+# NOTHING, forward-declare the Win32/COM entry points, and reach them by symbol.
+#
+# --- THE WNDPROC PROBLEM (and how this spike sidesteps it) ---
+# A normal Win32 window needs a custom WndProc(HWND,UINT,WPARAM,LPARAM) supplied
+# to WNDCLASSEX.lpfnWndProc. WndProc is a callback *you* must define. The `>>>`
+# interleave CANNOT define a C function (only forward-declare + call), and the
+# %[$method]% trampoline (proven on macOS/Linux) does NOT fit: it emits an
+# INSTANCE method whose first slot is `this`, so a 4-arg, no-`this` callback
+# would have every argument shifted by one (hwnd->this, msg->hwnd, ...). Atexit
+# (0 args) and GSourceFunc (1 arg absorbed by `this`) worked precisely because
+# the caller passed FEWER args than the trampoline's hidden `this`; WndProc
+# passes 4 with no `this` slot. Unsalvageable.
+#
+# Escape: DefWindowProcA is a real Win32 library function whose signature IS
+# WndProc's. Register it as lpfnWndProc and the window gets correct default
+# behavior (close box, minimize, etc.) with ZERO custom callback. This is the
+# furthest the pure-Zimbu binding reaches without authoring a real WndProc.
+#
+# --- THE WEBVIEW2 BLOCKER (what this spike does NOT do) ---
+# CreateCoreWebView2EnvironmentWithOptions is RESOLVED here (loader reachable)
+# but NOT driven. Its last arg is an ICoreWebView2CreateCoreWebView2Environment-
+# CompletedHandler — a COM vtable object, not a C function pointer. The >>>
+# interleave cannot author a COM vtable, and the trampoline cannot impersonate
+# one. So the WebView2 control never instantiates from pure Zimbu. Closing this
+# gap needs either a hand-written .c vtable shim linked in (breaks the pure->>>
+# pattern) or new compiler machinery for COM interop — a Phase 3+ concern.
+#
+# --- SELF-CLOSE LIMITATION ---
+# Because lpfnWndProc = DefWindowProcA (no custom handler), closing the window
+# does NOT call PostQuitMessage (WM_DESTROY just falls through to default), so
+# the GetMessage loop never receives WM_QUIT and the process does not exit on
+# close. Kill it externally. A custom WndProc would fix this — same blocker as
+# above. Acceptable for a reachability spike.
+#
+# Win64 struct layouts are reproduced by field order + natural alignment; this
+# file only runs on Windows, where DWORD=unsigned long is 4 bytes as assumed.
+
+FUNC Main() int
+>>>
+  /* Forward declarations ONLY (legal at function scope; definitions are not, so
+   * no #include of <windows.h> here). Drive Win32 + COM from pure C. */
+  extern int printf(const char *, ...);
+
+  extern void *GetModuleHandleA(const char *);            /* HMODULE own exe via NULL */
+  extern unsigned short RegisterClassExA(void *wc);
+  extern void *CreateWindowExA(unsigned long ex, const char *cls, const char *name,
+                               unsigned long style, int x, int y, int w, int h,
+                               void *parent, void *menu, void *inst, void *param);
+  extern int  ShowWindow(void *hwnd, int cmd);
+  extern int  UpdateWindow(void *hwnd);
+  extern int  GetMessageA(void *msg, void *hwnd, unsigned lo, unsigned hi);
+  extern int  TranslateMessage(void *msg);
+  extern long long DispatchMessageA(void *msg);
+  extern long long DefWindowProcA(void *hwnd, unsigned int msg,
+                                  unsigned long long wp, long long lp);
+  extern void PostQuitMessage(int code);
+  extern void *LoadLibraryA(const char *path);
+  extern void *GetProcAddress(void *mod, const char *name);
+  extern long CoInitializeEx(void *reserved, unsigned long coInit);
+
+  /* WNDCLASSEXA (Win64, 80 bytes): field order + natural alignment reproduces ABI. */
+  typedef long long (*ZNWndProc)(void *, unsigned int, unsigned long long, long long);
+  typedef struct {
+    unsigned int  cbSize;
+    unsigned int  style;
+    ZNWndProc     lpfnWndProc;
+    int           cbClsExtra;
+    int           cbWndExtra;
+    void         *hInstance;
+    void         *hIcon;
+    void         *hCursor;
+    void         *hbrBackground;
+    const char   *lpszMenuName;
+    const char   *lpszClassName;
+    void         *hIconSm;
+  } ZNWndClassEx;
+
+  /* MSG (Win64, 48 bytes). WPARAM/LPARAM are pointer-sized; DWORD is 4 on Win64. */
+  typedef struct {
+    void              *hwnd;
+    unsigned int       message;
+    unsigned long long wParam;   /* after message(4): 4-byte pad for 8-byte align */
+    long long          lParam;
+    unsigned long      time;
+    long               pt_x;
+    long               pt_y;
+  } ZNMsg;
+
+  /* COINIT_APARTMENTTHREADED = 0x2. WebView2 needs a single-threaded apartment. */
+  long co = CoInitializeEx((void *)0, 2UL);
+  printf("[zimbu-wv] CoInitializeEx -> %ld\n", co);
+
+  void *inst = GetModuleHandleA((const char *)0);
+
+  /* DefWindowProcA's signature IS WndProc's, so it serves as lpfnWndProc with no
+   * custom callback (see the WNDPROC note above). */
+  ZNWndClassEx wc = {0};
+  wc.cbSize        = sizeof(ZNWndClassEx);
+  wc.lpfnWndProc   = DefWindowProcA;
+  wc.hInstance     = inst;
+  wc.lpszClassName = "ZimbuWebView";
+  unsigned short atom = RegisterClassExA(&wc);
+  printf("[zimbu-wv] RegisterClassExA atom=%u (0 == failure)\n", atom);
+
+  /* WS_OVERLAPPEDWINDOW = 0x00CF0000 (title bar + sys menu + min/max + thick frame). */
+  void *hwnd = CreateWindowExA(0UL, "ZimbuWebView", "Zimbu WebView2 spike",
+                               0x00CF0000UL,
+                               100, 100, 800, 600,
+                               (void *)0, (void *)0, inst, (void *)0);
+  printf("[zimbu-wv] CreateWindowExA hwnd=%p\n", hwnd);
+  ShowWindow(hwnd, 1 /* SW_SHOWNORMAL */);
+  UpdateWindow(hwnd);
+
+  /* Resolve the WebView2 loader export — reachability proof. The Evergreen
+   * runtime ships EmbeddedBrowserWebView.dll; load its ANSI export by name. */
+  void *dll = LoadLibraryA("EmbeddedBrowserWebView.dll");
+  if (dll != (void *)0) {
+    void *env = GetProcAddress(dll, "CreateCoreWebView2EnvironmentWithOptions");
+    printf("[zimbu-wv] loader resolved CreateCoreWebView2EnvironmentWithOptions=%p\n", env);
+    printf("[zimbu-wv] NOT driven: needs a COM vtable handler the >>> interleave cannot author (#6 blocker)\n");
+  } else {
+    printf("[zimbu-wv] EmbeddedBrowserWebView.dll not found; install the Evergreen runtime to reach the loader\n");
+  }
+
+  /* Message pump. With DefWindowProcA as the class proc, closing the window does
+   * not post WM_QUIT (see SELF-CLOSE note); kill the process to exit. */
+  ZNMsg msg;
+  int n;
+  while ((n = GetMessageA(&msg, (void *)0, 0U, 0U)) > 0) {
+    TranslateMessage(&msg);
+    DispatchMessageA(&msg);
+  }
+  printf("[zimbu-wv] GetMessage -> %d (loop exited)\n", n);
+<<<
+
+  RETURN 0
+}
