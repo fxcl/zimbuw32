@@ -202,20 +202,45 @@ MODULE Config @items=public                   # TODO: restrict visibility
     RETURN r
   }
 
+  # TRUE iff this compiler binary was built on Linux. Same mechanism as
+  # darwinHost(): resolved at compiler-build time via the C preprocessor.
+  FUNC linuxHost() bool
+    bool r = FALSE
+>>>
+#ifdef __linux__
+    %r% = 1;
+#else
+    %r% = 0;
+#endif
+<<<
+    RETURN r
+  }
+
   # call when using the native macOS GUI. AppKit/Foundation are macOS-only
   # frameworks; the arg is hardcoded (no config entry) for this first slice.
   PROC addAppKitLib()
     %libArgs.add("-framework AppKit -framework Foundation")
   }
 
-  # call when using the native WebView (WEBVIEW module). macOS: host-detected,
-  # adds WebKit + AppKit + Foundation (WebKit is NOT pulled in by uses(appkit)).
-  # Other hosts: no-op -- Linux/Windows pass platform libs via --ccendarg until
-  # their flag paths land. The darwinHost() guard is essential: an unconditional
-  # -framework flag cannot be cancelled by --ccendarg and would break Linux.
+  # call when using the native WebView (WEBVIEW module). Host-detected so a user
+  # program needs NO --ccendarg on any host:
+  #  - macOS (darwinHost): -framework WebKit AppKit Foundation (WebKit is NOT
+  #    pulled in by uses(appkit)).
+  #  - Linux (linuxHost): "$(pkg-config --libs webkit2gtk-4.1 gtk+-3.0 ||
+  #    pkg-config --libs webkit2gtk-4.0 gtk+-3.0)". The $(...) is shell command
+  #    substitution: it is NOT evaluated here, but later, when the assembled cc
+  #    command runs via SYS.shell() = libc system() = /bin/sh -c. So pkg-config
+  #    emits the right -l flags (incl. transitive deps + the 4.1/4.0 version
+  #    match for the distro) at link time. WebViewModule forward-declares every
+  #    GTK/WebKit symbol, so no -I include flags are needed at compile time.
+  #  - Other hosts (e.g. Windows): no-op here; the Windows body is a stub.
+  # The host guards are essential: an unconditional -framework would break Linux
+  # and an unconditional -lwebkit2gtk would break macOS.
   PROC addWebViewLib()
     IF darwinHost()
       %libArgs.add("-framework WebKit -framework AppKit -framework Foundation")
+    ELSEIF linuxHost()
+      %libArgs.add("$(pkg-config --libs webkit2gtk-4.1 gtk+-3.0 2>/dev/null || pkg-config --libs webkit2gtk-4.0 gtk+-3.0 2>/dev/null)")
     }
   }
 

@@ -12,18 +12,19 @@
 #
 # Binding pattern (mirrors GUI/uses(appkit)): the work is pure C inside a
 # `>>> uses(webview, getCstring) blockgc` interleave. `uses(webview)` triggers
-# Config.addWebViewLib(), which appends the OS-appropriate link flags: on macOS
-# "-framework WebKit -framework AppKit -framework Foundation" (host-detected),
-# nothing elsewhere (Linux/Windows pass platform libs via --ccendarg until their
-# gate lands). So a user program merely IMPORTs WEBVIEW and calls WEBVIEW.open()
-# with no --ccendarg on macOS.
+# Config.addWebViewLib(), which appends OS-appropriate link flags host-detected:
+# on macOS "-framework WebKit -framework AppKit -framework Foundation"; on Linux
+# "$(pkg-config --libs webkit2gtk-4.1 gtk+-3.0 || ...4.0...)" (shell-expanded
+# when the cc command runs via SYS.shell). So a user program merely IMPORTs
+# WEBVIEW and calls WEBVIEW.open() with NO --ccendarg on macOS or Linux.
 #
 # OS branches:
-#  - macOS (__APPLE__): authoritative. WKWebView + NSWindow + the GUIModule
-#    returning event-pump (objc_msgSend from pure C; no .m, no headers).
-#  - Linux (__linux__): PRELIMINARY. webkit2gtk + GTK3, written from docs, NOT
-#    built on this host (no webkit2gtk headers). Forward-declared like the objc
-#    branch. Link via --ccendarg on the Linux target.
+#  - macOS (__APPLE__): authoritative, verified. WKWebView + NSWindow + the
+#    GUIModule returning event-pump (objc_msgSend from pure C; no .m, no
+#    headers).
+#  - Linux (__linux__): webkit2gtk + GTK3, auto-linked via pkg-config. Written
+#    from docs, NOT built on this macOS host (forward-declared like the objc
+#    branch); PRELIMINARY until the Linux gate (link + run) passes on target.
 #  - Windows (__MINGW32__): native WebView embedding needs a file-scope WndProc,
 #    which cannot be emitted inside this function-body interleave (no nested
 #    function definitions in standard C). Surfaced as a clear limitation until
@@ -38,9 +39,10 @@
 MODULE WebViewModule @public @items=public
 
   #= Open a native OS window titled |title| hosting a system WebView pointed at
-  #  |url|. Blocks until the window is closed by the user. Auto-links WebKit +
-  #  AppKit + Foundation on macOS via `uses(webview)`; Linux/Windows need
-  #  --ccendarg (PRELIMINARY there - see header).
+  #  |url|. Blocks until the window is closed by the user. Auto-links on macOS
+  #  (WebKit/AppKit/Foundation) and Linux (webkit2gtk/GTK3 via pkg-config) via
+  #  `uses(webview)`; no --ccendarg needed on either. Windows is a stub
+  #  (PRELIMINARY - see header).
   PROC open(string url, string title)
 >>> uses(webview, getCstring) blockgc
   {
@@ -139,13 +141,14 @@ MODULE WebViewModule @public @items=public
     C0(void, pool, "drain");
 
 #elif defined(__linux__)
-    /* PRELIMINARY -- webkit2gtk + GTK3, written from docs, NOT built on this
-     * macOS host. Forward-declared like the objc branch (no #include at function
-     * scope). Link flags come from --ccendarg on the Linux target until the
-     * webview uses-name gains a Linux flag path. */
+    /* webkit2gtk + GTK3. Auto-linked via uses(webview) -> Config.addWebViewLib()
+     * -> "$(pkg-config --libs webkit2gtk-4.1 gtk+-3.0 || ...4.0...)" (shell-
+     * expanded when the cc command runs). Forward-declared like the objc branch
+     * (no #include at function scope); pkg-config supplies the -l flags only. */
     typedef struct _GtkWidget GtkWidget;
     typedef struct _GtkWindow GtkWindow;
     typedef struct _GtkContainer GtkContainer;
+    typedef void (*GCallback)(void);
     extern void gtk_init(int *, char ***);
     extern GtkWidget *gtk_window_new(int);                 /* GTK_WINDOW_TOPLEVEL */
     extern void gtk_window_set_title(GtkWindow *, const char *);
@@ -154,16 +157,28 @@ MODULE WebViewModule @public @items=public
     extern void webkit_web_view_load_uri(GtkWidget *, const char *);
     extern void gtk_widget_show_all(GtkWidget *);
     extern void gtk_main(void);
+    extern void gtk_main_quit(void);
+    /* g_signal_connect(instance, signal, cb, data) is a macro for this. Returns
+     * the handler id (gulong); connect_flags is an int enum -> 0 here. */
+    extern unsigned long g_signal_connect_data(void *, const char *,
+                                               GCallback, void *, void *,
+                                               unsigned int);
 
     gtk_init((int *)0, (char ***)0);
     GtkWidget *win = gtk_window_new(0);
     gtk_window_set_title((GtkWindow *)win, ZgetCstring(%title%));
+    /* Route the window "destroy" (emitted after the close button's default
+     * delete-event handler tears down the toplevel) to gtk_main_quit, so
+     * gtk_main() returns and open() unblocks. Without this gtk_main() runs
+     * forever after the window is gone. */
+    g_signal_connect_data((void *)win, "destroy",
+                          (GCallback)gtk_main_quit,
+                          (void *)0, (void *)0, 0);
     GtkWidget *wv = webkit_web_view_new();
     webkit_web_view_load_uri(wv, ZgetCstring(%url%));
     gtk_container_add((GtkContainer *)win, wv);
     gtk_widget_show_all(win);
-    gtk_main();   /* blocks; the default delete-event destroys the last toplevel
-                   * and gtk_main() returns -> open() returns. */
+    gtk_main();   /* blocks until gtk_main_quit() (connected above). */
 
 #elif defined(__MINGW32__)
     /* PRELIMINARY / KNOWN LIMITATION -- native WebView embedding on Windows

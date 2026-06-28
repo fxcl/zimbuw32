@@ -5,9 +5,9 @@
 # composable primitive: usable on its own, independent of the ZWT framework
 # (cf. native_zwt_demo.zu, which reaches it via ZWT.runNative()).
 #
-# Build (macOS -- WebKit auto-links via uses(webview), NO flags needed):
+# Build (macOS + Linux -- webview auto-links via uses(webview), NO flags needed):
 #   ./zimbu examples/native_webview_demo.zu
-# Linux/Windows: pass platform webview libs via --ccendarg (see WEBVIEW docs).
+# Windows: stub only (see lib/WebViewModule.zu); user32 links by default.
 # Run: ./examples/native_webview_demo
 #      (a native window opens showing the page; close it to exit)
 

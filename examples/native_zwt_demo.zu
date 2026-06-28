@@ -6,9 +6,9 @@
 # web view pointed at the server and blocks until the window closes.  This
 # exercises the delegation end to end: server setup, WEBVIEW.open(), teardown.
 #
-# Build (macOS -- WebKit auto-links via uses(webview), NO flags needed):
+# Build (macOS + Linux -- webview auto-links via uses(webview), NO flags needed):
 #   ./zimbu examples/native_zwt_demo.zu
-# Linux/Windows: pass platform webview libs via --ccendarg (see WEBVIEW docs).
+# Windows: stub only (see lib/WebViewModule.zu); user32 links by default.
 # Run: ./examples/native_zwt_demo
 #      (a native window opens showing the flex/grid page; close it to exit)
 
