@@ -1,0 +1,102 @@
+# WEBVIEW navigation-delegate + loadHTML viewer demo.
+#
+# Proves two macOS WEBVIEW extensions, then STAYS OPEN so you can see the loaded
+# page. Close the window with the OS close button to exit.
+#   1. WKNavigationDelegate -> poll() channel: a load surfaces in the bridge
+#      ring as nav:start then nav:done (or nav:fail:<reason>).
+#   2. loadHTML() direct content load: replace the page with a literal HTML
+#      string, NO HTTP server required. The page runs an inline script that
+#      posts 'ready:NAVHTML' to the bridge. about:blank cannot produce that
+#      message, so it is a hard proof that loadHTML's content actually executed.
+#
+# Build (macOS + Linux -- uses(webview) auto-links, NO flags needed):
+#   ./zimbu examples/native_webview_nav_demo.zu
+# Windows (MinGW): builds; eval/poll + the nav channel are PRELIMINARY there.
+# Run: ./examples/native_webview_nav_demo
+#
+# The window stays open until you close it. nav:* and ready:NAVHTML stream live
+# to stdout; the verdict prints at exit:
+#   webview: nav=Y/N html=Y/N [nav:fail:<reason>]
+#   nav=Y  -> the delegate fired nav:start AND nav:done for the loadHTML load
+#   html=Y -> loadHTML content executed (ready:NAVHTML arrived)
+
+FUNC Main() int
+  # Start on about:blank so no HTTP server is needed -- proving loadHTML is a
+  # self-contained content load, not a fetch.
+  WEBVIEW.Window a = WEBVIEW.Window.NEW("about:blank", "Nav Demo", 520, 400, 120, 120, 15)
+  IO.print("webview: opened about:blank (close the window to exit)")
+
+  bool gotNavStart = FALSE
+  bool gotNavDone = FALSE
+  bool gotNavFail = FALSE
+  string failReason = ""
+  bool gotReady = FALSE
+  bool didLoad = FALSE
+  int settle = 0      # pumps since open; fires loadHTML once, early
+
+  # Pump until the user closes the window (isOpen() turns FALSE). No cap: the
+  # OS close button is the escape, so a load failure just leaves a blank window
+  # the user closes manually.
+  WHILE a.isOpen()
+    WEBVIEW.run()
+    settle = settle + 1
+
+    # Let about:blank settle a few pumps, then replace it with real content.
+    # The inline script posts 'ready:NAVHTML' the moment it executes.
+    IF settle == 5 && !didLoad
+      string html = "<!DOCTYPE html><html><head><meta charset='utf-8'>"
+      html ..= "<title>Nav Demo</title></head>"
+      html ..= "<body style='font-family:sans-serif;margin:2em'>"
+      html ..= "<h1>loadHTML + navigation delegate</h1>"
+      html ..= "<p>Loaded via WEBVIEW.Window.loadHTML -- no HTTP server.</p>"
+      html ..= "<p>Close this window to exit the demo.</p>"
+      html ..= "<script>try{window.webkit.messageHandlers.zimbu.postMessage('ready:NAVHTML')}catch(e){}</script>"
+      html ..= "</body></html>"
+      a.loadHTML(html)
+      IO.print("webview: called loadHTML()")
+      didLoad = TRUE
+    }
+
+    # Drain every bridge message this pump produced (FIFO): nav:* tags plus the
+    # page's ready:NAVHTML.
+    WHILE TRUE
+      string m = a.poll()
+      IF m == ""
+        BREAK
+      }
+      IO.print("bridge: " .. m)
+      IF m == "nav:start"
+        gotNavStart = TRUE
+      }
+      IF m == "nav:done"
+        gotNavDone = TRUE
+      }
+      IF m == "ready:NAVHTML"
+        gotReady = TRUE
+      }
+      IF m.startsWith("nav:fail:")
+        gotNavFail = TRUE
+        failReason = m
+      }
+    }
+  }
+
+  # Window closed by the user (or the OS). close() is a safe no-op on a window
+  # that is already closed (the C side NULL-guards and nulls the handle).
+  a.close()
+
+  string sNav = "N"
+  IF gotNavStart && gotNavDone
+    sNav = "Y"
+  }
+  string sHtml = "N"
+  IF gotReady
+    sHtml = "Y"
+  }
+  string verdict = "webview: nav=" .. sNav .. " html=" .. sHtml
+  IF gotNavFail
+    verdict ..= " " .. failReason
+  }
+  IO.print(verdict)
+  RETURN 0
+}

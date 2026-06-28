@@ -42,6 +42,7 @@
 #ifndef ZIMBU_WEBVIEW_INT_H
 #define ZIMBU_WEBVIEW_INT_H
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -59,6 +60,11 @@ typedef struct { double x, y, width, height; } ZWRect;
 #define zwv_nil ((id)0)
 #define zwv_YES ((BOOL)1)
 #define zwv_NO  ((BOOL)0)
+
+/* A window-style bit (high, outside the NSWindowStyleMask range) that opts a
+ * window into the browser chrome (toolbar + address field + spinner) built
+ * above the webview. Default windows have no chrome; existing demos unchanged. */
+#define ZIMBU_WV_STYLE_NAVBAR (1UL << 20)
 
 extern id   objc_msgSend(void);                 /* cast per call site (ABI-exact) */
 extern id   objc_getClass(const char *);
@@ -79,6 +85,12 @@ typedef struct {
   id webView;
   id userCC;       /* retained WKUserContentController (keeps the handler alive) */
   id handler;      /* retained synthesized message-handler instance */
+  id navDelegate;  /* retained WKNavigationDelegate instance */
+  /* Browser-chrome parts (set only when created with ZIMBU_WV_STYLE_NAVBAR). */
+  id controller;         /* synthesized toolbar target (target/action owner) */
+  id addressField;       /* NSTextField showing the current URL */
+  id homeURL;            /* NSString of the initial URL (Home button target) */
+  id progressIndicator;  /* indeterminate NSProgressIndicator (load spinner) */
   char **msgs;     /* FIFO ring of UTF-8 strings (each malloc'd; caller frees) */
   int   msgCap;
   int   msgHead;
@@ -157,6 +169,302 @@ static id zwv_getHandlerClass(void) {
   return zwv_handlerClass;
 }
 
+/* ---- WKNavigationDelegate synthesis ------------------------------------- */
+/* The generated TU is plain .c (no ObjC headers), so we synthesize an NSObject
+ * subclass at runtime and wire its load callbacks to plain C IMPs. Each IMP
+ * posts a short tag into the owning window's ring so poll() can report load
+ * state to Zimbu without crossing the closure gap. The webView is always the
+ * first object argument of a WKNavigationDelegate method, so the registry
+ * lookup (zwv_findByWebView) is identical to the script-message path. These
+ * IMPs also drive the optional browser chrome (load spinner + address sync)
+ * when the window was created with ZIMBU_WV_STYLE_NAVBAR. */
+static ZWWindow *zwv_findByWebView(id webView) {
+  int i;
+  for (i = 0; i < zwv_registryCount; ++i)
+    if (zwv_registry[i] && zwv_registry[i]->webView == webView)
+      return zwv_registry[i];
+  return NULL;
+}
+static void zwv_ringPushForWebView(id webView, const char *utf8) {
+  ZWWindow *zw = zwv_findByWebView(webView);
+  if (zw) zwv_ringPush(zw, utf8);
+}
+/* Start/stop the indeterminate load spinner (no-op when there is no chrome). */
+static void zwv_setLoading(ZWWindow *zw, BOOL loading) {
+  if (!zw || !zw->progressIndicator) return;
+  ((void (*)(id, SEL, id))objc_msgSend)(zw->progressIndicator,
+      loading ? sel_registerName("startAnimation:")
+               : sel_registerName("stopAnimation:"),
+      zwv_nil);
+}
+/* Copy the webview's current URL into the address field (no-op w/o chrome). */
+static void zwv_syncAddress(ZWWindow *zw) {
+  if (!zw || !zw->addressField || !zw->webView) return;
+  id url = ((id (*)(id, SEL))objc_msgSend)(zw->webView, sel_registerName("URL"));
+  if (!url) return;
+  id s = ((id (*)(id, SEL))objc_msgSend)(url, sel_registerName("absoluteString"));
+  if (s)
+    ((void (*)(id, SEL, id))objc_msgSend)(zw->addressField,
+        sel_registerName("setStringValue:"), s);
+}
+static void zwv_navStart_IMP(id s, SEL c, id wv, id nav) {
+  (void)s; (void)c; (void)nav;
+  zwv_ringPushForWebView(wv, "nav:start");
+  zwv_setLoading(zwv_findByWebView(wv), zwv_YES);
+}
+static void zwv_navCommit_IMP(id s, SEL c, id wv, id nav) {
+  (void)s; (void)c; (void)nav;
+  zwv_ringPushForWebView(wv, "nav:commit");
+  zwv_syncAddress(zwv_findByWebView(wv));
+}
+static void zwv_navDone_IMP(id s, SEL c, id wv, id nav) {
+  (void)s; (void)c; (void)nav;
+  zwv_ringPushForWebView(wv, "nav:done");
+  ZWWindow *zw = zwv_findByWebView(wv);
+  zwv_setLoading(zw, zwv_NO);
+  zwv_syncAddress(zw);
+}
+static void zwv_navFail_IMP(id s, SEL c, id wv, id nav, id err) {
+  (void)s; (void)c; (void)nav;
+  ZWWindow *zw = zwv_findByWebView(wv);
+  if (zw && err) {
+    id desc = ((id (*)(id, SEL))objc_msgSend)(err,
+        sel_registerName("localizedDescription"));
+    const char *utf8 = desc
+        ? ((const char *(*)(id, SEL))objc_msgSend)(desc,
+            sel_registerName("UTF8String"))
+        : "unknown";
+    char buf[512];
+    snprintf(buf, sizeof(buf), "nav:fail:%.480s",
+             utf8 ? utf8 : "unknown");
+    zwv_ringPush(zw, buf);
+  } else {
+    zwv_ringPushForWebView(wv, "nav:fail:unknown");
+  }
+  zwv_setLoading(zw, zwv_NO);
+}
+
+static id zwv_getNavDelegateClass(void) {
+  static id cls = zwv_nil;
+  if (cls) return cls;
+  id nsObj = objc_getClass("NSObject");
+  cls = objc_allocateClassPair(nsObj, "ZimbuWVNavDelegate", 0);
+  if (!cls) return zwv_nil;
+  /* "v@:@@" = void(self,_cmd,webView,navigation); the fail variants add the
+   * error object -> "v@:@@@". didCommit fires once content begins, between
+   * start and finish -> the address-sync point (final URL is known here). */
+  class_addMethod(cls,
+      sel_registerName("webView:didStartProvisionalNavigation:"),
+      (void *)zwv_navStart_IMP, "v@:@@");
+  class_addMethod(cls,
+      sel_registerName("webView:didCommitNavigation:"),
+      (void *)zwv_navCommit_IMP, "v@:@@");
+  class_addMethod(cls,
+      sel_registerName("webView:didFinishNavigation:"),
+      (void *)zwv_navDone_IMP, "v@:@@");
+  class_addMethod(cls,
+      sel_registerName("webView:didFailNavigation:withError:"),
+      (void *)zwv_navFail_IMP, "v@:@@@");
+  class_addMethod(cls,
+      sel_registerName("webView:didFailProvisionalNavigation:withError:"),
+      (void *)zwv_navFail_IMP, "v@:@@@");
+  objc_registerClassPair(cls);
+  return cls;
+}
+
+/* ---- Browser-chrome controller synthesis -------------------------------- */
+/* When a window is created with ZIMBU_WV_STYLE_NAVBAR, zwv_buildBar lays a
+ * toolbar (back/forward/reload/stop/home + address field + spinner) above the
+ * webview. The controls target a runtime-synthesized NSObject
+ * (ZimbuWVNavController); its action IMPs find their owning window via the
+ * registry (keyed by controller pointer, mirroring zwv_findByWebView) and drive
+ * the webview through plain objc_msgSend. No ivars: the controller is
+ * registered on zw->controller and each IMP re-resolves its window from it. */
+static ZWWindow *zwv_findByController(id ctrl) {
+  int i;
+  for (i = 0; i < zwv_registryCount; ++i)
+    if (zwv_registry[i] && zwv_registry[i]->controller == ctrl)
+      return zwv_registry[i];
+  return NULL;
+}
+static void zwv_ctrl_goBack(id s, SEL c, id sender) {
+  (void)c; (void)sender;
+  ZWWindow *zw = zwv_findByController(s);
+  if (zw && zw->webView)
+    ((void (*)(id, SEL))objc_msgSend)(zw->webView, sel_registerName("goBack"));
+}
+static void zwv_ctrl_goForward(id s, SEL c, id sender) {
+  (void)c; (void)sender;
+  ZWWindow *zw = zwv_findByController(s);
+  if (zw && zw->webView)
+    ((void (*)(id, SEL))objc_msgSend)(zw->webView, sel_registerName("goForward"));
+}
+static void zwv_ctrl_reload(id s, SEL c, id sender) {
+  (void)c; (void)sender;
+  ZWWindow *zw = zwv_findByController(s);
+  if (zw && zw->webView)
+    ((void (*)(id, SEL))objc_msgSend)(zw->webView, sel_registerName("reload"));
+}
+static void zwv_ctrl_stop(id s, SEL c, id sender) {
+  (void)c; (void)sender;
+  ZWWindow *zw = zwv_findByController(s);
+  if (zw && zw->webView)
+    ((void (*)(id, SEL))objc_msgSend)(zw->webView, sel_registerName("stopLoading"));
+}
+static void zwv_ctrl_home(id s, SEL c, id sender) {
+  (void)c; (void)sender;
+  ZWWindow *zw = zwv_findByController(s);
+  if (!zw || !zw->webView || !zw->homeURL) return;
+  id url = ((id (*)(id, SEL, id))objc_msgSend)(objc_getClass("NSURL"),
+      sel_registerName("URLWithString:"), zw->homeURL);
+  if (!url) return;
+  id req = ((id (*)(id, SEL, id))objc_msgSend)(objc_getClass("NSURLRequest"),
+      sel_registerName("requestWithURL:"), url);
+  ((void (*)(id, SEL, id))objc_msgSend)(zw->webView, sel_registerName("loadRequest:"), req);
+}
+/* navigate: -- the address field's action (fires on Enter). |sender| is the
+ * field; read its stringValue, prepend http:// if there is no scheme, then load. */
+static void zwv_ctrl_navigate(id s, SEL c, id sender) {
+  (void)c;
+  ZWWindow *zw = zwv_findByController(s);
+  if (!zw || !zw->webView) return;
+  id field = sender ? sender : zw->addressField;
+  if (!field) return;
+  id raw = ((id (*)(id, SEL))objc_msgSend)(field, sel_registerName("stringValue"));
+  if (!raw) return;
+  const char *cs = ((const char *(*)(id, SEL))objc_msgSend)(raw,
+      sel_registerName("UTF8String"));
+  if (!cs || !*cs) return;
+  id urlStr = raw;
+  if (!strstr(cs, "://")) {                      /* no scheme -> assume http:// */
+    char buf[1024];
+    snprintf(buf, sizeof(buf), "http://%.1000s", cs);
+    urlStr = zwv_NSSTR(buf);
+  }
+  id url = ((id (*)(id, SEL, id))objc_msgSend)(objc_getClass("NSURL"),
+      sel_registerName("URLWithString:"), urlStr);
+  if (!url) return;
+  id req = ((id (*)(id, SEL, id))objc_msgSend)(objc_getClass("NSURLRequest"),
+      sel_registerName("requestWithURL:"), url);
+  ((void (*)(id, SEL, id))objc_msgSend)(zw->webView, sel_registerName("loadRequest:"), req);
+}
+
+static id zwv_getControllerClass(void) {
+  static id cls = zwv_nil;
+  if (cls) return cls;
+  id nsObj = objc_getClass("NSObject");
+  cls = objc_allocateClassPair(nsObj, "ZimbuWVNavController", 0);
+  if (!cls) return zwv_nil;
+  /* Every action is -(void)action:(id)sender -> "v@:@". */
+  class_addMethod(cls, sel_registerName("goBack:"),    (void *)zwv_ctrl_goBack,    "v@:@");
+  class_addMethod(cls, sel_registerName("goForward:"), (void *)zwv_ctrl_goForward, "v@:@");
+  class_addMethod(cls, sel_registerName("reload:"),    (void *)zwv_ctrl_reload,    "v@:@");
+  class_addMethod(cls, sel_registerName("stop:"),      (void *)zwv_ctrl_stop,      "v@:@");
+  class_addMethod(cls, sel_registerName("home:"),      (void *)zwv_ctrl_home,      "v@:@");
+  class_addMethod(cls, sel_registerName("navigate:"),  (void *)zwv_ctrl_navigate,  "v@:@");
+  objc_registerClassPair(cls);
+  return cls;
+}
+
+/* A titled push button bound to |target|/|action|. setBezelStyle:1 is
+ * NSRoundedBezelStyle (renders a standard button regardless of exact enum). */
+static id zwv_newButton(const char *title, id target, const char *action,
+                        double x, double y, double w, double h) {
+  id b = ((id (*)(id, SEL))objc_msgSend)(objc_getClass("NSButton"),
+                                         sel_registerName("alloc"));
+  ZWRect f = { x, y, w, h };
+  b = ((id (*)(id, SEL, ZWRect))objc_msgSend)(b, sel_registerName("initWithFrame:"), f);
+  ((void (*)(id, SEL, id))objc_msgSend)(b, sel_registerName("setTitle:"), zwv_NSSTR(title));
+  ((void (*)(id, SEL, id))objc_msgSend)(b, sel_registerName("setTarget:"), target);
+  ((void (*)(id, SEL, SEL))objc_msgSend)(b, sel_registerName("setAction:"),
+                                         sel_registerName(action));
+  ((void (*)(id, SEL, long))objc_msgSend)(b, sel_registerName("setBezelStyle:"), 1L);
+  return b;
+}
+
+/* Build the browser chrome into |win| above |webView| and record the bar parts
+ * on |zw|. autoresizing masks pin the bar to the top edge (grows in width) and
+ * the webview to fill below (grows both ways, anchored bottom-left); within the
+ * bar the buttons stick left, the address field grows, the spinner sticks right.
+ * autoresizing flag values: widthSizable=2, heightSizable=16, minXMargin=1,
+ * minYMargin=8, maxXMargin=4, maxYMargin=32. */
+static void zwv_buildBar(ZWWindow *zw, id win, id webView, const char *url,
+                         double w, double h) {
+  id ctrlCls = zwv_getControllerClass();
+  id ctrl = ((id (*)(id, SEL))objc_msgSend)(ctrlCls, sel_registerName("alloc"));
+  ctrl = ((id (*)(id, SEL))objc_msgSend)(ctrl, sel_registerName("init"));
+  zw->controller = ctrl;
+
+  const double barH = 36.0;
+  const double by = 5.0, bh = 24.0;
+  double bx = 6.0;
+
+  ZWRect barFrame = { 0.0, h - barH, w, barH };
+  id topBar = ((id (*)(id, SEL))objc_msgSend)(objc_getClass("NSView"),
+                                              sel_registerName("alloc"));
+  topBar = ((id (*)(id, SEL, ZWRect))objc_msgSend)(topBar,
+      sel_registerName("initWithFrame:"), barFrame);
+  /* widthSizable(2) | maxYMargin(32): pinned to the top, grows in width. */
+  ((void (*)(id, SEL, NSUInteger))objc_msgSend)(topBar,
+      sel_registerName("setAutoresizingMask:"), (NSUInteger)(2 | 32));
+
+  id bBack    = zwv_newButton("Back",    ctrl, "goBack:",    bx, by, 52, bh); bx += 58;
+  id bForward = zwv_newButton("Forward", ctrl, "goForward:", bx, by, 64, bh); bx += 70;
+  id bReload  = zwv_newButton("Reload",  ctrl, "reload:",    bx, by, 60, bh); bx += 66;
+  id bStop    = zwv_newButton("Stop",    ctrl, "stop:",      bx, by, 48, bh); bx += 54;
+  id bHome    = zwv_newButton("Home",    ctrl, "home:",      bx, by, 52, bh); bx += 58;
+
+  double addrX = bx;
+  double addrW = w - addrX - 30.0;
+  if (addrW < 80.0) addrW = 80.0;
+  ZWRect addrFrame = { addrX, by, addrW, bh };
+  id addr = ((id (*)(id, SEL))objc_msgSend)(objc_getClass("NSTextField"),
+                                            sel_registerName("alloc"));
+  addr = ((id (*)(id, SEL, ZWRect))objc_msgSend)(addr,
+      sel_registerName("initWithFrame:"), addrFrame);
+  ((void (*)(id, SEL, id))objc_msgSend)(addr, sel_registerName("setStringValue:"),
+                                        zwv_NSSTR(url));
+  ((void (*)(id, SEL, id))objc_msgSend)(addr, sel_registerName("setTarget:"), ctrl);
+  ((void (*)(id, SEL, SEL))objc_msgSend)(addr, sel_registerName("setAction:"),
+                                         sel_registerName("navigate:"));
+  /* widthSizable(2): left edge fixed, grows with the bar. */
+  ((void (*)(id, SEL, NSUInteger))objc_msgSend)(addr,
+      sel_registerName("setAutoresizingMask:"), (NSUInteger)2);
+
+  ZWRect spinFrame = { w - 26.0, by + 2.0, 20.0, 20.0 };
+  id prog = ((id (*)(id, SEL))objc_msgSend)(objc_getClass("NSProgressIndicator"),
+                                            sel_registerName("alloc"));
+  prog = ((id (*)(id, SEL, ZWRect))objc_msgSend)(prog,
+      sel_registerName("initWithFrame:"), spinFrame);
+  /* style 1 = NSProgressIndicatorStyleSpinning; indeterminate animates. */
+  ((void (*)(id, SEL, long))objc_msgSend)(prog, sel_registerName("setStyle:"), 1L);
+  ((void (*)(id, SEL, BOOL))objc_msgSend)(prog, sel_registerName("setIndeterminate:"), zwv_YES);
+  /* minXMargin(1): pinned to the right edge. */
+  ((void (*)(id, SEL, NSUInteger))objc_msgSend)(prog,
+      sel_registerName("setAutoresizingMask:"), (NSUInteger)1);
+
+  id barSubviews[] = { bBack, bForward, bReload, bStop, bHome, addr, prog };
+  int k;
+  for (k = 0; k < (int)(sizeof(barSubviews) / sizeof(barSubviews[0])); ++k)
+    ((void (*)(id, SEL, id))objc_msgSend)(topBar, sel_registerName("addSubview:"),
+                                          barSubviews[k]);
+
+  /* Webview fills below the bar; width+height sizable, anchored bottom-left
+   * (2|16|8). */
+  ZWRect wvFrame = { 0.0, 0.0, w, h - barH };
+  ((void (*)(id, SEL, ZWRect))objc_msgSend)(webView, sel_registerName("setFrame:"), wvFrame);
+  ((void (*)(id, SEL, NSUInteger))objc_msgSend)(webView,
+      sel_registerName("setAutoresizingMask:"), (NSUInteger)(2 | 16 | 8));
+
+  id cv = ((id (*)(id, SEL))objc_msgSend)(win, sel_registerName("contentView"));
+  ((void (*)(id, SEL, id))objc_msgSend)(cv, sel_registerName("addSubview:"), topBar);
+  ((void (*)(id, SEL, id))objc_msgSend)(cv, sel_registerName("addSubview:"), webView);
+
+  zw->addressField = addr;
+  zw->homeURL = zwv_NSSTR(url);
+  zw->progressIndicator = prog;
+}
+
 static void zwv_appInit(void) {
   if (zwv_appInited) return;
   id app = ((id (*)(id, SEL))objc_msgSend)(objc_getClass("NSApplication"),
@@ -203,6 +511,14 @@ static void *zimbu_wv_create(const char *url, const char *title,
   ((void (*)(id, SEL, NSUInteger))objc_msgSend)(webView, sel_registerName("setAutoresizingMask:"),
                                                 (NSUInteger)18);
 
+  /* Attach the synthesized navigation delegate so loads surface as nav:* in the
+   * ring. Allocated here (one per window) and retained on the struct below. */
+  id navCls = zwv_getNavDelegateClass();
+  id navDel = ((id (*)(id, SEL))objc_msgSend)(navCls, sel_registerName("alloc"));
+  navDel = ((id (*)(id, SEL))objc_msgSend)(navDel, sel_registerName("init"));
+  ((void (*)(id, SEL, id))objc_msgSend)(webView,
+      sel_registerName("setNavigationDelegate:"), navDel);
+
   id urlStr = zwv_NSSTR(url);
   id nsurl = ((id (*)(id, SEL, id))objc_msgSend)(objc_getClass("NSURL"),
       sel_registerName("URLWithString:"), urlStr);
@@ -216,7 +532,13 @@ static void *zimbu_wv_create(const char *url, const char *title,
       sel_registerName("initWithContentRect:styleMask:backing:defer:"),
       frame, style, 2UL /* NSBackingStoreBuffered */, zwv_NO);
   ((void (*)(id, SEL, id))objc_msgSend)(win, sel_registerName("setTitle:"), zwv_NSSTR(title));
-  ((void (*)(id, SEL, id))objc_msgSend)(win, sel_registerName("setContentView:"), webView);
+  if (style & ZIMBU_WV_STYLE_NAVBAR) {
+    /* Toolbar above the webview; the webView becomes a subview (not the
+     * contentView) so the bar and page share one content area. */
+    zwv_buildBar(zw, win, webView, url, w, h);
+  } else {
+    ((void (*)(id, SEL, id))objc_msgSend)(win, sel_registerName("setContentView:"), webView);
+  }
   ((void (*)(id, SEL, id))objc_msgSend)(win, sel_registerName("makeKeyAndOrderFront:"),
                                         zwv_nil);
 
@@ -224,6 +546,7 @@ static void *zimbu_wv_create(const char *url, const char *title,
   zw->webView = webView;
   zw->userCC = userCC;
   zw->handler = handler;
+  zw->navDelegate = navDel;
   if (zwv_registryCount < ZWV_MAX_WIN) zwv_registry[zwv_registryCount++] = zw;
   return zw;
 }
@@ -234,6 +557,30 @@ static void zimbu_wv_eval(void *handle, const char *js) {
   /* nil completion handler = fire and forget (documented). */
   ((void (*)(id, SEL, id, id))objc_msgSend)(zw->webView,
       sel_registerName("evaluateJavaScript:completionHandler:"), zwv_NSSTR(js), zwv_nil);
+}
+
+/* Replace the page with a literal HTML string -- no HTTP server required.
+ * baseURL nil means no relative-URL resolution. Fires nav:start/nav:done. */
+static void zimbu_wv_loadHTML(void *handle, const char *html) {
+  ZWWindow *zw = (ZWWindow *)handle;
+  if (!zw || !zw->webView) return;
+  ((void (*)(id, SEL, id, id))objc_msgSend)(zw->webView,
+      sel_registerName("loadHTMLString:baseURL:"), zwv_NSSTR(html), zwv_nil);
+}
+
+/* Load a local file:// URL given a filesystem |path|. Read access is granted to
+ * the file's directory so relative assets (css/js/img) resolve. */
+static void zimbu_wv_loadFile(void *handle, const char *path) {
+  ZWWindow *zw = (ZWWindow *)handle;
+  if (!zw || !zw->webView) return;
+  id pathStr = zwv_NSSTR(path);
+  id fileURL = ((id (*)(id, SEL, id))objc_msgSend)(objc_getClass("NSURL"),
+      sel_registerName("fileURLWithPath:"), pathStr);
+  /* URLByDeletingLastPathComponent is an instance method on the URL itself. */
+  id dirURL = ((id (*)(id, SEL))objc_msgSend)(fileURL,
+      sel_registerName("URLByDeletingLastPathComponent"));
+  ((void (*)(id, SEL, id, id))objc_msgSend)(zw->webView,
+      sel_registerName("loadFileURL:allowingReadAccessToURL:"), fileURL, dirURL);
 }
 
 static char *zimbu_wv_poll(void *handle) {

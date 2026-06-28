@@ -1,0 +1,137 @@
+# WEBVIEW browser-chrome demo -- a native macOS window with a FULL navigation
+# bar built in pure C over the ObjC runtime (no .m, no system headers):
+#   [ Back | Forward | Reload | Stop | Home | <address field> ........ | spinner ]
+# All wired to a runtime-synthesized NSObject (ZimbuWVNavController) whose action
+# IMPs drive the WKWebView via objc_msgSend. The address field syncs to the live
+# URL on every navigation; the spinner animates while a load is in flight.
+#
+# Open the window, click the links, use Back/Forward/Reload/Stop/Home, or type a
+# URL in the address field and press Enter. nav:* events stream to stdout; close
+# the window to exit.
+#
+# Build (macOS -- uses(webview) auto-links WebKit/AppKit/Foundation, NO flags):
+#   ./zimbu examples/native_webview_browser_demo.zu
+# Run:  ./examples/native_webview_browser_demo
+#
+# 0x100000 is the ZIMBU_WV_STYLE_NAVBAR bit (defined in lib/webview_int.h);
+# OR it into the NSWindowStyleMask (15 = titled|closable|miniaturizable|resizable).
+#   webview: nav=Y -> the home page loaded under the chrome (start + done seen)
+
+ARG.Int port = NEW("p", "port", 8099, "Port for the demo HTTP server")
+# gate=0 (default): the window stays open so you can browse. gate=1: auto-close
+# after the first load proves nav=start+done -> a non-interactive CI gate.
+ARG.Int gate = NEW("g", "gate", 0, "1 = auto-close after first load (CI gate); 0 = stay open")
+
+FUNC Main() int
+  HTTP.Server server = NEW(port.value())
+
+  # Home page with links to the other two pages so Back/Forward/Reload are real.
+  string home = "<!DOCTYPE html><html><head><meta charset='utf-8'>"
+  home ..= "<title>Home</title></head>"
+  home ..= "<body style='font-family:-apple-system,sans-serif;margin:2em;max-width:60ch'>"
+  home ..= "<h1>Home</h1>"
+  home ..= "<p>This native window has a real navigation bar -- Back, Forward, Reload, "
+  home ..= "Stop, Home, an address field, and a loading spinner -- all built in pure C "
+  home ..= "over the ObjC runtime. Click a link, or type a URL in the address field and "
+  home ..= "press Enter.</p>"
+  home ..= "<ul>"
+  home ..= "<li><a href='/page2'>Go to Page 2</a></li>"
+  home ..= "<li><a href='/page3'>Go to Page 3</a></li>"
+  home ..= "</ul>"
+  home ..= "<p style='color:#666'>nav:* events stream to the terminal. Close the window to exit.</p>"
+  home ..= "</body></html>"
+
+  string page2 = "<!DOCTYPE html><html><head><meta charset='utf-8'>"
+  page2 ..= "<title>Page 2</title></head>"
+  page2 ..= "<body style='font-family:-apple-system,sans-serif;margin:2em;max-width:60ch'>"
+  page2 ..= "<h1>Page 2</h1>"
+  page2 ..= "<p>You navigated here. Press <b>Back</b> to return Home, then <b>Forward</b> "
+  page2 ..= "to come back. The address field updates on every navigation.</p>"
+  page2 ..= "<ul>"
+  page2 ..= "<li><a href='/page3'>Go to Page 3</a></li>"
+  page2 ..= "<li><a href='/'>Home</a></li>"
+  page2 ..= "</ul>"
+  page2 ..= "</body></html>"
+
+  string page3 = "<!DOCTYPE html><html><head><meta charset='utf-8'>"
+  page3 ..= "<title>Page 3</title></head>"
+  page3 ..= "<body style='font-family:-apple-system,sans-serif;margin:2em;max-width:60ch'>"
+  page3 ..= "<h1>Page 3</h1>"
+  page3 ..= "<p>End of the line. Press <b>Reload</b> to refresh this page, or <b>Home</b> "
+  page3 ..= "to jump back to the start URL.</p>"
+  page3 ..= "<ul>"
+  page3 ..= "<li><a href='/page2'>Page 2</a></li>"
+  page3 ..= "<li><a href='/'>Home</a></li>"
+  page3 ..= "</ul>"
+  page3 ..= "</body></html>"
+
+  HTTP.Servlet sh = HTTP.StringServlet.NEW(home)
+  sh.addPath("/home")
+  server.addServlet(sh)
+  HTTP.Servlet s2 = HTTP.StringServlet.NEW(page2)
+  s2.addPath("/page2")
+  server.addServlet(s2)
+  HTTP.Servlet s3 = HTTP.StringServlet.NEW(page3)
+  s3.addPath("/page3")
+  server.addServlet(s3)
+  server.redirect("/", "/home")
+  server.start()
+
+  string base = "http://localhost:" .. port.value()
+  # 15 = titled|closable|miniaturizable|resizable; 0x100000 = ZIMBU_WV_STYLE_NAVBAR.
+  WEBVIEW.Window a = WEBVIEW.Window.NEW(base .. "/home", "Browser Demo", 900, 600, 120, 120,
+                                       15 + 0x100000)
+  IO.print("webview: opened browser window at " .. base .. "/home (close the window to exit)")
+
+  bool gotNavStart = FALSE
+  bool gotNavDone = FALSE
+  bool gotNavFail = FALSE
+  string failReason = ""
+  int navLoads = 0
+
+  # Pump until the user closes the window (isOpen() turns FALSE). The OS close
+  # button is the escape, so the loop has no cap.
+  WHILE a.isOpen()
+    WEBVIEW.run()
+
+    # Drain every bridge message this pump produced (FIFO): nav:* tags.
+    WHILE TRUE
+      string m = a.poll()
+      IF m == ""
+        BREAK
+      }
+      IO.print("bridge: " .. m)
+      IF m == "nav:start"
+        gotNavStart = TRUE
+      }
+      IF m == "nav:done"
+        gotNavDone = TRUE
+        navLoads = navLoads + 1
+      }
+      IF m.startsWith("nav:fail:")
+        gotNavFail = TRUE
+        failReason = m
+      }
+    }
+
+    # Gate mode: once the home page has loaded (start + done), close so the
+    # process exits and flushes the verdict (a non-interactive gate). Default
+    # keeps the window open for browsing.
+    IF gate.value() == 1 && gotNavDone
+      a.close()
+    }
+  }
+  a.close()
+
+  string sNav = "N"
+  IF gotNavStart && gotNavDone
+    sNav = "Y"
+  }
+  string verdict = "webview: nav=" .. sNav .. " loads=" .. navLoads
+  IF gotNavFail
+    verdict ..= " " .. failReason
+  }
+  IO.print(verdict)
+  server.quit()
+  RETURN 0
+}
