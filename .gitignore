@@ -11,6 +11,7 @@ lib/zwt/ZUDIR/*
 lib/zut/ZUDIR/*
 zwtdemo/ZUDIR/*
 zutdemo/ZUDIR/*
+examples/ZUDIR/*
 
 # generated HTML/testje
 ZUDIR/*.html
@@ -38,7 +39,7 @@ lib/ZUDIR/*.zui
 lib/ZUDIR/ZWTmodule.js
 
 # Mac build stuff
-*.dSYM/*
+*.dSYM/
 
 # not to be distributed
 AAPDIR/*
@@ -115,6 +116,18 @@ zudocu.c
 zwtdemo/zwtdemo
 zutdemo/zutdemo
 livedemo/livedemo
+# examples/ built programs (sources are examples/*.zu; binaries + dSYM are output)
+examples/ws_echo
+examples/ws_server
+examples/ws_zwt_demo
+examples/ws_zwt_live_demo
+examples/zwt_run_demo
+examples/zwt_widgets_demo
+examples/native_webview
+examples/native_callback_spike
+examples/native_window
+examples/gui_demo
+examples/tui_demo
 livedemo/livedemo.c
 livedemo/demo
 livedemo/ZUDIR/demo.c
