@@ -798,5 +798,125 @@ MODULE ZWTModule @public
       RETURN server
     }
 
+    #= Run a ZWT application in a native macOS window (WKWebView), not the
+    #- system browser.  Like run(), it creates a server on |port|, serves
+    #- |pageType| at "index.html" with |title| and starts it -- but instead of
+    #- openInBrowser() it opens a real NSWindow whose content view is a WKWebView
+    #- pointed at the local server, then blocks in a manual event loop until the
+    #- window is closed (GUIModule's event-pump, not [NSApp run], which would
+    #- never return).  On close the server is quit and the call returns.
+    #-
+    #- macOS only.  AppKit + Foundation auto-link via uses(appkit); WebKit must
+    #- be supplied by the caller, e.g.:
+    #%   ./zimbu app.zu -ccendarg "-framework WebKit"
+    #- Example:
+    #%   ZWT.runNative(MyPage.Type(), "My app", 8095)
+    PROC runNative(type pageType, string title, int port) @public
+      HTTP.Server server = NEW(port)
+      string path = "index.html"
+      ZWT.createPage(server, path, title, pageType)
+      server.redirect("/", "/" .. path)
+      server.start()
+      IO.print("ZWT: serving '" .. title .. "' at http://localhost:"
+               .. port .. "/" .. path)
+      string url = "http://localhost:" .. port .. "/" .. path
+>>> uses(appkit, getCstring) blockgc
+  {
+    /* Forward declarations ONLY (legal at function scope; function definitions
+     * are not, hence no #include of system headers). Drive the ObjC runtime from
+     * pure C -- the emitted TU is a .c in C mode; AppKit/WebKit headers carry
+     * ObjC @interface syntax that only compiles in .m mode. */
+    typedef void *id;
+    typedef void *SEL;
+    typedef signed char BOOL;
+    typedef unsigned long NSUInteger;
+    #define nil ((id)0)
+    #define YES ((BOOL)1)
+    #define NO  ((BOOL)0)
+    extern id objc_msgSend(id, SEL, ...);
+    extern id objc_getClass(const char *);
+    extern SEL sel_registerName(const char *);
+
+    /* NSRect ABI: origin(x,y) + size(w,h) = 4 doubles (32 bytes), passed by
+     * hidden SysV reference -- hence the precise non-variadic cast below. */
+    typedef struct { double x, y, width, height; } ZNWSRect;
+
+    #define C0(ret, recv, sel) \
+      ((ret (*)(id, SEL))objc_msgSend)((id)(recv), sel_registerName(sel))
+
+    id pool = C0(id, objc_getClass("NSAutoreleasePool"), "alloc");
+    pool    = C0(id, pool, "init");
+
+    id app = C0(id, objc_getClass("NSApplication"), "sharedApplication");
+    ((void (*)(id, SEL, long))objc_msgSend)((id)app,
+        sel_registerName("setActivationPolicy:"), (long)0);  /* Regular */
+
+    /* NSString builder; ZgetCstring(%url%)/%title% splice the Zimbu strings. */
+    id strClass = objc_getClass("NSString");
+    #define NSSTR(cstr) \
+      ((id (*)(id, SEL, const char *, unsigned long))objc_msgSend)( \
+          (id)strClass, sel_registerName("stringWithCString:encoding:"), \
+          (cstr), 4UL)  /* NSUTF8StringEncoding */
+
+    /* --- WKWebView pointed at the local HTTP server --- */
+    id config = C0(id, objc_getClass("WKWebViewConfiguration"), "alloc");
+    config    = C0(id, config, "init");
+
+    ZNWSRect webFrame = { 0.0, 0.0, 800.0, 600.0 };
+    id webView = C0(id, objc_getClass("WKWebView"), "alloc");
+    webView = ((id (*)(id, SEL, ZNWSRect, id))objc_msgSend)(
+                (id)webView, sel_registerName("initWithFrame:configuration:"),
+                webFrame, (id)config);
+    /* Resize with the window: NSViewWidthSizable(2) | NSViewHeightSizable(16) = 18. */
+    ((void (*)(id, SEL, NSUInteger))objc_msgSend)(
+        (id)webView, sel_registerName("setAutoresizingMask:"), (NSUInteger)18);
+
+    id nsurl = ((id (*)(id, SEL, id))objc_msgSend)(
+                (id)objc_getClass("NSURL"), sel_registerName("URLWithString:"),
+                NSSTR(ZgetCstring(%url%)));
+    id req = ((id (*)(id, SEL, id))objc_msgSend)(
+                (id)objc_getClass("NSURLRequest"), sel_registerName("requestWithURL:"),
+                (id)nsurl);
+    ((void (*)(id, SEL, id))objc_msgSend)(
+                (id)webView, sel_registerName("loadRequest:"), (id)req);
+
+    /* --- NSWindow hosting the webview --- */
+    ZNWSRect frame = { 100.0, 100.0, 800.0, 600.0 };
+    id win = C0(id, objc_getClass("NSWindow"), "alloc");
+    win = ((id (*)(id, SEL, ZNWSRect, unsigned long, unsigned long, BOOL))objc_msgSend)(
+            (id)win, sel_registerName("initWithContentRect:styleMask:backing:defer:"),
+            frame, (unsigned long)15, (unsigned long)2, NO);
+    ((void (*)(id, SEL, id))objc_msgSend)((id)win,
+        sel_registerName("setTitle:"), NSSTR(ZgetCstring(%title%)));
+    ((void (*)(id, SEL, id))objc_msgSend)((id)win,
+        sel_registerName("setContentView:"), (id)webView);
+    ((void (*)(id, SEL, id))objc_msgSend)((id)win,
+        sel_registerName("makeKeyAndOrderFront:"), nil);
+    ((void (*)(id, SEL, BOOL))objc_msgSend)((id)app,
+        sel_registerName("activateIgnoringOtherApps:"), YES);
+    /* No [NSApp run] (never returns): finish launching manually so the app and
+     * window participate in event delivery. */
+    C0(void, app, "finishLaunching");
+
+    /* Manual event-pump (GUIModule pattern). nextEventMatchingMask: with a nil
+     * untilDate blocks until an event arrives -- not a busy loop. The loop exits
+     * when the window is no longer visible (close button orders it out). */
+    id mode = NSSTR("kCFRunLoopDefaultMode");
+    SEL nextEv = sel_registerName("nextEventMatchingMask:untilDate:inMode:dequeue:");
+    SEL sendEv = sel_registerName("sendEvent:");
+    SEL visSel = sel_registerName("isVisible");
+    while (((BOOL (*)(id, SEL))objc_msgSend)((id)win, visSel)) {
+      id ev = ((id (*)(id, SEL, unsigned long, id, id, BOOL))objc_msgSend)(
+              (id)app, nextEv, (unsigned long)~0UL, nil, mode, YES);
+      if (ev != nil)
+        ((void (*)(id, SEL, id))objc_msgSend)((id)app, sendEv, ev);
+    }
+
+    C0(void, pool, "drain");
+  }
+<<<
+      server.quit()
+    }
+
   } # GENERATE_IF
 }

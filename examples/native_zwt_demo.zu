@@ -1,0 +1,20 @@
+# Native WebView host demo (Phase 2, Option 1 -- macOS only).
+#
+# Serves the FlexGridPage (reused from flex_grid_page.zu) via a local HTTP
+# server, but instead of opening the system browser it opens a real native
+# NSWindow whose content view is a WKWebView pointed at the server.  This
+# exercises ZWT.runNative() end to end: server setup, WKWebView embedding, and
+# the GUIModule-style event-pump that returns when the window is closed.
+#
+# Build: ./zimbu examples/native_zwt_demo.zu -ccendarg "-framework WebKit"
+# Run:   ./examples/native_zwt_demo
+#        (a native window opens showing the flex/grid page; close it to exit)
+
+IMPORT.ZWT "flex_grid_page.zu"
+
+ARG.Int port = NEW("p", "port", 8095, "Port for the HTTP server")
+
+FUNC Main() int
+  ZWT.runNative(FlexGridPage.Type(), "Zimbu Native WebView", port.value())
+  RETURN 0
+}
