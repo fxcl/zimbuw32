@@ -216,6 +216,21 @@ MODULE Config @items=public                   # TODO: restrict visibility
     RETURN r
   }
 
+  # TRUE iff this compiler binary was built on Windows. Same mechanism as
+  # darwinHost()/linuxHost(): _WIN32 is defined by both MinGW and MSVC for any
+  # Windows target (x86 and x64), so this covers the MinGW toolchain Zimbu uses.
+  FUNC windowsHost() bool
+    bool r = FALSE
+>>>
+#ifdef _WIN32
+    %r% = 1;
+#else
+    %r% = 0;
+#endif
+<<<
+    RETURN r
+  }
+
   # call when using the native macOS GUI. AppKit/Foundation are macOS-only
   # frameworks; the arg is hardcoded (no config entry) for this first slice.
   PROC addAppKitLib()
@@ -233,7 +248,11 @@ MODULE Config @items=public                   # TODO: restrict visibility
   #    emits the right -l flags (incl. transitive deps + the 4.1/4.0 version
   #    match for the distro) at link time. WebViewModule forward-declares every
   #    GTK/WebKit symbol, so no -I include flags are needed at compile time.
-  #  - Other hosts (e.g. Windows): no-op here; the Windows body is a stub.
+  #  - Windows (windowsHost): -luser32 -lole32 -lkernel32. WebViewModule's
+  #    webview2_win.h forward-declares every Win32/COM symbol; the WebView2
+  #    loader is LoadLibrary'd at runtime (no -lWebView2Loader). user32 =
+  #    Win32 window/message loop, ole32 = CoInitializeEx, kernel32 =
+  #    LoadLibraryA/GetProcAddress/MultiByteToWideChar.
   # The host guards are essential: an unconditional -framework would break Linux
   # and an unconditional -lwebkit2gtk would break macOS.
   PROC addWebViewLib()
@@ -241,6 +260,8 @@ MODULE Config @items=public                   # TODO: restrict visibility
       %libArgs.add("-framework WebKit -framework AppKit -framework Foundation")
     ELSEIF linuxHost()
       %libArgs.add("$(pkg-config --libs webkit2gtk-4.1 gtk+-3.0 2>/dev/null || pkg-config --libs webkit2gtk-4.0 gtk+-3.0 2>/dev/null)")
+    ELSEIF windowsHost()
+      %libArgs.add("-luser32 -lole32 -lkernel32")
     }
   }
 

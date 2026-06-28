@@ -8,7 +8,10 @@
 #
 # Build (macOS + Linux -- webview auto-links via uses(webview), NO flags needed):
 #   ./zimbu examples/native_zwt_demo.zu
-# Windows: stub only (see lib/WebViewModule.zu); user32 links by default.
+# Windows (MinGW): same command. Auto-links user32/ole32/kernel32; ship
+#   WebView2Loader.dll (x64, from NuGet Microsoft.Web.WebView2) next to the exe
+#   for real WebView2 via the Edge runtime (Evergreen). PRELIMINARY until gated
+#   on a Windows target.
 # Run: ./examples/native_zwt_demo
 #      (a native window opens showing the flex/grid page; close it to exit)
 

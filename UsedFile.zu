@@ -81,10 +81,23 @@ CLASS UsedFile @items=public   # TODO: restrict visibility
     IF pluginName == "CHEADER"
       # Handle IMPORT.CHEADER <somefile.h>
       # TODO: check if file exists.
-      string key = import.getAngleQuotes()
-                ? "<" .. import.getFileName() .. ">"
-                : "\"../" .. Generate.relativeName(
-                                       THIS, import.getFileName()) .. "\""
+      string fileName = import.getFileName()
+      string key
+      IF import.getAngleQuotes()
+        key = "<" .. fileName .. ">"
+      ELSEIF THIS.zimbuFile.dirName == Config.libPath
+        # Builtin module. Its dirName is Config.libPath, which Config.run()
+        # resolves relative to the compiler's runtime cwd (it cwd-strips the
+        # root "for when building Zimbu itself"). The "../<relpath>" form used
+        # for user files is resolved against the user TU's output dir, where a
+        # builtin header does not live, so the generated #include would fail.
+        # IO.fullPath() chdir+getcwd-resolves the relative path to an absolute
+        # one, correct from any cwd/project (only builtin modules hit this; user
+        # IMPORT.CHEADER in testprog.zu / testdir/Errors.zu keeps the ../ form).
+        key = "\"" .. IO.fullPath(Generate.relativeName(THIS, fileName)) .. "\""
+      ELSE
+        key = "\"../" .. Generate.relativeName(THIS, fileName) .. "\""
+      }
       IF topScope.cheaders.find(key) < 0
         topScope.cheaders.add(key)
       }

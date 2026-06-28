@@ -25,24 +25,29 @@
 #  - Linux (__linux__): webkit2gtk + GTK3, auto-linked via pkg-config. Written
 #    from docs, NOT built on this macOS host (forward-declared like the objc
 #    branch); PRELIMINARY until the Linux gate (link + run) passes on target.
-#  - Windows (__MINGW32__): native WebView embedding needs a file-scope WndProc,
-#    which cannot be emitted inside this function-body interleave (no nested
-#    function definitions in standard C). Surfaced as a clear limitation until
-#    WebViewModule gains a file-scope helper emission path. Link user32 via
-#    --ccendarg.
+#  - Windows (_WIN32 / MinGW): real WebView2 via WebView2Loader.dll, loaded
+#    dynamically. The WndProc + COM handler vtables are file-scope statics in
+#    lib/webview2_win.h, pulled into the generated TU by IMPORT.CHEADER (standard
+#    C has no nested function definitions, so callbacks cannot live in open()'s
+#    function body). Auto-links user32/ole32/kernel32 via uses(webview); ship
+#    WebView2Loader.dll next to the exe. Written from docs, NOT built on this
+#    macOS host (guarded empty here); PRELIMINARY until the Windows gate passes.
 #
 # MRC note: the generated .c is NOT compiled with -fobjc-arc. We take no extra
 # retains (AppKit retains the window/webview once placed in the hierarchy) and
 # only drain the autorelease pool.
 #
 
+IMPORT.CHEADER "webview2_win.h"
+
 MODULE WebViewModule @public @items=public
 
   #= Open a native OS window titled |title| hosting a system WebView pointed at
   #  |url|. Blocks until the window is closed by the user. Auto-links on macOS
-  #  (WebKit/AppKit/Foundation) and Linux (webkit2gtk/GTK3 via pkg-config) via
-  #  `uses(webview)`; no --ccendarg needed on either. Windows is a stub
-  #  (PRELIMINARY - see header).
+  #  (WebKit/AppKit/Foundation), Linux (webkit2gtk/GTK3 via pkg-config), and
+  #  Windows (user32/ole32/kernel32) via `uses(webview)`; no --ccendarg needed
+  #  on any host. Windows impl lives in lib/webview2_win.h (PRELIMINARY until
+  #  gated on a Windows target).
   PROC open(string url, string title)
 >>> uses(webview, getCstring) blockgc
   {
@@ -180,21 +185,18 @@ MODULE WebViewModule @public @items=public
     gtk_widget_show_all(win);
     gtk_main();   /* blocks until gtk_main_quit() (connected above). */
 
-#elif defined(__MINGW32__)
-    /* PRELIMINARY / KNOWN LIMITATION -- native WebView embedding on Windows
-     * needs a Win32 WndProc at file scope, which cannot be emitted inside this
-     * function-body C interleave (no nested function definitions in standard
-     * C). The macOS branch sidesteps callbacks with an objc polling loop;
-     * Windows has no equivalent. Until WebViewModule emits a file-scope helper,
-     * surface a clear message instead of broken COM. Link user32 via --ccendarg. */
-    extern int MessageBoxA(void *, const char *, const char *, unsigned int);
-    MessageBoxA((void *)0,
-        "WEBVIEW.open: native WebView on Windows is not yet implemented "
-        "(see lib/WebViewModule.zu).",
-        ZgetCstring(%title%), 0x30u);  /* MB_ICONWARNING */
+#elif defined(_WIN32)
+    /* Windows: real WebView2. The WndProc + COM handler vtables and the whole
+     * implementation live at file scope in lib/webview2_win.h, pulled into this
+     * TU by IMPORT.CHEADER at the top of the module (standard C has no nested
+     * function definitions, so they cannot live in this function-body block).
+     * Auto-links user32/ole32/kernel32 via uses(webview); the WebView2 loader is
+     * LoadLibrary'd at runtime. Blocks on the Win32 message loop until the
+     * window is destroyed. */
+    zimbu_webview2_open(ZgetCstring(%url%), ZgetCstring(%title%));
 
 #else
-# error "WEBVIEW.open: unsupported host (need __APPLE__, __linux__, or __MINGW32__)."
+# error "WEBVIEW.open: unsupported host (need __APPLE__, __linux__, or _WIN32)."
 #endif
   }
 <<<
