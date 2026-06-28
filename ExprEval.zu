@@ -84,6 +84,17 @@ MODULE ExprEval @items=public                   # TODO: restrict visibility
               RETURN Config.haveFork
             ELSEIF arg == "mswindows"
               RETURN Config.isMingw
+            ELSEIF arg == "os_macos"
+              RETURN Config.darwinHost()
+            ELSEIF arg == "os_linux"
+              RETURN Config.linuxHost()
+            ELSEIF arg == "os_windows"
+              RETURN Config.windowsHost()
+            ELSEIF arg == "os_unix"
+              # macOS + Linux are unix; Windows is not. Resolved at compiler-
+              # build time (the host funcs are #ifdef probes), and Zimbu rebuilds
+              # per-OS, so build host == link host == the OS user code targets.
+              RETURN Config.darwinHost() || Config.linuxHost()
             ELSEIF arg == "sigaction"
               RETURN Config.haveSigaction
             ELSEIF arg == "portable"

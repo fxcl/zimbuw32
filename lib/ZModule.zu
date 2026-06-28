@@ -168,6 +168,19 @@ MODULE ZModule @public @items=public
   #
   #- "mswindows"  - Whether running on MS-Windows
   #
+  #- "os_macos"   - Whether the build/link host is macOS
+  #
+  #- "os_linux"   - Whether the build/link host is Linux
+  #
+  #- "os_windows" - Whether the build/link host is Windows (any toolchain)
+  #
+  #- "os_unix"    - Whether the build/link host is unix (macOS or Linux)
+  #-               The os_* flags are resolved at compiler-build time from the
+  #-               C preprocessor (__APPLE__ / __linux__ / _WIN32). Zimbu
+  #-               rebuilds per-OS, so the build host == the link host == the OS
+  #-               your program is compiled for. Distinct from "mswindows",
+  #-               which tracks the MinGW toolchain specifically.
+  #
   #- Example:
   #% GENERATE_IF Z.have("resolve")
   #%   fname = IO.resolve(fname)
