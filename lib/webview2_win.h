@@ -106,6 +106,9 @@ extern ZWHWND_     CreateWindowExW(ZWDWORD, ZWLPCWSTR_, ZWLPCWSTR_, ZWDWORD,
 extern ZWBOOL      ShowWindow(ZWHWND_, int);
 extern ZWBOOL      UpdateWindow(ZWHWND_);
 extern int         GetMessageW(ZWMSG_ *, ZWHWND_, ZWUINT, ZWUINT);
+extern ZWBOOL      PeekMessageW(ZWMSG_ *, ZWHWND_, ZWUINT, ZWUINT, ZWUINT);
+extern ZWBOOL      IsWindow(ZWHWND_);
+extern ZWBOOL      PostMessageW(ZWHWND_, ZWUINT, ZWWPARAM_, ZWLPARAM_);
 extern ZWBOOL      TranslateMessage(const ZWMSG_ *);
 extern ZWLRESULT_  DispatchMessageW(const ZWMSG_ *);
 extern ZWLRESULT_  DefWindowProcW(ZWHWND_, ZWUINT, ZWWPARAM_, ZWLPARAM_);
@@ -173,6 +176,7 @@ static ZWHWND_       zwv_hwnd;
 static const char   *zwv_url;
 static ZWController_ *zwv_controller;
 static ZWWebView_    *zwv_webview;
+static ZWHMODULE_    zwv_hLoader;
 
 /* ---- Win32 constants (numeric, no #include needed) ----------------------- */
 #define ZW_WM_DESTROY          0x0002
@@ -185,6 +189,9 @@ static ZWWebView_    *zwv_webview;
 #define ZW_COLOR_WINDOW        5
 #define ZW_CP_UTF8             65001
 #define ZW_COINIT_APARTMENTTHREADED 0x2
+#define ZW_WM_CLOSE                0x0010
+#define ZW_WM_QUIT                 0x0012
+#define ZW_PM_REMOVE               1
 
 /* ---- Handler implementations --------------------------------------------- */
 static ZWHRESULT ZW_STDCALL zw_handler_QI(void *This, ZWREFIID_ riid, void **ppv) {
@@ -240,14 +247,17 @@ static ZWLRESULT_ ZW_STDCALL zw_WndProc(ZWHWND_ hwnd, ZWUINT msg,
   return DefWindowProcW(hwnd, msg, wp, lp);
 }
 
-/* ---- Entry: called from WebViewModule.zu's __MINGW32__/_WIN32 branch -----
- * Blocks (message loop) until the window is destroyed, then returns. The
- * caller passes UTF-8 url/title; title is widened for CreateWindowExW. ------ */
-static void zimbu_webview2_open(const char *url, const char *title) {
+/* ---- Setup: register the window class, create + show the window, and kick
+ *      off WebView2 environment creation. Returns the HWND; does NOT run the
+ *      message loop, so the caller can pump cooperatively (zimbu_webview2_pump)
+ *      or block (zimbu_webview2_open). Caller passes UTF-8 url/title; title is
+ *      widened for CreateWindowExW. ---------------------------------------- */
+static ZWHWND_ zimbu_webview2_create(const char *url, const char *title) {
   zwv_url = url;
   zwv_controller = (ZWController_ *)0;
   zwv_webview = (ZWWebView_ *)0;
   zwv_hwnd = (ZWHWND_)0;
+  zwv_hLoader = (ZWHMODULE_)0;
 
   CoInitializeEx((void *)0, ZW_COINIT_APARTMENTTHREADED);
 
@@ -282,9 +292,9 @@ static void zimbu_webview2_open(const char *url, const char *title) {
 
   /* Load WebView2Loader.dll and kick off environment creation. The DLL ships
    * next to the exe; the Edge runtime is Evergreen (resolved by the loader). */
-  ZWHMODULE_ hLoader = LoadLibraryA("WebView2Loader.dll");
-  if (hLoader) {
-    void *sym = GetProcAddress(hLoader,
+  zwv_hLoader = LoadLibraryA("WebView2Loader.dll");
+  if (zwv_hLoader) {
+    void *sym = GetProcAddress(zwv_hLoader,
                                "CreateCoreWebView2EnvironmentWithOptions");
     if (sym) {
       ZWHRESULT (ZW_STDCALL *pfn)(ZWLPCWSTR_, ZWLPCWSTR_, void *, void *) =
@@ -295,16 +305,44 @@ static void zimbu_webview2_open(const char *url, const char *title) {
       pfn((ZWLPCWSTR_)0, (ZWLPCWSTR_)0, (void *)0, &envHandler);
     }
   }
+  return zwv_hwnd;
+}
 
-  /* Message loop: GetMessageW returns >0 while messages flow, 0 on WM_QUIT
-   * (posted by WM_DESTROY), <0 on error. Exiting the loop = window closed. */
+/* 1 while the host window is alive, 0 once destroyed. */
+static int zimbu_webview2_is_open(void) {
+  return zwv_hwnd && IsWindow(zwv_hwnd);
+}
+
+/* Cooperative pump: drain pending messages without blocking. Returns 1 while
+ * the window is alive, 0 once WM_QUIT has been dequeued (window destroyed).
+ * The async COM CompletedHandlers fire here as their messages are dispatched. */
+static int zimbu_webview2_pump(void) {
+  ZWMSG_ m;
+  while (PeekMessageW(&m, (ZWHWND_)0, 0, 0, ZW_PM_REMOVE)) {
+    if (m.message == ZW_WM_QUIT) return 0;
+    TranslateMessage(&m);
+    DispatchMessageW(&m);
+  }
+  return zimbu_webview2_is_open() ? 1 : 0;
+}
+
+/* Ask the window to close: WM_CLOSE runs the destroy path (WndProc posts
+ * WM_QUIT), so a subsequent pump() returns 0. */
+static void zimbu_webview2_close(void) {
+  if (zwv_hwnd) PostMessageW(zwv_hwnd, ZW_WM_CLOSE, (ZWWPARAM_)0, (ZWLPARAM_)0);
+  PostQuitMessage(0);
+}
+
+/* ---- Legacy entry: create + blocking message loop until the window is
+ *      destroyed, then clean up. Kept for any direct caller. -------------- */
+static void zimbu_webview2_open(const char *url, const char *title) {
+  (void)zimbu_webview2_create(url, title);
   ZWMSG_ m;
   while (GetMessageW(&m, (ZWHWND_)0, 0, 0) > 0) {
     TranslateMessage(&m);
     DispatchMessageW(&m);
   }
-
-  if (hLoader) FreeLibrary(hLoader);
+  if (zwv_hLoader) { FreeLibrary(zwv_hLoader); zwv_hLoader = (ZWHMODULE_)0; }
   CoUninitialize();
 }
 

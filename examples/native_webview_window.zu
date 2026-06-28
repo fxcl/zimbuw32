@@ -1,0 +1,108 @@
+# OO WEBVIEW.Window demo -- exercises the FULL new API:
+#   - multiple simultaneous windows (window params: size/position/style)
+#   - JS eval (Zimbu -> JS): inject a postMessage call into the page
+#   - JS -> Zimbu bridge: page posts on load; Zimbu drains via poll()
+#
+# Two windows open. Window A's page posts "from-A" to the bridge on load
+# (proves bridge: JS -> Zimbu). Once Zimbu sees it, it eval()s JS into A that
+# posts "evald" (proves eval: Zimbu -> JS, round-tripped back through the
+# bridge). When both arrive, all four features are proven and the demo closes
+# both windows and exits cleanly.
+#
+# Build (macOS + Linux -- webview auto-links via uses(webview), NO flags):
+#   ./zimbu examples/native_webview_window.zu
+# Windows (MinGW): same command; eval/poll are PRELIMINARY there (stubs).
+# Run: ./examples/native_webview_window
+#      (two native windows open; close is automatic once the bridge is proven)
+#
+# An iteration cap (cap < 600) bounds the pump so a network/load failure exits
+# instead of hanging -- the final line reports onload=Y/N eval=Y/N.
+
+ARG.Int port = NEW("p", "port", 8098, "Port for the HTTP server")
+
+FUNC Main() int
+  HTTP.Server server = NEW(port.value())
+
+  # Page A: posts a bridge message as soon as it loads.
+  string htmlA = "<!DOCTYPE html><html><head><meta charset='utf-8'>"
+  htmlA ..= "<title>Window A</title></head>"
+  htmlA ..= "<body style='font-family:sans-serif;margin:2em'>"
+  htmlA ..= "<h1>Window A</h1>"
+  htmlA ..= "<p>Posts <code>from-A</code> to the bridge on load.</p>"
+  htmlA ..= "<script>try{window.webkit.messageHandlers.zimbu.postMessage('from-A')}catch(e){}</script>"
+  htmlA ..= "</body></html>"
+
+  # Page B: plain target for eval (Window A is the one we eval into here).
+  string htmlB = "<!DOCTYPE html><html><head><meta charset='utf-8'>"
+  htmlB ..= "<title>Window B</title></head>"
+  htmlB ..= "<body style='font-family:sans-serif;margin:2em'>"
+  htmlB ..= "<h1>Window B</h1>"
+  htmlB ..= "<p>Companion window proving multi-window support.</p>"
+  htmlB ..= "</body></html>"
+
+  HTTP.Servlet sa = HTTP.StringServlet.NEW(htmlA)
+  sa.addPath("/a.html")
+  server.addServlet(sa)
+  HTTP.Servlet sb = HTTP.StringServlet.NEW(htmlB)
+  sb.addPath("/b.html")
+  server.addServlet(sb)
+  server.redirect("/", "/a.html")
+  server.start()
+
+  string base = "http://localhost:" .. port.value()
+  # 15 = NSWindowStyleMaskTitled|Closable|Miniaturizable|Resizable (capped|titled).
+  WEBVIEW.Window a = WEBVIEW.Window.NEW(base .. "/a.html", "Window A", 500, 400, 100, 100, 15)
+  WEBVIEW.Window b = WEBVIEW.Window.NEW(base .. "/b.html", "Window B", 500, 400, 700, 100, 15)
+  IO.print("webview: opened 2 windows")
+
+  bool gotOnload = FALSE
+  bool didEval = FALSE
+  bool gotEval = FALSE
+  int cap = 0
+
+  WHILE (a.isOpen() || b.isOpen()) && cap < 600
+    WEBVIEW.run()
+    cap = cap + 1
+
+    # Drain every buffered bridge message this pump produced (FIFO).
+    WHILE TRUE
+      string m = a.poll()
+      IF m == ""
+        BREAK
+      }
+      IO.print("bridge: " .. m)
+      IF m == "from-A"
+        gotOnload = TRUE
+      }
+      IF m == "evald"
+        gotEval = TRUE
+      }
+    }
+
+    # Once the page is loaded (onload msg seen), prove Zimbu -> JS eval by
+    # injecting a postMessage the bridge will echo back.
+    IF gotOnload && !didEval
+      a.eval("try{window.webkit.messageHandlers.zimbu.postMessage('evald')}catch(e){}")
+      didEval = TRUE
+    }
+
+    # All four features proven: multi-window, window params, eval, bridge.
+    IF gotOnload && gotEval
+      IO.print("webview: all features proven, closing")
+      a.close()
+      b.close()
+    }
+  }
+
+  string sOn = "N"
+  IF gotOnload
+    sOn = "Y"
+  }
+  string sEv = "N"
+  IF gotEval
+    sEv = "Y"
+  }
+  IO.print("webview: onload=" .. sOn .. " eval=" .. sEv)
+  server.quit()
+  RETURN 0
+}

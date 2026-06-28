@@ -3,201 +3,147 @@
 #
 # WebView module - native desktop WebView (macOS WKWebView, webkit2gtk, WebView2)
 #
-# A composable native-WebView primitive, mirroring lib/GUIModule.zu:
-#   WEBVIEW.open(url, title)   -> blocks until the window is closed.
-# It opens a real OS window whose content view is a system WebView pointed at
-# |url|, titled |title|, pumps the native event loop until the window closes,
-# then returns. lib/ZWTModule.runNative delegates here instead of inlining its
-# own WKWebView block.
+# OO Window API over lib/webview_int.h:
+#   WEBVIEW.Window win = WEBVIEW.Window.NEW(url, title, w, h, x, y, style)
+#   win.eval(js)            # Zimbu -> JS (fire and forget)
+#   win.poll()              # drain one JS -> Zimbu bridge msg ("" if none)
+#   win.isOpen()            # 1 while the native window is on screen
+#   win.close()             # order out / destroy; unregister
+#   WEBVIEW.run()           # cooperative event pump (process pending, return)
+#   WEBVIEW.open(url, title)  # LEGACY: NEW(800,600,100,100,15) + run() until closed
+#
+# Each Window method is a thin dispatcher into a pure-C function in
+# lib/webview_int.h (struct + registry + create/eval/poll/isOpen/close/run; the
+# macOS WKScriptMessageHandler class is runtime-synthesized there). IMPORT.CHEADER
+# pulls that file into the generated TU at file scope; standard C has no nested
+# function definitions, so the ObjC IMP / GObject GCallback / COM vtable that
+# buffer bridge messages cannot live in a method body.
 #
 # Binding pattern (mirrors GUI/uses(appkit)): the work is pure C inside a
-# `>>> uses(webview, getCstring) blockgc` interleave. `uses(webview)` triggers
+# `>>> uses(webview[, getCstring]) blockgc` interleave. `uses(webview)` triggers
 # Config.addWebViewLib(), which appends OS-appropriate link flags host-detected:
-# on macOS "-framework WebKit -framework AppKit -framework Foundation"; on Linux
+# on macOS "-framework WebKit -framework AppKit - Foundation"; on Linux
 # "$(pkg-config --libs webkit2gtk-4.1 gtk+-3.0 || ...4.0...)" (shell-expanded
 # when the cc command runs via SYS.shell). So a user program merely IMPORTs
-# WEBVIEW and calls WEBVIEW.open() with NO --ccendarg on macOS or Linux.
+# WEBVIEW and calls the API with NO --ccendarg on macOS or Linux.
 #
-# OS branches:
-#  - macOS (__APPLE__): authoritative, verified. WKWebView + NSWindow + the
-#    GUIModule returning event-pump (objc_msgSend from pure C; no .m, no
-#    headers).
+# JS -> Zimbu bridge (sidesteps the Zimbu closure gap, todo.txt:415): the gap
+# blocks calling back INTO a Zimbu function; it does NOT block a pure-C handler
+# that buffers messages into a per-window C ring drained by poll(). JS posts via
+# window.webkit.messageHandlers.zimbu.postMessage(s); Zimbu drains with poll().
+# Precedent: THREADModule passes (GCallback)gtk_main_quit; webview2_win.h builds
+# COM CompletedHandler vtables in pure C.
+#
+# OS branches (only the host's section in webview_int.h is compiled):
+#  - macOS (__APPLE__): AUTHORITATIVE, gated here. Multi-window WKWebView +
+#    runtime-synthesized WKScriptMessageHandler + per-window FIFO ring.
 #  - Linux (__linux__): webkit2gtk + GTK3, auto-linked via pkg-config. Written
-#    from docs, NOT built on this macOS host (forward-declared like the objc
-#    branch); PRELIMINARY until the Linux gate (link + run) passes on target.
-#  - Windows (_WIN32 / MinGW): real WebView2 via WebView2Loader.dll, loaded
-#    dynamically. The WndProc + COM handler vtables are file-scope statics in
-#    lib/webview2_win.h, pulled into the generated TU by IMPORT.CHEADER (standard
-#    C has no nested function definitions, so callbacks cannot live in open()'s
-#    function body). Auto-links user32/ole32/kernel32 via uses(webview); ship
-#    WebView2Loader.dll next to the exe. Written from docs, NOT built on this
-#    macOS host (guarded empty here); PRELIMINARY until the Windows gate passes.
+#    from docs, NOT built on this host; PRELIMINARY until the Linux gate passes.
+#  - Windows (_WIN32 / MinGW): WebView2 via webview2_win.h. create/run/close/
+#    isOpen wrap the existing backend; eval/poll are PRELIMINARY stubs (need
+#    ICoreWebView2 vtable slots beyond Navigate). NOT built here; PRELIMINARY.
 #
 # MRC note: the generated .c is NOT compiled with -fobjc-arc. We take no extra
-# retains (AppKit retains the window/webview once placed in the hierarchy) and
-# only drain the autorelease pool.
+# retains (AppKit retains the window/webview once placed in the hierarchy).
 #
 
-IMPORT.CHEADER "webview2_win.h"
+IMPORT.CHEADER "webview_int.h"
 
 MODULE WebViewModule @public @items=public
 
-  #= Open a native OS window titled |title| hosting a system WebView pointed at
-  #  |url|. Blocks until the window is closed by the user. Auto-links on macOS
-  #  (WebKit/AppKit/Foundation), Linux (webkit2gtk/GTK3 via pkg-config), and
-  #  Windows (user32/ole32/kernel32) via `uses(webview)`; no --ccendarg needed
-  #  on any host. Windows impl lives in lib/webview2_win.h (PRELIMINARY until
-  #  gated on a Windows target).
-  PROC open(string url, string title)
+  #= A native OS window hosting a system WebView pointed at a URL.
+  #-
+  #- The handle is opaque and per-OS (macOS ZWWindow*, Linux GtkWidget pair,
+  #- Windows HWND); user code treats it as a black box and drives the window
+  #- through eval(), poll(), isOpen(), and close(). Pair with WEBVIEW.run() to
+  #- pump native events cooperatively.
+  CLASS Window @public
+    C(void*) $handle   #! opaque per-OS window handle
+
+    #= Create and show a native window titled |title| hosting a system WebView
+    #= pointed at |url|. |w|x|h| is the content size; |x|,|y| the origin;
+    #= |style| the OS window-style bitmask (macOS NSWindowStyleMask, e.g. 15).
+    #- Does NOT pump events: call WEBVIEW.run() in a loop, or use legacy open().
+    NEW(string url, string title, int w, int h, int x, int y, int style) @public
 >>> uses(webview, getCstring) blockgc
-  {
-#ifdef __APPLE__
-    /* macOS: WKWebView in an NSWindow. Forward declarations ONLY (legal at
-     * function scope; function definitions are not, hence no #include of system
-     * headers). Drive the ObjC runtime from pure C -- the emitted TU is a .c in
-     * C mode; AppKit/WebKit headers carry ObjC @interface syntax that only
-     * compiles in .m mode. */
-    typedef void *id;
-    typedef void *SEL;
-    typedef signed char BOOL;
-    typedef unsigned long NSUInteger;
-    #define nil ((id)0)
-    #define YES ((BOOL)1)
-    #define NO  ((BOOL)0)
-    extern id objc_msgSend(id, SEL, ...);
-    extern id objc_getClass(const char *);
-    extern SEL sel_registerName(const char *);
-
-    /* NSRect ABI: origin(x,y) + size(w,h) = 4 doubles (32 bytes), passed by
-     * hidden SysV reference -- hence the precise non-variadic cast below. */
-    typedef struct { double x, y, width, height; } ZNWSRect;
-
-    #define C0(ret, recv, sel) \
-      ((ret (*)(id, SEL))objc_msgSend)((id)(recv), sel_registerName(sel))
-
-    id pool = C0(id, objc_getClass("NSAutoreleasePool"), "alloc");
-    pool    = C0(id, pool, "init");
-
-    id app = C0(id, objc_getClass("NSApplication"), "sharedApplication");
-    ((void (*)(id, SEL, long))objc_msgSend)((id)app,
-        sel_registerName("setActivationPolicy:"), (long)0);  /* Regular */
-
-    /* NSString builder; ZgetCstring(%url%)/%title% splice the Zimbu strings. */
-    id strClass = objc_getClass("NSString");
-    #define NSSTR(cstr) \
-      ((id (*)(id, SEL, const char *, unsigned long))objc_msgSend)( \
-          (id)strClass, sel_registerName("stringWithCString:encoding:"), \
-          (cstr), 4UL)  /* NSUTF8StringEncoding */
-
-    /* --- WKWebView pointed at the local HTTP server --- */
-    id config = C0(id, objc_getClass("WKWebViewConfiguration"), "alloc");
-    config    = C0(id, config, "init");
-
-    ZNWSRect webFrame = { 0.0, 0.0, 800.0, 600.0 };
-    id webView = C0(id, objc_getClass("WKWebView"), "alloc");
-    webView = ((id (*)(id, SEL, ZNWSRect, id))objc_msgSend)(
-                (id)webView, sel_registerName("initWithFrame:configuration:"),
-                webFrame, (id)config);
-    /* Resize with the window: NSViewWidthSizable(2) | NSViewHeightSizable(16) = 18. */
-    ((void (*)(id, SEL, NSUInteger))objc_msgSend)(
-        (id)webView, sel_registerName("setAutoresizingMask:"), (NSUInteger)18);
-
-    id nsurl = ((id (*)(id, SEL, id))objc_msgSend)(
-                (id)objc_getClass("NSURL"), sel_registerName("URLWithString:"),
-                NSSTR(ZgetCstring(%url%)));
-    id req = ((id (*)(id, SEL, id))objc_msgSend)(
-                (id)objc_getClass("NSURLRequest"), sel_registerName("requestWithURL:"),
-                (id)nsurl);
-    ((void (*)(id, SEL, id))objc_msgSend)(
-                (id)webView, sel_registerName("loadRequest:"), (id)req);
-
-    /* --- NSWindow hosting the webview --- */
-    ZNWSRect frame = { 100.0, 100.0, 800.0, 600.0 };
-    id win = C0(id, objc_getClass("NSWindow"), "alloc");
-    win = ((id (*)(id, SEL, ZNWSRect, unsigned long, unsigned long, BOOL))objc_msgSend)(
-            (id)win, sel_registerName("initWithContentRect:styleMask:backing:defer:"),
-            frame, (unsigned long)15, (unsigned long)2, NO);
-    ((void (*)(id, SEL, id))objc_msgSend)((id)win,
-        sel_registerName("setTitle:"), NSSTR(ZgetCstring(%title%)));
-    ((void (*)(id, SEL, id))objc_msgSend)((id)win,
-        sel_registerName("setContentView:"), (id)webView);
-    ((void (*)(id, SEL, id))objc_msgSend)((id)win,
-        sel_registerName("makeKeyAndOrderFront:"), nil);
-    ((void (*)(id, SEL, BOOL))objc_msgSend)((id)app,
-        sel_registerName("activateIgnoringOtherApps:"), YES);
-    /* No [NSApp run] (never returns): finish launching manually so the app and
-     * window participate in event delivery. */
-    C0(void, app, "finishLaunching");
-
-    /* Manual event-pump (GUIModule pattern). nextEventMatchingMask: with a nil
-     * untilDate blocks until an event arrives -- not a busy loop. The loop exits
-     * when the window is no longer visible (close button orders it out). */
-    id mode = NSSTR("kCFRunLoopDefaultMode");
-    SEL nextEv = sel_registerName("nextEventMatchingMask:untilDate:inMode:dequeue:");
-    SEL sendEv = sel_registerName("sendEvent:");
-    SEL visSel = sel_registerName("isVisible");
-    while (((BOOL (*)(id, SEL))objc_msgSend)((id)win, visSel)) {
-      id ev = ((id (*)(id, SEL, unsigned long, id, id, BOOL))objc_msgSend)(
-              (id)app, nextEv, (unsigned long)~0UL, nil, mode, YES);
-      if (ev != nil)
-        ((void (*)(id, SEL, id))objc_msgSend)((id)app, sendEv, ev);
+  %$handle% = (void *)zimbu_wv_create(ZgetCstring(%url%), ZgetCstring(%title%),
+                                      (double)%w%, (double)%h%,
+                                      (double)%x%, (double)%y%,
+                                      (unsigned long)%style%);
+<<<
     }
 
-    C0(void, pool, "drain");
+    #= Evaluate |js| in the page. Fire and forget (no return value): the JS runs
+    #= once the page's context has it. To receive data back from the page, post
+    #= via window.webkit.messageHandlers.zimbu.postMessage(s) and drain poll().
+    PROC $eval(string js) @public
+>>> uses(webview, getCstring) blockgc
+  zimbu_wv_eval(%$handle%, ZgetCstring(%js%));
+<<<
+    }
 
-#elif defined(__linux__)
-    /* webkit2gtk + GTK3. Auto-linked via uses(webview) -> Config.addWebViewLib()
-     * -> "$(pkg-config --libs webkit2gtk-4.1 gtk+-3.0 || ...4.0...)" (shell-
-     * expanded when the cc command runs). Forward-declared like the objc branch
-     * (no #include at function scope); pkg-config supplies the -l flags only. */
-    typedef struct _GtkWidget GtkWidget;
-    typedef struct _GtkWindow GtkWindow;
-    typedef struct _GtkContainer GtkContainer;
-    typedef void (*GCallback)(void);
-    extern void gtk_init(int *, char ***);
-    extern GtkWidget *gtk_window_new(int);                 /* GTK_WINDOW_TOPLEVEL */
-    extern void gtk_window_set_title(GtkWindow *, const char *);
-    extern void gtk_container_add(GtkContainer *, GtkWidget *);
-    extern GtkWidget *webkit_web_view_new(void);
-    extern void webkit_web_view_load_uri(GtkWidget *, const char *);
-    extern void gtk_widget_show_all(GtkWidget *);
-    extern void gtk_main(void);
-    extern void gtk_main_quit(void);
-    /* g_signal_connect(instance, signal, cb, data) is a macro for this. Returns
-     * the handler id (gulong); connect_flags is an int enum -> 0 here. */
-    extern unsigned long g_signal_connect_data(void *, const char *,
-                                               GCallback, void *, void *,
-                                               unsigned int);
+    #= Drain one buffered JS -> Zimbu bridge message (FIFO). Returns the oldest
+    #= posted string, or "" when the queue is empty.
+    FUNC $poll() string @public
+      string r = ""
+>>> uses(webview) blockgc
+  {
+    char *m = zimbu_wv_poll(%$handle%);
+    if (m) {
+      size_t n = strlen(m);
+      %r% = ZnewString((Tc *)m, (Ti)n);
+      free(m);
+    }
+  }
+<<<
+      RETURN r
+    }
 
-    gtk_init((int *)0, (char ***)0);
-    GtkWidget *win = gtk_window_new(0);
-    gtk_window_set_title((GtkWindow *)win, ZgetCstring(%title%));
-    /* Route the window "destroy" (emitted after the close button's default
-     * delete-event handler tears down the toplevel) to gtk_main_quit, so
-     * gtk_main() returns and open() unblocks. Without this gtk_main() runs
-     * forever after the window is gone. */
-    g_signal_connect_data((void *)win, "destroy",
-                          (GCallback)gtk_main_quit,
-                          (void *)0, (void *)0, 0);
-    GtkWidget *wv = webkit_web_view_new();
-    webkit_web_view_load_uri(wv, ZgetCstring(%url%));
-    gtk_container_add((GtkContainer *)win, wv);
-    gtk_widget_show_all(win);
-    gtk_main();   /* blocks until gtk_main_quit() (connected above). */
+    #= Close the native window and free its bridge ring. Safe to call on an
+    #= already-closed window (the OS close is idempotent). The handle is nulled
+    #- after the C struct is freed (zimbu_wv_close owns + frees it): without this,
+    #- the field would alias freed memory and a later isOpen()/poll() would pass a
+    #- dangling pointer past the C-side `if (!zw)` guard (use-after-free). NULL
+    #- makes isOpen() return FALSE and eval/poll/close into no-ops.
+    PROC $close() @public
+>>> uses(webview) blockgc
+  zimbu_wv_close(%$handle%);
+  %$handle% = (void *)0;
+<<<
+    }
 
-#elif defined(_WIN32)
-    /* Windows: real WebView2. The WndProc + COM handler vtables and the whole
-     * implementation live at file scope in lib/webview2_win.h, pulled into this
-     * TU by IMPORT.CHEADER at the top of the module (standard C has no nested
-     * function definitions, so they cannot live in this function-body block).
-     * Auto-links user32/ole32/kernel32 via uses(webview); the WebView2 loader is
-     * LoadLibrary'd at runtime. Blocks on the Win32 message loop until the
-     * window is destroyed. */
-    zimbu_webview2_open(ZgetCstring(%url%), ZgetCstring(%title%));
+    #= 1 (TRUE) while the native window is on screen, FALSE once it has been
+    #= closed (by close() or the OS close button).
+    FUNC $isOpen() bool @public
+      bool r = FALSE
+>>> uses(webview) blockgc
+  %r% = zimbu_wv_isOpen(%$handle%) ? 1 : 0;
+<<<
+      RETURN r
+    }
+  }
 
-#else
-# error "WEBVIEW.open: unsupported host (need __APPLE__, __linux__, or _WIN32)."
-#endif
+  #= Pump native events cooperatively: drain whatever is pending, block briefly
+  #= for the next, compact windows closed via the OS, then return. A caller
+  #= loops `while someWindow.isOpen() { WEBVIEW.run() }`. Multiple Window
+  #= objects share one pump (the per-OS registry in webview_int.h).
+  PROC run() @public
+>>> uses(webview) blockgc
+  zimbu_wv_run();
+<<<
+  }
+
+  #= LEGACY COMPAT: open a single 800x600 window titled |title| at (100,100)
+  #= hosting a WebView pointed at |url|, and block until the user closes it.
+  #- Equivalent to NEW(url,title,800,600,100,100,15) + run() until closed.
+  #- lib/ZWTModule.runNative delegates here; existing callers are unchanged.
+  PROC open(string url, string title) @public
+>>> uses(webview, getCstring) blockgc
+  {
+    void *h = zimbu_wv_create(ZgetCstring(%url%), ZgetCstring(%title%),
+                              800.0, 600.0, 100.0, 100.0, (unsigned long)15);
+    while (zimbu_wv_isOpen(h)) zimbu_wv_run();
+    zimbu_wv_close(h);
   }
 <<<
   }
