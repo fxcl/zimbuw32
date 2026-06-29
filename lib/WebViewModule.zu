@@ -9,6 +9,11 @@
 #                                           chrome = FALSE)
 #     -- all params but |url| optional; chrome = TRUE adds a browser nav bar
 #   win.eval(js)                       # Zimbu -> JS (fire and forget)
+#   win.load(url)                      # navigate to a new URL (loadRequest:)
+#   win.reload() / stop() / goBack() / goForward()   # navigation actuators
+#   win.setTitle(s) / setSize(w,h) / setPosition(x,y)  # window actuators
+#   win.url() / title()                # current page URL / document.title (string)
+#   win.isLoading() / canGoBack() / canGoForward()    # live state (bool)
 #   win.loadHTML(html, baseURL = "")   # replace page with literal HTML; baseURL
 #     # (when set) lets relative css/js/img in |html| resolve against it
 #   win.loadFile(path)                 # replace page with local file:// (assets resolve)
@@ -218,6 +223,129 @@ MODULE WebViewModule @public @items=public
       bool r = FALSE
 >>> uses(webview) blockgc
   %r% = zimbu_wv_isOpen(%$handle%) ? 1 : 0;
+<<<
+      RETURN r
+    }
+
+    #= Navigate the webview to a new |url| (a real loadRequest:, so it creates a
+    #- back-forward list entry -- use goBack()/goForward() to move across these).
+    #- The load surfaces as nav:start / nav:done (or nav:fail:<reason>) in poll().
+    PROC $load(string url) @public
+>>> uses(webview, getCstring) blockgc
+  zimbu_wv_load(%$handle%, ZgetCstring(%url%));
+<<<
+    }
+
+    #= Reload the current page. Fires nav:start / nav:done again.
+    PROC $reload() @public
+>>> uses(webview) blockgc
+  zimbu_wv_reload(%$handle%);
+<<<
+    }
+
+    #= Stop the in-flight load (no-op if nothing is loading).
+    PROC $stop() @public
+>>> uses(webview) blockgc
+  zimbu_wv_stop(%$handle%);
+<<<
+    }
+
+    #= Go back one history entry. No-op when canGoBack() is FALSE.
+    PROC $goBack() @public
+>>> uses(webview) blockgc
+  zimbu_wv_goBack(%$handle%);
+<<<
+    }
+
+    #= Go forward one history entry. No-op when canGoForward() is FALSE.
+    PROC $goForward() @public
+>>> uses(webview) blockgc
+  zimbu_wv_goForward(%$handle%);
+<<<
+    }
+
+    #= Re-title the native window's titlebar (NOT the page document). Independent
+    #- of the page's document.title, which is read via title(): WKWebView does not
+    #- push document.title to the titlebar without a UI delegate we do not install.
+    PROC $setTitle(string title) @public
+>>> uses(webview, getCstring) blockgc
+  zimbu_wv_setTitle(%$handle%, ZgetCstring(%title%));
+<<<
+    }
+
+    #= Move the window so its bottom-left origin is (|x|,|y|) in screen coords
+    #- (same frame.origin semantics as NEW).
+    PROC $setPosition(int x, int y) @public
+>>> uses(webview) blockgc
+  zimbu_wv_setPosition(%$handle%, (double)%x%, (double)%y%);
+<<<
+    }
+
+    #= Resize the window's CONTENT area to |w|x|h| (the area the webview fills;
+    #- matches the w,h semantics of NEW, independent of any chrome).
+    PROC $setSize(int w, int h) @public
+>>> uses(webview) blockgc
+  zimbu_wv_setSize(%$handle%, (double)%w%, (double)%h%);
+<<<
+    }
+
+    #= The current page URL as a string (the loaded URL's absolute form), "" when
+    #- unavailable / closed. Mirrors the address the browser-chrome field shows.
+    FUNC $url() string @public
+      string r = ""
+>>> uses(webview) blockgc
+  {
+    char *m = zimbu_wv_url(%$handle%);
+    if (m) {
+      size_t n = strlen(m);
+      %r% = ZnewString((Tc *)m, (Ti)n);
+      free(m);
+    }
+  }
+<<<
+      RETURN r
+    }
+
+    #= The page's document.title as a string, "" before the first navigation
+    #- finishes or when the page has no title.
+    FUNC $title() string @public
+      string r = ""
+>>> uses(webview) blockgc
+  {
+    char *m = zimbu_wv_title(%$handle%);
+    if (m) {
+      size_t n = strlen(m);
+      %r% = ZnewString((Tc *)m, (Ti)n);
+      free(m);
+    }
+  }
+<<<
+      RETURN r
+    }
+
+    #= TRUE while a load is in flight (between nav:start and nav:done/fail).
+    FUNC $isLoading() bool @public
+      bool r = FALSE
+>>> uses(webview) blockgc
+  %r% = zimbu_wv_isLoading(%$handle%) ? 1 : 0;
+<<<
+      RETURN r
+    }
+
+    #= TRUE when a history entry exists to goBack() to.
+    FUNC $canGoBack() bool @public
+      bool r = FALSE
+>>> uses(webview) blockgc
+  %r% = zimbu_wv_canGoBack(%$handle%) ? 1 : 0;
+<<<
+      RETURN r
+    }
+
+    #= TRUE when a history entry exists to goForward() to.
+    FUNC $canGoForward() bool @public
+      bool r = FALSE
+>>> uses(webview) blockgc
+  %r% = zimbu_wv_canGoForward(%$handle%) ? 1 : 0;
 <<<
       RETURN r
     }

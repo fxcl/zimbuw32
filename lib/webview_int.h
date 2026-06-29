@@ -4,6 +4,13 @@
  * Hosts the per-OS implementation of:
  *   void *zimbu_wv_create(url, title, w, h, x, y, style) -> handle (does NOT pump)
  *   void  zimbu_wv_eval(handle, js)            Zimbu -> JS (fire and forget)
+ *   void  zimbu_wv_load(handle, url)           navigate to a new URL (loadRequest:)
+ *   void  zimbu_wv_reload/stop/goBack/goForward(handle)   nav actuators
+ *   void  zimbu_wv_setTitle(handle, t)         retitle the NSWindow titlebar
+ *   void  zimbu_wv_setPosition(handle, x, y)   move the window (setFrameOrigin:)
+ *   void  zimbu_wv_setSize(handle, w, h)       resize content (setContentSize:)
+ *   char *zimbu_wv_url/title(handle)           current page URL / document.title (caller frees)
+ *   int   zimbu_wv_isLoading/canGoBack/canGoForward(handle)   live state
  *   char *zimbu_wv_poll(handle)                drain one JS -> Zimbu msg (caller frees; NULL if none)
  *   int   zimbu_wv_isOpen(handle)              1 while the native window is on screen
  *   void  zimbu_wv_close(handle)               order out / destroy; unregister
@@ -56,6 +63,13 @@ typedef void *SEL;
 typedef signed char BOOL;
 typedef unsigned long NSUInteger;
 typedef struct { double x, y, width, height; } ZWRect;
+/* 2-double stand-in for NSPoint/NSSize. Declared as its own type (not reused
+ * ZWRect) because the objc_msgSend ABI for a struct arg depends on its size: a
+ * 2-double HVA passes in d0,d1 (arm64) / xmm0,xmm1 (x86_64), but a 4-double
+ * ZWRect passes in d0..d3 / BY MEMORY on x86_64. Passing ZWRect to a selector
+ * expecting NSPoint/NSSize would put origin/size in the wrong place on Intel
+ * Macs. ZWVec2 matches the 16-byte HVA the callee reads. */
+typedef struct { double a, b; } ZWVec2;
 
 #define zwv_nil ((id)0)
 #define zwv_YES ((BOOL)1)
@@ -623,6 +637,109 @@ static void zimbu_wv_close(void *handle) {
   free(zw);
 }
 
+/* ---- Tier 2: actuators + state queries ---------------------------------- */
+/* Thin wrappers over WKWebView/NSWindow selectors already exercised elsewhere
+ * in this file (reload/goBack/goForward/stopLoading by the nav-controller IMPs;
+ * URL/absoluteString by zwv_syncAddress; loadRequest: by zwv_ctrl_home). They
+ * let a Zimbu caller ACT on a window -- navigate/reload/stop/back/forward,
+ * retitle, move, resize -- and read live state -- url/title/isLoading and the
+ * back-forward flags -- instead of only open/poll/close. Every entry is a no-op
+ * on a NULL/closed handle (NULL-guarded like eval/isOpen). url()/title() malloc
+ * a UTF-8 copy the caller frees (same ownership as poll()). */
+
+static void zimbu_wv_load(void *handle, const char *url) {
+  ZWWindow *zw = (ZWWindow *)handle;
+  if (!zw || !zw->webView) return;
+  id nsurl = ((id (*)(id, SEL, id))objc_msgSend)(objc_getClass("NSURL"),
+      sel_registerName("URLWithString:"), zwv_NSSTR(url));
+  if (!nsurl) return;
+  id req = ((id (*)(id, SEL, id))objc_msgSend)(objc_getClass("NSURLRequest"),
+      sel_registerName("requestWithURL:"), nsurl);
+  ((void (*)(id, SEL, id))objc_msgSend)(zw->webView, sel_registerName("loadRequest:"), req);
+}
+static void zimbu_wv_reload(void *handle) {
+  ZWWindow *zw = (ZWWindow *)handle;
+  if (zw && zw->webView)
+    ((void (*)(id, SEL))objc_msgSend)(zw->webView, sel_registerName("reload"));
+}
+static void zimbu_wv_stop(void *handle) {
+  ZWWindow *zw = (ZWWindow *)handle;
+  if (zw && zw->webView)
+    ((void (*)(id, SEL))objc_msgSend)(zw->webView, sel_registerName("stopLoading"));
+}
+static void zimbu_wv_goBack(void *handle) {
+  ZWWindow *zw = (ZWWindow *)handle;
+  if (zw && zw->webView)
+    ((void (*)(id, SEL))objc_msgSend)(zw->webView, sel_registerName("goBack"));
+}
+static void zimbu_wv_goForward(void *handle) {
+  ZWWindow *zw = (ZWWindow *)handle;
+  if (zw && zw->webView)
+    ((void (*)(id, SEL))objc_msgSend)(zw->webView, sel_registerName("goForward"));
+}
+/* setTitle re-titles the NSWindow (the titlebar), NOT the page document; the
+ * page title is read back via title(). WKWebView does not push document.title to
+ * the titlebar without a UI delegate, so these are independent. */
+static void zimbu_wv_setTitle(void *handle, const char *title) {
+  ZWWindow *zw = (ZWWindow *)handle;
+  if (zw && zw->win)
+    ((void (*)(id, SEL, id))objc_msgSend)(zw->win,
+        sel_registerName("setTitle:"), zwv_NSSTR(title));
+}
+/* setFrameOrigin: takes NSPoint {x,y}; setContentSize: takes NSSize {w,h}; both
+ * are 2-double HVAs read from d0,d1 / xmm0,xmm1 -- hence ZWVec2 (not ZWRect). */
+static void zimbu_wv_setPosition(void *handle, double x, double y) {
+  ZWWindow *zw = (ZWWindow *)handle;
+  if (!zw || !zw->win) return;
+  ZWVec2 pt = { x, y };
+  ((void (*)(id, SEL, ZWVec2))objc_msgSend)(zw->win,
+      sel_registerName("setFrameOrigin:"), pt);
+}
+static void zimbu_wv_setSize(void *handle, double w, double h) {
+  ZWWindow *zw = (ZWWindow *)handle;
+  if (!zw || !zw->win) return;
+  ZWVec2 sz = { w, h };
+  ((void (*)(id, SEL, ZWVec2))objc_msgSend)(zw->win,
+      sel_registerName("setContentSize:"), sz);
+}
+/* url() = the webview's current URL absoluteString; title() = the page document
+ * title. Both return a malloc'd UTF-8 copy (NULL when empty/unavailable). */
+static char *zimbu_wv_url(void *handle) {
+  ZWWindow *zw = (ZWWindow *)handle;
+  if (!zw || !zw->webView) return NULL;
+  id url = ((id (*)(id, SEL))objc_msgSend)(zw->webView, sel_registerName("URL"));
+  if (!url) return NULL;
+  id s = ((id (*)(id, SEL))objc_msgSend)(url, sel_registerName("absoluteString"));
+  if (!s) return NULL;
+  const char *utf8 =
+      ((const char *(*)(id, SEL))objc_msgSend)(s, sel_registerName("UTF8String"));
+  return utf8 ? strdup(utf8) : NULL;
+}
+static char *zimbu_wv_title(void *handle) {
+  ZWWindow *zw = (ZWWindow *)handle;
+  if (!zw || !zw->webView) return NULL;
+  id t = ((id (*)(id, SEL))objc_msgSend)(zw->webView, sel_registerName("title"));
+  if (!t) return NULL;
+  const char *utf8 =
+      ((const char *(*)(id, SEL))objc_msgSend)(t, sel_registerName("UTF8String"));
+  return utf8 ? strdup(utf8) : NULL;
+}
+static int zimbu_wv_isLoading(void *handle) {
+  ZWWindow *zw = (ZWWindow *)handle;
+  if (!zw || !zw->webView) return 0;
+  return ((BOOL (*)(id, SEL))objc_msgSend)(zw->webView, sel_registerName("isLoading")) ? 1 : 0;
+}
+static int zimbu_wv_canGoBack(void *handle) {
+  ZWWindow *zw = (ZWWindow *)handle;
+  if (!zw || !zw->webView) return 0;
+  return ((BOOL (*)(id, SEL))objc_msgSend)(zw->webView, sel_registerName("canGoBack")) ? 1 : 0;
+}
+static int zimbu_wv_canGoForward(void *handle) {
+  ZWWindow *zw = (ZWWindow *)handle;
+  if (!zw || !zw->webView) return 0;
+  return ((BOOL (*)(id, SEL))objc_msgSend)(zw->webView, sel_registerName("canGoForward")) ? 1 : 0;
+}
+
 /* Cooperative pump: drain all immediately-pending events, then block briefly
  * (~20ms) for the next. Returns so the caller can interleave poll(). The caller
  * loops while any window it cares about is open. */
@@ -812,6 +929,26 @@ static void zimbu_wv_run(void) {
   g_main_context_iteration((void *)0, 1);
 }
 
+/* Tier 2 actuators + state queries -- PRELIMINARY on Linux. webkit2gtk has the
+ * direct equivalents (webkit_web_view_load_uri/reload/stop_loading/go_back/
+ * go_forward/get_uri/get_title/is_loading/can_go_back/can_go_forward and
+ * gtk_window_set_title/resize/move) but their exact signatures are not verified
+ * on this macOS host, so they are stubbed to keep link parity with the macOS
+ * branch. Implement (and verify against headers) when the Linux gate runs. */
+static void zimbu_wv_load(void *h, const char *u) { (void)h; (void)u; }
+static void zimbu_wv_reload(void *h) { (void)h; }
+static void zimbu_wv_stop(void *h) { (void)h; }
+static void zimbu_wv_goBack(void *h) { (void)h; }
+static void zimbu_wv_goForward(void *h) { (void)h; }
+static void zimbu_wv_setTitle(void *h, const char *t) { (void)h; (void)t; }
+static void zimbu_wv_setPosition(void *h, double x, double y) { (void)h; (void)x; (void)y; }
+static void zimbu_wv_setSize(void *h, double w, double ht) { (void)h; (void)w; (void)ht; }
+static char *zimbu_wv_url(void *h) { (void)h; return NULL; }
+static char *zimbu_wv_title(void *h) { (void)h; return NULL; }
+static int zimbu_wv_isLoading(void *h) { (void)h; return 0; }
+static int zimbu_wv_canGoBack(void *h) { (void)h; return 0; }
+static int zimbu_wv_canGoForward(void *h) { (void)h; return 0; }
+
 /* ===========================================================================
  * Windows -- WebView2 via webview2_win.h (kept intact). PRELIMINARY: the OO
  * interface wraps the existing single-window backend; eval/poll need
@@ -860,6 +997,26 @@ static void zimbu_wv_close(void *handle) {
 static void zimbu_wv_run(void) {
   zimbu_webview2_pump();
 }
+
+/* Tier 2 actuators + state queries -- PRELIMINARY on Windows. WebView2 exposes
+ * them via further ICoreWebView2 vtable slots (Reload/Stop/GoBack/GoForward/
+ * CanGoBack/CanGoForward/ExecuteScript for url+title, plus CoreWebView2Controller
+ * put_Bounds / window SetWindowText/MoveWindow). Those slots are beyond what
+ * webview2_win.h transcribes today; stubbed to keep link parity. Implement when
+ * the Windows gate runs. */
+static void zimbu_wv_load(void *h, const char *u) { (void)h; (void)u; }
+static void zimbu_wv_reload(void *h) { (void)h; }
+static void zimbu_wv_stop(void *h) { (void)h; }
+static void zimbu_wv_goBack(void *h) { (void)h; }
+static void zimbu_wv_goForward(void *h) { (void)h; }
+static void zimbu_wv_setTitle(void *h, const char *t) { (void)h; (void)t; }
+static void zimbu_wv_setPosition(void *h, double x, double y) { (void)h; (void)x; (void)y; }
+static void zimbu_wv_setSize(void *h, double w, double ht) { (void)h; (void)w; (void)ht; }
+static char *zimbu_wv_url(void *h) { (void)h; return NULL; }
+static char *zimbu_wv_title(void *h) { (void)h; return NULL; }
+static int zimbu_wv_isLoading(void *h) { (void)h; return 0; }
+static int zimbu_wv_canGoBack(void *h) { (void)h; return 0; }
+static int zimbu_wv_canGoForward(void *h) { (void)h; return 0; }
 
 #else
 # error "WEBVIEW: unsupported host (need __APPLE__, __linux__, or _WIN32)."

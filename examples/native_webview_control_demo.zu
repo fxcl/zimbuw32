@@ -1,0 +1,161 @@
+# WEBVIEW actuators + state-query demo (Tier 2).
+#
+# Proves the API added on top of open/poll/close actually drives the webview and
+# reads live state back -- the gap that made the wrapper feel read-only. Each
+# step navigates (a real loadRequest:, so back-forward history exists), then a
+# helper pumps until nav:done and the assertions read state RIGHT AFTER:
+#   nav   : initial load -> title()=="Page A", url()==expectA, !isLoading, !canGoBack
+#   load  : win.load(b)   -> title()=="Page B", canGoBack()==TRUE
+#   back  : win.goBack()  -> title()=="Page A", canGoForward()==TRUE
+#   fwd   : win.goForward()-> title()=="Page B"
+#   reload: win.reload()  -> title()=="Page B" (re-loaded the current page)
+#   win   : setTitle/setSize/setPosition exercised (visual; reaches ObjC, no crash)
+#
+# setSize/setPosition/setTitle have no getter here (reading an NSRect back would
+# need objc_msgSend_stret; WKWebView does not echo the window title to a query),
+# so they are exercised, not asserted -- the state queries (url/title/isLoading/
+# canGoBack/canGoForward) are the verifiable part.
+#
+# Build (macOS -- uses(webview) auto-links WebKit/AppKit/Foundation, NO flags):
+#   ./zimbu examples/native_webview_control_demo.zu
+# Run:  ./examples/native_webview_control_demo
+#       (self-closes after the round-trip; final line is the verdict)
+
+ARG.Int port = NEW("p", "port", 8100, "Port for the demo HTTP server")
+
+# Pump until the next nav:done (or nav:fail) drains, then settle a few pumps so
+# the page's document.title / URL have fully committed before the caller reads
+# state. Returns TRUE on done, FALSE on fail or timeout (cap bounds the wait).
+FUNC waitDone(WEBVIEW.Window w, int cap) bool
+  int n = 0
+  WHILE n < cap
+    WEBVIEW.run()
+    n = n + 1
+    WHILE TRUE
+      WEBVIEW.Event e = w.poll()
+      IF e == NIL
+        BREAK
+      }
+      IO.print("bridge: " .. e.ToString())
+      IF e.kind == WEBVIEW.NavEvent.done
+        # Settle: title commits around didFinishNavigation; a few extra pumps
+        # make isLoading() flip to FALSE and document.title finalize.
+        int s = 0
+        WHILE s < 10
+          WEBVIEW.run()
+          s = s + 1
+        }
+        RETURN TRUE
+      }
+      IF e.kind == WEBVIEW.NavEvent.fail
+        RETURN FALSE
+      }
+    }
+  }
+  RETURN FALSE
+}
+
+FUNC Main() int
+  HTTP.Server server = NEW(port.value())
+
+  string head = "<!DOCTYPE html><html><head><meta charset='utf-8'><title>"
+  # Page A: title "Page A".
+  string htmlA = head .. "Page A</title></head>"
+  htmlA ..= "<body style='font-family:-apple-system,sans-serif;margin:2em'>"
+  htmlA ..= "<h1>Page A</h1><p>Initial page. win.load() will go to Page B.</p>"
+  htmlA ..= "</body></html>"
+  # Page B: title "Page B".
+  string htmlB = head .. "Page B</title></head>"
+  htmlB ..= "<body style='font-family:-apple-system,sans-serif;margin:2em'>"
+  htmlB ..= "<h1>Page B</h1><p>win.goBack() returns to Page A.</p>"
+  htmlB ..= "</body></html>"
+
+  HTTP.Servlet sa = HTTP.StringServlet.NEW(htmlA)
+  sa.addPath("/a.html")
+  server.addServlet(sa)
+  HTTP.Servlet sb = HTTP.StringServlet.NEW(htmlB)
+  sb.addPath("/b.html")
+  server.addServlet(sb)
+  server.redirect("/", "/a.html")
+  server.start()
+
+  string base = "http://localhost:" .. port.value()
+  string expectA = base .. "/a.html"
+  string expectB = base .. "/b.html"
+
+  WEBVIEW.Window a = WEBVIEW.Window.NEW(expectA, "Control Demo", 560, 420, 140, 140)
+  IO.print("control: opened at " .. expectA)
+
+  # ---- nav: initial load of Page A ----------------------------------------
+  bool okNav = FALSE
+  IF waitDone(a, 400)
+    bool titleOK = a.title() == "Page A"
+    bool urlOK = a.url() == expectA
+    bool settled = !a.isLoading()
+    bool noBack = !a.canGoBack()
+    IO.print("nav: title=" .. a.title() .. " url=" .. a.url()
+             .. " loading=" .. yn(a.isLoading())
+             .. " canGoBack=" .. yn(a.canGoBack()))
+    okNav = titleOK && urlOK && settled && noBack
+  }
+
+  # ---- load: navigate to Page B -------------------------------------------
+  bool okLoad = FALSE
+  a.load(expectB)
+  IF waitDone(a, 400)
+    bool titleOK = a.title() == "Page B"
+    bool urlOK = a.url() == expectB
+    bool hasBack = a.canGoBack()
+    IO.print("load: title=" .. a.title() .. " canGoBack=" .. yn(hasBack))
+    okLoad = titleOK && urlOK && hasBack
+  }
+
+  # ---- back: goBack() to Page A -------------------------------------------
+  bool okBack = FALSE
+  a.goBack()
+  IF waitDone(a, 400)
+    bool titleOK = a.title() == "Page A"
+    bool urlOK = a.url() == expectA
+    bool hasFwd = a.canGoForward()
+    IO.print("back: title=" .. a.title() .. " canGoForward=" .. yn(hasFwd))
+    okBack = titleOK && urlOK && hasFwd
+  }
+
+  # ---- fwd: goForward() to Page B -----------------------------------------
+  bool okFwd = FALSE
+  a.goForward()
+  IF waitDone(a, 400)
+    okFwd = a.title() == "Page B"
+    IO.print("fwd: title=" .. a.title())
+  }
+
+  # ---- reload: reload current (Page B) ------------------------------------
+  bool okReload = FALSE
+  a.reload()
+  IF waitDone(a, 400)
+    okReload = a.title() == "Page B"
+    IO.print("reload: title=" .. a.title())
+  }
+
+  # ---- win: exercise the non-queryable actuators (visual; reaches ObjC) ---
+  a.setTitle("Control Demo -- retitled")
+  a.setSize(720, 520)
+  a.setPosition(200, 200)
+  bool okWin = waitDone(a, 50) || TRUE   # just pump; the calls above are the point
+
+  a.close()
+
+  string verdict = "control: nav=" .. yn(okNav) .. " load=" .. yn(okLoad)
+  verdict ..= " back=" .. yn(okBack) .. " fwd=" .. yn(okFwd)
+  verdict ..= " reload=" .. yn(okReload) .. " win=" .. yn(okWin)
+  IO.print(verdict)
+  server.quit()
+  RETURN 0
+}
+
+FUNC yn(bool b) string
+  IF b
+    RETURN "Y"
+  }
+  RETURN "N"
+}
