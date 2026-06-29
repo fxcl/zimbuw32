@@ -50,9 +50,8 @@ FUNC Main() int
   server.start()
 
   string base = "http://localhost:" .. port.value()
-  # 15 = NSWindowStyleMaskTitled|Closable|Miniaturizable|Resizable (capped|titled).
-  WEBVIEW.Window a = WEBVIEW.Window.NEW(base .. "/a.html", "Window A", 500, 400, 100, 100, 15)
-  WEBVIEW.Window b = WEBVIEW.Window.NEW(base .. "/b.html", "Window B", 500, 400, 700, 100, 15)
+  WEBVIEW.Window a = WEBVIEW.Window.NEW(base .. "/a.html", "Window A", 500, 400, 100, 100)
+  WEBVIEW.Window b = WEBVIEW.Window.NEW(base .. "/b.html", "Window B", 500, 400, 700, 100)
   IO.print("webview: opened 2 windows")
 
   bool gotOnload = FALSE
@@ -64,17 +63,17 @@ FUNC Main() int
     WEBVIEW.run()
     cap = cap + 1
 
-    # Drain every buffered bridge message this pump produced (FIFO).
+    # Drain every buffered bridge event this pump produced (FIFO) as typed Events.
     WHILE TRUE
-      string m = a.poll()
-      IF m == ""
+      WEBVIEW.Event e = a.poll()
+      IF e == NIL
         BREAK
       }
-      IO.print("bridge: " .. m)
-      IF m == "from-A"
+      IO.print("bridge: " .. e.ToString())
+      IF e.payload == "from-A"
         gotOnload = TRUE
       }
-      IF m == "evald"
+      IF e.payload == "evald"
         gotEval = TRUE
       }
     }

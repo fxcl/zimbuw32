@@ -13,8 +13,8 @@
 #   ./zimbu examples/native_webview_browser_demo.zu
 # Run:  ./examples/native_webview_browser_demo
 #
-# 0x100000 is the ZIMBU_WV_STYLE_NAVBAR bit (defined in lib/webview_int.h);
-# OR it into the NSWindowStyleMask (15 = titled|closable|miniaturizable|resizable).
+# chrome = TRUE sets the ZIMBU_WV_STYLE_NAVBAR bit (defined in lib/webview_int.h),
+# layered on the base NSWindowStyleMask (15 = titled|closable|miniaturizable|resizable).
 #   webview: nav=Y -> the home page loaded under the chrome (start + done seen)
 
 ARG.Int port = NEW("p", "port", 8099, "Port for the demo HTTP server")
@@ -78,9 +78,8 @@ FUNC Main() int
   server.start()
 
   string base = "http://localhost:" .. port.value()
-  # 15 = titled|closable|miniaturizable|resizable; 0x100000 = ZIMBU_WV_STYLE_NAVBAR.
   WEBVIEW.Window a = WEBVIEW.Window.NEW(base .. "/home", "Browser Demo", 900, 600, 120, 120,
-                                       15 + 0x100000)
+                                       chrome = TRUE)
   IO.print("webview: opened browser window at " .. base .. "/home (close the window to exit)")
 
   bool gotNavStart = FALSE
@@ -94,23 +93,22 @@ FUNC Main() int
   WHILE a.isOpen()
     WEBVIEW.run()
 
-    # Drain every bridge message this pump produced (FIFO): nav:* tags.
+    # Drain every bridge event this pump produced (FIFO) as typed Events.
     WHILE TRUE
-      string m = a.poll()
-      IF m == ""
+      WEBVIEW.Event e = a.poll()
+      IF e == NIL
         BREAK
       }
-      IO.print("bridge: " .. m)
-      IF m == "nav:start"
-        gotNavStart = TRUE
-      }
-      IF m == "nav:done"
-        gotNavDone = TRUE
-        navLoads = navLoads + 1
-      }
-      IF m.startsWith("nav:fail:")
-        gotNavFail = TRUE
-        failReason = m
+      IO.print("bridge: " .. e.ToString())
+      SWITCH e.kind
+        CASE WEBVIEW.NavEvent.start
+          gotNavStart = TRUE
+        CASE WEBVIEW.NavEvent.done
+          gotNavDone = TRUE
+          navLoads = navLoads + 1
+        CASE WEBVIEW.NavEvent.fail
+          gotNavFail = TRUE
+          failReason = e.ToString()
       }
     }
 

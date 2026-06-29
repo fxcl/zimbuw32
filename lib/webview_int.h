@@ -560,12 +560,19 @@ static void zimbu_wv_eval(void *handle, const char *js) {
 }
 
 /* Replace the page with a literal HTML string -- no HTTP server required.
- * baseURL nil means no relative-URL resolution. Fires nav:start/nav:done. */
-static void zimbu_wv_loadHTML(void *handle, const char *html) {
+ * baseURL: when non-NULL and non-empty, relative URLs in html resolve against
+ * it (built via +[NSURL URLWithString:]); NULL/empty means no resolution, which
+ * preserves the legacy behavior and still fires nav:start/nav:done. */
+static void zimbu_wv_loadHTML(void *handle, const char *html, const char *baseURL) {
   ZWWindow *zw = (ZWWindow *)handle;
   if (!zw || !zw->webView) return;
+  id base = zwv_nil;
+  if (baseURL && baseURL[0]) {
+    base = ((id (*)(id, SEL, id))objc_msgSend)(objc_getClass("NSURL"),
+        sel_registerName("URLWithString:"), zwv_NSSTR(baseURL));
+  }
   ((void (*)(id, SEL, id, id))objc_msgSend)(zw->webView,
-      sel_registerName("loadHTMLString:baseURL:"), zwv_NSSTR(html), zwv_nil);
+      sel_registerName("loadHTMLString:baseURL:"), zwv_NSSTR(html), base);
 }
 
 /* Load a local file:// URL given a filesystem |path|. Read access is granted to

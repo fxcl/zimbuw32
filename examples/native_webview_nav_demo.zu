@@ -23,7 +23,7 @@
 FUNC Main() int
   # Start on about:blank so no HTTP server is needed -- proving loadHTML is a
   # self-contained content load, not a fetch.
-  WEBVIEW.Window a = WEBVIEW.Window.NEW("about:blank", "Nav Demo", 520, 400, 120, 120, 15)
+  WEBVIEW.Window a = WEBVIEW.Window.NEW("about:blank", "Nav Demo", 520, 400, 120, 120)
   IO.print("webview: opened about:blank (close the window to exit)")
 
   bool gotNavStart = FALSE
@@ -57,26 +57,25 @@ FUNC Main() int
       didLoad = TRUE
     }
 
-    # Drain every bridge message this pump produced (FIFO): nav:* tags plus the
-    # page's ready:NAVHTML.
+    # Drain every bridge event this pump produced (FIFO) as typed Events: nav:*
+    # states plus the page's ready:NAVHTML (a NavEvent.message).
     WHILE TRUE
-      string m = a.poll()
-      IF m == ""
+      WEBVIEW.Event e = a.poll()
+      IF e == NIL
         BREAK
       }
-      IO.print("bridge: " .. m)
-      IF m == "nav:start"
-        gotNavStart = TRUE
+      IO.print("bridge: " .. e.ToString())
+      SWITCH e.kind
+        CASE WEBVIEW.NavEvent.start
+          gotNavStart = TRUE
+        CASE WEBVIEW.NavEvent.done
+          gotNavDone = TRUE
+        CASE WEBVIEW.NavEvent.fail
+          gotNavFail = TRUE
+          failReason = e.ToString()
       }
-      IF m == "nav:done"
-        gotNavDone = TRUE
-      }
-      IF m == "ready:NAVHTML"
+      IF e.payload == "ready:NAVHTML"
         gotReady = TRUE
-      }
-      IF m.startsWith("nav:fail:")
-        gotNavFail = TRUE
-        failReason = m
       }
     }
   }

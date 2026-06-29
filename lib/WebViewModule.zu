@@ -4,13 +4,24 @@
 # WebView module - native desktop WebView (macOS WKWebView, webkit2gtk, WebView2)
 #
 # OO Window API over lib/webview_int.h:
-#   WEBVIEW.Window win = WEBVIEW.Window.NEW(url, title, w, h, x, y, style)
-#   win.eval(js)            # Zimbu -> JS (fire and forget)
-#   win.poll()              # drain one JS -> Zimbu bridge msg ("" if none)
-#   win.isOpen()            # 1 while the native window is on screen
-#   win.close()             # order out / destroy; unregister
-#   WEBVIEW.run()           # cooperative event pump (process pending, return)
-#   WEBVIEW.open(url, title)  # LEGACY: NEW(800,600,100,100,15) + run() until closed
+#   WEBVIEW.Window win = WEBVIEW.Window.NEW(url, title = "Zimbu",
+#                                           w = 800, h = 600, x = 100, y = 100,
+#                                           chrome = FALSE)
+#     -- all params but |url| optional; chrome = TRUE adds a browser nav bar
+#   win.eval(js)                       # Zimbu -> JS (fire and forget)
+#   win.loadHTML(html, baseURL = "")   # replace page with literal HTML; baseURL
+#     # (when set) lets relative css/js/img in |html| resolve against it
+#   win.loadFile(path)                 # replace page with local file:// (assets resolve)
+#   win.poll()                         # drain one bridge msg as a typed Event, or NIL
+#   win.isOpen()                       # 1 while the native window is on screen
+#   win.close()                        # order out / destroy; unregister
+#   WEBVIEW.run()                      # cooperative event pump (drain + ~20ms block)
+#   WEBVIEW.open(url, title)           # LEGACY: NEW(800,600,100,100) + run() until closed
+#
+# Events are typed (NavEvent) instead of raw string tags: poll() returns an Event
+# whose kind is one of start/commit/done/fail (WKNavigationDelegate load callbacks)
+# or message (an app-defined JS -> Zimbu postMessage), with .payload holding the
+# nav:fail reason or the message text. poll() returns NIL when the ring is empty.
 #
 # Each Window method is a thin dispatcher into a pure-C function in
 # lib/webview_int.h (struct + registry + create/eval/poll/isOpen/close/run; the
@@ -51,6 +62,50 @@ IMPORT.CHEADER "webview_int.h"
 
 MODULE WebViewModule @public @items=public
 
+  #= Kind of bridge event drained by Window.poll(). start/commit/done/fail mirror
+  #- the WKNavigationDelegate load callbacks; message is an app-defined JS ->
+  #- Zimbu postMessage (anything the page pushed through the bridge that is not a
+  #- nav: callback, including legacy tags like ready:*).
+  ENUM NavEvent @public
+    start
+    commit
+    done
+    fail
+    message
+  }
+
+  #= One drained bridge event. |kind| classifies it; |payload| is the nav:fail
+  #- localized reason (for fail) or the raw message text (for message), "" for
+  #- the other nav states. Immutable once constructed by poll().
+  CLASS Event @public
+    NavEvent $kind @public
+    string $payload @public
+
+    NEW(NavEvent kind, string payload) @public
+      $kind = kind
+      $payload = payload
+    }
+
+    #= Render this event in the legacy wire-tag form: start/commit/done -> the
+    #- "nav:<state>" tag, fail -> "nav:fail:<payload>", message -> the raw
+    #- payload text. Lets a poll loop print a typed Event as if it were the old
+    #- raw bridge string, without reconstructing the tag at every call site.
+    FUNC $ToString() string @public
+      SWITCH $kind
+        CASE NavEvent.start
+          RETURN "nav:start"
+        CASE NavEvent.commit
+          RETURN "nav:commit"
+        CASE NavEvent.done
+          RETURN "nav:done"
+        CASE NavEvent.fail
+          RETURN "nav:fail:" .. $payload
+        DEFAULT
+          RETURN $payload
+      }
+    }
+  }
+
   #= A native OS window hosting a system WebView pointed at a URL.
   #-
   #- The handle is opaque and per-OS (macOS ZWWindow*, Linux GtkWidget pair,
@@ -60,16 +115,21 @@ MODULE WebViewModule @public @items=public
   CLASS Window @public
     C(void*) $handle   #! opaque per-OS window handle
 
-    #= Create and show a native window titled |title| hosting a system WebView
-    #= pointed at |url|. |w|x|h| is the content size; |x|,|y| the origin;
-    #= |style| the OS window-style bitmask (macOS NSWindowStyleMask, e.g. 15).
+    #= Create and show a native window titled |title| (default "Zimbu") hosting a
+    #= system WebView pointed at |url|. |w|x|h| is the content size (default
+    #= 800x600); |x|,|y| the origin (default 100,100). |chrome| (default FALSE)
+    #= adds a browser navigation bar (Back/Forward/Reload/Stop/Home + address +
+    #= spinner) above the webview via the ZIMBU_WV_STYLE_NAVBAR style bit.
     #- Does NOT pump events: call WEBVIEW.run() in a loop, or use legacy open().
-    NEW(string url, string title, int w, int h, int x, int y, int style) @public
+    NEW(string url, string title = "Zimbu", int w = 800, int h = 600,
+        int x = 100, int y = 100, bool chrome = FALSE) @public
 >>> uses(webview, getCstring) blockgc
-  %$handle% = (void *)zimbu_wv_create(ZgetCstring(%url%), ZgetCstring(%title%),
-                                      (double)%w%, (double)%h%,
-                                      (double)%x%, (double)%y%,
-                                      (unsigned long)%style%);
+  {
+    unsigned long style = 15UL | (%chrome% ? ZIMBU_WV_STYLE_NAVBAR : 0UL);
+    %$handle% = (void *)zimbu_wv_create(ZgetCstring(%url%), ZgetCstring(%title%),
+                                        (double)%w%, (double)%h%,
+                                        (double)%x%, (double)%y%, style);
+  }
 <<<
     }
 
@@ -83,12 +143,14 @@ MODULE WebViewModule @public @items=public
     }
 
     #= Replace the page with the literal HTML string |html|. No HTTP server
-    #- needed. Relative URLs in |html| do NOT resolve (baseURL is nil): use
-    #- loadFile() for pages with local asset references. The load surfaces as
-    #- nav: start / nav:done (or nav:fail:<reason>) in poll().
-    PROC $loadHTML(string html) @public
+    #- needed. |baseURL| (default ""): when non-empty, relative URLs in |html|
+    #- (css/js/img) resolve against it (e.g. "https://x.app/" or a file:// dir);
+    #- empty means no resolution (the legacy behavior) -- use loadFile() for
+    #- pages whose assets live on disk. The load surfaces as nav:start /
+    #- nav:done (or nav:fail:<reason>) in poll().
+    PROC $loadHTML(string html, string baseURL = "") @public
 >>> uses(webview, getCstring) blockgc
-  zimbu_wv_loadHTML(%$handle%, ZgetCstring(%html%));
+  zimbu_wv_loadHTML(%$handle%, ZgetCstring(%html%), ZgetCstring(%baseURL%));
 <<<
     }
 
@@ -102,9 +164,12 @@ MODULE WebViewModule @public @items=public
 <<<
     }
 
-    #= Drain one buffered JS -> Zimbu bridge message (FIFO). Returns the oldest
-    #= posted string, or "" when the queue is empty.
-    FUNC $poll() string @public
+    #= Drain one buffered JS -> Zimbu bridge event (FIFO) as a typed Event, or
+    #= NIL when the queue is empty. |kind| is start/commit/done/fail for the
+    #= WKNavigationDelegate callbacks, or message for any other bridge string
+    #= the page pushed (app postMessage calls, legacy ready:* tags); |payload| is
+    #= the nav:fail reason or the message text.
+    FUNC $poll() Event @public
       string r = ""
 >>> uses(webview) blockgc
   {
@@ -116,7 +181,22 @@ MODULE WebViewModule @public @items=public
     }
   }
 <<<
-      RETURN r
+      IF r == ""
+        RETURN NIL
+      }
+      IF r == "nav:start"
+        RETURN Event.NEW(NavEvent.start, "")
+      }
+      IF r == "nav:commit"
+        RETURN Event.NEW(NavEvent.commit, "")
+      }
+      IF r == "nav:done"
+        RETURN Event.NEW(NavEvent.done, "")
+      }
+      IF r.startsWith("nav:fail:")
+        RETURN Event.NEW(NavEvent.fail, r.slice(9))
+      }
+      RETURN Event.NEW(NavEvent.message, r)
     }
 
     #= Close the native window and free its bridge ring. Safe to call on an
@@ -155,8 +235,8 @@ MODULE WebViewModule @public @items=public
 
   #= LEGACY COMPAT: open a single 800x600 window titled |title| at (100,100)
   #= hosting a WebView pointed at |url|, and block until the user closes it.
-  #- Equivalent to NEW(url,title,800,600,100,100,15) + run() until closed.
-  #- lib/ZWTModule.runNative delegates here; existing callers are unchanged.
+  #- Equivalent to NEW(url,title,800,600,100,100,chrome=FALSE) + run() until
+  #- closed. lib/ZWTModule.runNative delegates here; existing callers unchanged.
   PROC open(string url, string title) @public
 >>> uses(webview, getCstring) blockgc
   {
